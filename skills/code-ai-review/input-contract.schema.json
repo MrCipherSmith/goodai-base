@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goodai-base.local/schemas/code-ai-review/input-contract.schema.json",
+  "title": "Code AI Review Input Contract",
+  "description": "Input contract for code-ai-review skill. All fields are optional — the skill collects scope from git context.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "scope": {
+      "type": "object",
+      "description": "Git diff scope to review. If omitted, defaults to full branch from merge-base to working tree.",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["default", "explicit-range"],
+          "description": "default = merge-base to working tree; explicit-range = from_sha..to_sha"
+        },
+        "from_sha": {
+          "type": "string",
+          "description": "Start commit SHA for explicit-range mode"
+        },
+        "to_sha": {
+          "type": "string",
+          "description": "End commit SHA for explicit-range mode (omit for HEAD)"
+        }
+      }
+    },
+    "job_context": {
+      "type": "object",
+      "description": "Optional job context from job-orchestrator. Used to enrich review with project-specific knowledge.",
+      "additionalProperties": false,
+      "properties": {
+        "job_name": {
+          "type": "string",
+          "description": "Job folder name, e.g. issue-4141--pipeline-validation"
+        },
+        "context_path": {
+          "type": "string",
+          "description": "Absolute path to context.md document, e.g. ~/goodea/goodai-base/jobs/<job-name>/ai/context.md"
+        }
+      }
+    }
+  }
+}

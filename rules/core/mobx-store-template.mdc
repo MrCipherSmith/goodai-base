@@ -1,0 +1,275 @@
+---
+description: "Reference template and checklist for MobX store structure and async state handling."
+alwaysApply: false
+globs:
+  - "**/*store*.ts"
+---
+
+# MobX Store Template
+
+## Purpose
+Provide a reliable baseline for MobX stores and context wiring.
+
+## When To Apply
+Apply when creating or reviewing a MobX store file (`*.store.ts`, `*Store.ts`).
+
+## Required Store Elements
+- `makeObservable(this)` in constructor.
+- Observable state fields.
+- Computed getters for derived state.
+- Bound actions for mutations triggered from UI.
+- `runInAction` for post-await mutations.
+- Context + hook with null-check error.
+
+## Member Accessibility Modifiers
+
+ESLint enforces `@typescript-eslint/explicit-member-accessibility: ["error", { accessibility: "no-public" }]` — the `public` keyword is **forbidden**. Public members have no modifier.
+
+| Modifier | When to use |
+|----------|-------------|
+| *(no modifier)* | `@observable` fields, `@computed` getters, `@action.bound` methods, `dispose()`, `init()` — the store's public API |
+| `private` | Internal state (`disposed`, `initialized`), helper methods, API-calling methods (`fetchX`, `performX`), inter-store callbacks (`onChangeX`, `onFireX`, `handleX`, `syncX`) |
+| `private readonly` | Constructor-injected dependencies, immutable config (`id`, `context`) |
+| `readonly` | Immutable identity fields that are public (`pipelineType`, `contextActions`) |
+| `protected` | Only in abstract base classes for extension points |
+
+## Member Ordering
+
+Follow `@typescript-eslint/member-ordering` (default config) and project convention:
+
+```
+1. @observable fields (no modifier — public state)
+2. private fields (internal state: disposed, initialized, etc.)
+3. constructor
+4. @computed getters
+5. dispose() — cleanup lifecycle
+6. init() / onMount() — initialization lifecycle (called from parent store)
+7. @action.bound methods — UI-facing actions (createX, updateX, deleteX)
+8. private methods — API calls and internal logic (fetchX, performX)
+```
+
+## Action Binding Rules
+
+- **Prefer arrow function actions**: Use arrow function class fields annotated with `@action` (i.e. `methodName = action((args) => { ... })`) or plain arrow methods for UI-facing mutations. Arrow functions already bind `this`; `@action.bound` is therefore redundant and should not be used.
+- **`@action.bound` is discouraged**: Do not use `@action.bound`. It is redundant when the method is defined as an arrow function and can cause confusion about binding semantics. Prefer `= action(...)` assignment or arrow class fields instead.
+- **Plain method + `runInAction`**: Use for methods called from other stores or internal logic. Private methods that perform API calls and mutate state use `runInAction` inside.
+- Avoid `@action.bound` on private methods — **except** when passing as a bound reference to a child store's constructor (inter-store callback pattern). Even then, prefer an arrow function field to avoid the redundancy.
+
+## Inter-Store Callbacks and Internal Handlers
+
+Methods that serve as **internal callbacks** between stores or internal event handlers MUST be `private`. These are NOT part of the store's public API — they are internal synchronization glue.
+
+**Common patterns that MUST be `private`:**
+- `onChangeEditorState(state)` — callback receiving state from child/sibling store
+- `onFireExecutorChange()` — internal sync handler when executor changes
+- `onChangeX(value)` — handler for internal state propagation between stores
+- `handleX()`, `syncX()` — any internal coordination method
+
+**Decision rule:** Ask "Is this method called from a React component via JSX/event handler?" If NO — it is `private`.
+
+```typescript
+// WRONG — public inter-store callback
+@action.bound
+onChangeEditorState(editorState: ICodeEditorState) {
+  this.setRawScript(editorState.script);
+}
+
+// CORRECT — private inter-store callback
+@action.bound
+private onChangeEditorState(editorState: ICodeEditorState) {
+  this.setRawScript(editorState.script);
+}
+```
+
+**Note:** `@action.bound` on a `private` method is acceptable here because these callbacks are passed as bound references to child stores (e.g. `new CodeEditorStore(this.onChangeEditorState)`). The `@action.bound` ensures correct `this` binding and MobX action tracking. This is the one exception to the "never `@action.bound` on private" rule — when the method is passed as a callback reference to another store.
+
+```typescript
+// UI-facing action — @action.bound, delegates to private method
+@action.bound
+async createItem(name: string) {
+  if (this.saving) return;
+  await this.performCreate(name);
+}
+
+// Private method — API + state mutation via runInAction
+private async performCreate(name: string) {
+  runInAction(() => { this.saving = true; });
+  try {
+    const created = await SomeApi.create({ name });
+    runInAction(() => {
+      if (this.disposed) return;
+      this.items = [...this.items, created];
+    });
+  } finally {
+    runInAction(() => {
+      if (this.disposed) return;
+      this.saving = false;
+    });
+  }
+}
+```
+
+## Bidirectional Sync Bounce Protection
+
+When two stores synchronize state bidirectionally (Store A writes to Store B and Store B writes back to Store A), an **equality guard** is required in the reverse-sync path to prevent infinite callback loops.
+
+**Pattern:** Before propagating a value back to the source store, check that the value actually changed:
+
+```typescript
+// Store A → Store B (forward sync, triggered by user action)
+@action.bound
+private onChangeEditorState(editorState: ICodeEditorState) {
+  this.setRawScript(editorState.script);
+  // Reverse-sync: push executor back to editor — WITH equality guard
+  const codeExecutorId = this.codeExecutor?.id;
+  if (codeExecutorId && this.codeEditorStore.executorId !== codeExecutorId) {
+    this.codeEditorStore.setExecutorId(codeExecutorId);
+  }
+}
+```
+
+**Anti-pattern — missing equality guard causes infinite loop:**
+
+```typescript
+// WRONG — no guard, will bounce back and forth
+private onChangeEditorState(editorState: ICodeEditorState) {
+  this.setRawScript(editorState.script);
+  const codeExecutorId = this.codeExecutor?.id;
+  if (codeExecutorId) {
+    this.codeEditorStore.setExecutorId(codeExecutorId); // triggers onChangeX → back to here
+  }
+}
+```
+
+**Rule:** In any bidirectional sync between stores, at least one direction MUST have `if (newValue !== currentValue)` before writing to the other store.
+
+## Truthy vs Equality Guards for Optional Values
+
+When guarding state updates, prefer **equality comparison** (`!==`) over **truthy checks** (`if (value && ...)`) for optional/nullable fields. A truthy guard blocks propagation of legitimate `undefined`/`null`/`0`/`""` values.
+
+```typescript
+// WRONG — truthy guard blocks clearing (undefined cannot propagate)
+if (executor && executor.id !== this.executorId) {
+  this.setExecutorId(executor.id);
+}
+// If executor is undefined (user cleared it), nothing happens — stale value remains
+
+// CORRECT — equality guard allows clearing
+if (executor?.id !== this.executorId) {
+  this.setExecutorId(executor?.id);
+}
+// If executor is undefined, executorId becomes undefined — field is properly cleared
+```
+
+**Rule:** Use `if (value !== currentValue)` instead of `if (value && value !== currentValue)` when `undefined`/`null` is a valid state that should propagate. Reserve truthy guards only for fields that must never be falsy.
+
+## Lifecycle Initialization
+
+- **`init()` / `onMount()`**: Called by the **parent store**, not from component `useEffect`.
+- Components should **not** trigger store data loading via `useEffect`. Parent store orchestrates child store lifecycle.
+- `dispose()`: Called by parent store in its `onUnmount()` to prevent stale-state updates.
+
+```typescript
+// Parent store — orchestrates child lifecycle
+@action.bound
+onMount() {
+  this.runnerStore.initialize();
+  void this.variablesStore.init();
+}
+
+@action.bound
+onUnmount() {
+  this.variablesStore?.dispose();
+}
+```
+
+## API Calls in Private Methods
+
+API/IO calls must live in **private** store methods, never in `@action.bound` methods or components:
+
+- `@action.bound` methods are thin: guard check → delegate to private method
+- Private methods handle: API call → `runInAction` for state mutation → toast notifications → error handling
+
+## Minimal Template
+```typescript
+import { action, computed, makeObservable, observable, runInAction } from "mobx";
+import { createContext, useContext } from "react";
+
+export class ExampleStore {
+  // 1. Observable fields (public state)
+  @observable loading = false;
+  @observable saving = false;
+  @observable.ref items: IItem[] = [];
+
+  // 2. Private fields (internal state)
+  private disposed = false;
+
+  // 3. Constructor
+  constructor() {
+    makeObservable(this);
+  }
+
+  // 4. Computed getters
+  @computed get isEmpty() {
+    return this.items.length === 0;
+  }
+
+  // 5. Dispose (cleanup lifecycle)
+  dispose() {
+    this.disposed = true;
+  }
+
+  // 6. Init (called from parent store onMount)
+  async init() {
+    await this.fetchItems();
+  }
+
+  // 7. @action.bound methods (UI-facing actions)
+  @action.bound
+  async createItem(name: string) {
+    if (this.saving) return;
+    await this.performCreate(name);
+  }
+
+  // 8. Private methods (API + state mutation)
+  private async fetchItems() {
+    runInAction(() => { this.loading = true; });
+    try {
+      const items = await SomeApi.getAll();
+      runInAction(() => {
+        if (this.disposed) return;
+        this.items = items;
+      });
+    } finally {
+      runInAction(() => {
+        if (this.disposed) return;
+        this.loading = false;
+      });
+    }
+  }
+
+  private async performCreate(name: string) {
+    runInAction(() => { this.saving = true; });
+    try {
+      const created = await SomeApi.create({ name });
+      runInAction(() => {
+        if (this.disposed) return;
+        this.items = [...this.items, created];
+      });
+    } finally {
+      runInAction(() => {
+        if (this.disposed) return;
+        this.saving = false;
+      });
+    }
+  }
+}
+
+export const ExampleStoreContext = createContext<ExampleStore | null>(null);
+
+export const useExampleStore = () => {
+  const store = useContext(ExampleStoreContext);
+  if (!store) throw new Error("useExampleStore must be used within provider");
+  return store;
+};
+```

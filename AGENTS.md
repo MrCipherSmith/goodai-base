@@ -1,0 +1,429 @@
+
+# AGENTS Rule Index
+
+## Purpose
+This file is the single always-on rule for the repository rule system.
+It defines global behavior and tells the agent how to select the required rule files from `rules/core` OR invoke appropriate skills from `Skills Catalog`.
+
+---
+
+## 🎯 QUICK DECISION GUIDE
+
+**When user asks for analysis/investigation → Use SKILLS**
+**When user asks for coding standards/review guidelines → Use RULES**
+
+| User Request Type | Action | Examples |
+|------------------|--------|----------|
+| "Implement issue...", "Issue to PR..." | **ASK: orchestrator or direct?** | "Implement issue #4141", "Auto-implement" |
+| "Analyze...", "Study...", "Investigate..." | **ASK: orchestrator or direct?** | "Analyze branch", "Study pipeline changes" |
+| "Review code...", "Check style..." | **ASK: orchestrator or direct?** | "Review my code", "Check architecture" |
+| "Full review", "Full implementation", "Orchestrate..." | **Job Orchestrator directly** | "Полное ревью", "Run pipeline" |
+| Explicit skill name (e.g., "Run feature-analyzer") | **Invoke named skill directly** | "Use feature-analyzer", "Run feature-analyzer" |
+| "Add PR description", "Document PR", "Create issue for PR" | **`pr-issue-documenter` directly** | "Describe PR changes", "Update PR and issue" |
+| "How to write...", "Standards for..." | **Check Core Rule Catalog** | "How to write DTOs", "Git commit format" |
+| "Create...", "Add..." (with specific type) | **Check Core Rule Catalog** | "Create documentation", "Add pipeline step" |
+| "Change model", "Use different model", "Switch model" | **Check Model Selection** | "Use GPT-5 for sub-agent", "Switch to claude" |
+
+> **Orchestrator Routing Rule:** When the user does NOT explicitly name a specific skill
+> (e.g., "run code-ai-review", "use feature-analyzer"), and the request CAN be handled
+> by `job-orchestrator` (review, analyze, implement), the agent **MUST ask** the user:
+>
+> - **Job Orchestrator** — persistent documentation in `jobs/`, structured report, full traceability
+> - **Skill directly** — quick execution, no persistent documentation
+>
+> If the user explicitly names a skill → invoke it directly, skip this question.
+> If the request clearly implies orchestration ("full review", "полное ревью", "orchestrate") → go to `job-orchestrator` directly.
+
+---
+
+## 📚 Understanding Rules vs Skills
+
+### What are RULES? (in `rules/core/*.mdc`)
+- **Reference documentation** for coding standards and workflows
+- **Guidelines** on HOW to write code, format commits, structure docs
+- **Static** - don't change based on context
+- **Used for**: learning conventions, checking compliance, understanding patterns
+
+**Rule Examples:**
+- `nestjs-dto.mdc` - How to write NestJS DTOs
+- `code-style-patterns.mdc` - Architecture patterns for TS/React/MobX
+- `commit-message-formatting.mdc` - How to format commit messages
+
+### What are SKILLS? (in `skills/*/`)
+- **Actionable procedures** for complex multi-step tasks
+- **Intelligent agents** that perform analysis, reviews, investigations
+- **Dynamic** - adapt to user context and repository state
+- **Used for**: analyzing code, reviewing changes, investigating features
+
+**Skill Examples:**
+- `feature-analyzer` - Deep analysis of feature branches across repos
+- `pr-review-comments` - Analyze PR review comments
+
+---
+
+## 🔍 SELECTION PROTOCOL (Step-by-Step)
+
+### Step 1: Analyze User Intent
+Identify what user wants to do:
+
+**Intent: ANALYZE / INVESTIGATE / REVIEW / IMPLEMENT**
+→ Go to **Step 1.5** (Orchestrator Routing Check)
+
+**Intent: LEARN / CREATE (with standards)**
+→ Go to **Core Rule Catalog** (skip orchestrator check)
+
+### Step 1.5: Orchestrator Routing Check
+
+Before dispatching to a specific skill, check if the user **explicitly named** a skill:
+
+```
+IF user explicitly named a skill (e.g., "run code-ai-review", "use feature-analyzer"):
+  → Go directly to Step 2A with that skill. SKIP orchestrator question.
+
+ELSE IF request clearly implies orchestration ("full review", "полное ревью", "issue to PR", "orchestrate"):
+  → Go directly to job-orchestrator. SKIP question.
+
+ELSE (user did NOT name a specific skill, e.g., "review my code", "analyze branch"):
+  → ASK the user:
+    ○ Job Orchestrator — persistent docs in jobs/, structured report, full traceability (Recommended)
+    ○ Run skill directly — quick execution, no persistent docs
+
+  IF user chooses orchestrator → Load job-orchestrator skill
+  IF user chooses direct → Go to Step 2A to match the appropriate skill
+```
+
+**Orchestratable intents:** `implement`, `analyze`, `review`
+**Non-orchestratable:** `pr-review-comments`, `pr-issue-documenter` (specialized domain skills — always direct)
+
+### Step 2A: If Using Skills (Analysis Tasks)
+
+**MATCH user request to skill description:**
+
+```
+User: "Analyze everything related to variables in pipelines"
+
+Step 1.5: User did NOT name a specific skill → ASK orchestrator or direct?
+User chooses: direct
+
+SCAN Skills Catalog:
+✓ feature-analyzer - "Cross-repository analysis... Use when: backend→frontend
+  planning, cross-repo feature analysis"
+
+→ MATCH! Load feature-analyzer skill
+→ Follow skill instructions
+```
+
+**Skill Selection Examples:**
+
+| User Request | Correct Action | Why |
+|-------------|----------------|-----|
+| "Implement issue #4141" | **ASK:** `job-orchestrator` or `issue-analyzer` + `task-implementer` | User didn't name skill — ask first |
+| "Full implementation", "Issue to PR" | `job-orchestrator` | Implies orchestration — go directly |
+| "Analyze branch changes" | **ASK:** `job-orchestrator` or `feature-analyzer` | User didn't name skill — ask first |
+| "Use feature-analyzer on branch X" | `feature-analyzer` | User explicitly named skill — direct |
+| "Analyze variables in pipelines" | **ASK:** `job-orchestrator` or `feature-analyzer` | User didn't name skill — ask first |
+| "Decompose issue into tasks" | **ASK:** `job-orchestrator` or `issue-analyzer` | User didn't name skill — ask first |
+| "Review my code changes" | **ASK:** `job-orchestrator` or `feature-analyzer` | User didn't name skill — ask first |
+| "Full review", "Полное ревью" | `job-orchestrator` | Implies orchestration — go directly |
+| "Analyze PR comments" | `pr-review-comments` | Specialized domain skill — direct |
+| "Add PR description", "Document PR" | `pr-issue-documenter` | Specialized domain skill — direct |
+| "Create issue for PR changes" | `pr-issue-documenter` | Specialized domain skill — direct |
+
+### Step 2B: If Using Rules (Standards/Reference)
+
+**MATCH user request to rule description:**
+
+```
+User: "How should I write NestJS DTOs?"
+
+SCAN Core Rule Catalog:
+✓ nestjs-dto.mdc - "NestJS DTO and validation annotation standards"
+
+→ MATCH! Read nestjs-dto.mdc rule
+→ Follow guidelines
+```
+
+---
+
+## 📖 Core Rule Catalog
+
+Reference guidelines for coding standards and workflows:
+
+**Documentation & Planning:**
+- `core/documentation-management.mdc`: Documentation lifecycle and multilingual doc structure in `~/goodea/goodai-base/docs`.
+- `core/jobs-documentation.mdc`: Job documentation structure and conventions for `~/goodea/goodai-base/jobs`. Used by `job-orchestrator` and `job-documenter`.
+- `core/implementation-plans.mdc`: Implementation plan format and storage.
+- `core/requirements-management.mdc`: Requirements document workflow and structure.
+
+**Code Quality & Style:**
+- `core/code-style-patterns.mdc`: Architecture and style patterns for TS/React/MobX.
+- `core/frontend-assistant.mdc`: Frontend delivery standards for TS/React/MobX/AntD/Tailwind.
+- `core/mobx-store-template.mdc`: Reference structure for MobX stores.
+- `core/nestjs-dto.mdc`: NestJS DTO and validation annotation standards.
+
+**Review & Testing:**
+- `core/code-review-ai-assistant.mdc`: Default AI code review baseline.
+- `core/code-review-b091-profile.mdc`: b091-style review profile and tone constraints.
+- `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
+- `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
+
+**Development Workflow:**
+- `core/git-rules.mdc`: Commit safety, protected paths, and apply-changes gate.
+- `core/commit-message-formatting.mdc`: Conventional commit format policy.
+- `core/beads-workflow.mdc`: Beads/BD workflow when Beads tooling is requested.
+- `core/pipeline-new-step-prompt.mdc`: Required checklist for adding a new pipeline step type.
+
+**System Management:**
+- `core/rule-management-workflow.mdc`: Add/edit/sync workflow for rule files and rule metadata.
+- `core/skills-storage-workflow.mdc`: Skill authoring best practices and sync workflow for Cursor, Codex, Zed, OpenCode.
+- `core/model-selection.mdc`: Model selection workflow for sub-agents. Run `detect-models.sh` to see available models.
+
+---
+
+## 🎨 Skills Catalog
+
+Intelligent agents for complex analysis and review tasks:
+
+### Analysis & Investigation Skills
+
+**`skills/feature-analyzer`** ⭐ PRIMARY FOR ANALYSIS
+- **Purpose**: Deep cross-repository analysis of feature branches
+- **Use When**:
+  - "Analyze branch changes"
+  - "Study pipeline changes"
+  - "Investigate feature implementation"
+  - "Analyze [topic] in [area]" (e.g., "variables in pipelines")
+- **Key Features**:
+  - Source→Target repository analysis
+  - Focus-based prioritization (e.g., "variables in pipelines")
+  - P0/P1/P2 file selection
+  - Gherkin format for AI agents
+  - REQUIRES explicit user context (source/target/branch)
+- **Version**: v2.4.0
+- **Trigger Examples**:
+  - "Analyze everything related to variables in pipelines"
+  - "Study backend changes for frontend implementation"
+  - "Cross-repo analysis"
+
+### Code Review Skills
+
+**`skills/code-ai-review`**
+- **Purpose**: General AI code review — correctness, type safety, security, performance, error handling
+- **Use When**: "Review code changes", "Check my code", "AI code review"
+- **Key Features**: Focuses on P0 (correctness/security), P1 (architecture), P2 (style); follows `code-review-ai-assistant.mdc`; outputs structured findings with severity/file/line/suggestion
+- **Output**: JSON findings object (blocker/major/minor severities)
+- **Invoked by**: `job-orchestrator` review loop, or directly
+
+**`skills/code-b091-review`**
+- **Purpose**: Direct logic-first review in b091 style — architecture, layer correctness, no duct-tape code
+- **Use When**: "b091 review", "logic review", called by `job-orchestrator` review loop
+- **Key Features**: Logic in correct layer, inter-store callbacks must be `private`, no premature optimization; follows `code-review-b091-profile.mdc`
+- **Output**: JSON findings object
+
+**`skills/code-style-review`**
+- **Purpose**: Code style and architecture review — TypeScript strictness, MobX patterns, React structure
+- **Use When**: "Style review", "Architecture check", called by `job-orchestrator` review loop
+- **Key Features**: No `any` types, proper MobX observable/action patterns, naming conventions; follows `code-style-patterns.mdc`
+- **Output**: JSON findings object
+
+**`skills/code-mobx-store-review`**
+- **Purpose**: Targeted MobX store review — member ordering, accessibility modifiers, action binding, bidirectional sync
+- **Use When**: Store files modified (`.store.ts`), called by `job-orchestrator` when MobX files detected
+- **Key Features**: Member ordering rules, no `public` keyword, `makeObservable(this)` in constructor, `runInAction` after `await`, bounce protection for bidirectional sync
+- **Output**: JSON findings object
+
+### Implementation & Orchestration Skills
+
+**`skills/job-orchestrator`** ⭐ PRIMARY FOR ORCHESTRATION
+- **Purpose**: Dynamic orchestrator that builds execution plans based on user intent
+- **Use When**:
+  - "Implement issue #N"
+  - "Issue to PR"
+  - "Analyze and implement"
+  - "Run full implementation pipeline"
+  - "Auto-implement issue"
+  - "Full review", "Полное ревью"
+  - "Review my code" (when user chooses orchestrator at Step 1.5)
+  - "Analyze branch" (when user chooses orchestrator at Step 1.5)
+  - Any request where user confirms orchestrated execution via Step 1.5
+- **Key Features**:
+  - 4-phase dynamic pipeline: Context Collection → Plan Building → Execution → Completion
+  - Intent-driven: adapts plan to implement, analyze, review, or custom workflows
+  - Dispatches issue-analyzer, context-collector, task-implementer, and review skills as sub-agents
+  - Persistent job documentation via job-documenter in `jobs/<job-name>/`
+  - Dynamic plan extension (e.g., analyze → user confirms → implement)
+  - Review-fix loop (max 2 iterations)
+  - Draft PR proposal with user confirmation
+- **Version**: v2.0.0
+
+**`skills/job-documenter`**
+- **Purpose**: Creates and maintains structured job documentation in `jobs/`
+- **Use When**: Called by `job-orchestrator` — NOT invoked directly by users
+- **Actions**: init (create job folder), add-document, update-readme, finalize
+- **Standards**: `core/jobs-documentation.mdc`
+- **Output**: Persistent documentation in `~/goodea/goodai-base/jobs/<job-name>/`
+
+**`skills/context-collector`**
+- **Purpose**: Collects, summarizes, and maintains a unified context document for a job
+- **Use When**:
+  - "Collect context", "Build context", "Gather context"
+  - Called by `job-orchestrator` after analysis, before implementation
+  - Called again when sub-agents need additional context (e.g., new library discovered)
+  - Can also be invoked directly by user for standalone research
+- **Key Features**:
+  - 5-phase workflow: Receive → Local → External → Synthesize → Document
+  - Gathers local docs (`docs/`, `jobs/`, `rules/core/`), codebase patterns, external library docs
+  - Fetches best practices via web for identified libraries and patterns
+  - Produces a single `context.md` in `jobs/<job-name>/` (both `man/` and `ai/`)
+  - Version-tracked updates — can be refreshed during job lifecycle
+- **Version**: v1.0.0
+
+**`skills/issue-analyzer`**
+- **Purpose**: Decompose GitHub issue into atomic implementation tasks
+- **Use When**: "Analyze issue", "Decompose issue", "Break down issue"
+- **Output**: JSON object with `issue` metadata, `tasks` array (each with task_id, target_files, acceptance_criteria, context, module_patterns), and `dependency_order`
+- **Scope**: Read-only analysis, no code modifications
+
+**`skills/task-implementer`**
+- **Purpose**: Implement a single atomic task from issue-analyzer
+- **Use When**: "Implement task", "Execute task scenario"
+- **Features**: 6-phase workflow (Receive → Research → Plan → Implement → Verify → Report)
+- **Input**: JSON task object from issue-analyzer + workspace context (codebase_path, branch, issue_number)
+- **Output**: JSON result with status, files_modified, files_created, commits, lint_result, type_check_result, test_result, acceptance_criteria_met
+
+### PR & Comments Skills
+
+**`skills/pr-review-comments`**
+- **Purpose**: Analyze PR review comments
+- **Use When**: "Analyze PR comments", "What did reviewers say?"
+- **Features**: Groups by author, suggests fixes, proposes rule updates
+
+**`skills/pr-issue-documenter`**
+- **Purpose**: Generate structured PR descriptions and issue documentation from branch changes
+- **Use When**:
+  - "Add PR description", "Document PR"
+  - "Create issue for PR", "Update issue from PR changes"
+  - "Describe PR changes", "Update PR and issue"
+- **Key Features**:
+  - 7-step workflow: Parse Input → Collect Context → Analyze Changes → Generate PR Description → Handle Issue → Apply Changes → Verify
+  - Concise PR descriptions (Summary + Changes by area + Key Files table)
+  - Detailed issue descriptions (numbered sections with technical details)
+  - Contradiction detection when updating existing issue content
+  - Sub-issue creation under parent issues
+  - Asks before overwriting existing content
+- **Version**: v1.0.0
+
+---
+
+## ⚠️ CRITICAL: How to Use Skills (Step-by-Step)
+
+### When User Requests Analysis (e.g., "Analyze variables in pipelines"):
+
+```
+1. IDENTIFY intent: User wants ANALYSIS → Use SKILLS
+
+2. ORCHESTRATOR ROUTING CHECK (Step 1.5):
+   - User did NOT name a specific skill
+   - Request CAN be handled by job-orchestrator
+   → ASK user: orchestrator or direct?
+
+   User chooses: direct → continue to step 3
+
+3. SCAN Skills Catalog for match:
+   - feature-analyzer: "Cross-repository analysis... Use when: backend→frontend planning"
+   - context-collector: "Collects and maintains unified context document"
+
+   → feature-analyzer MATCHES (analysis task)
+
+4. LOAD skill from: ~/goodea/goodai-base/skills/feature-analyzer/SKILL.md
+
+5. FOLLOW skill instructions EXACTLY:
+   - Skill has guard clause → MUST ask for source/target/branch FIRST
+   - Skill has focus support → Extract "variables" and "pipelines"
+   - Skill has workflow → Follow step-by-step
+
+6. DO NOT start analysis until skill says you can proceed
+```
+
+### When User Says "Full review" or implies orchestration:
+
+```
+1. IDENTIFY intent: User wants REVIEW → Use SKILLS
+
+2. ORCHESTRATOR ROUTING CHECK (Step 1.5):
+   - Request clearly implies orchestration ("full review")
+   → Go directly to job-orchestrator. SKIP question.
+
+3. LOAD skill from: ~/goodea/goodai-base/skills/job-orchestrator/SKILL.md
+
+4. FOLLOW orchestrator workflow (Phase 0 → Phase 3)
+```
+
+### Common Mistakes to AVOID:
+
+❌ **WRONG**: User says "Review my code" → immediately launch `feature-analyzer`
+✅ **CORRECT**: User says "Review my code" → ASK: `job-orchestrator` (persistent docs) or `feature-analyzer` (quick)?
+
+❌ **WRONG**: User says "Run feature-analyzer" → ask about orchestrator
+✅ **CORRECT**: User says "Run feature-analyzer" → invoke `feature-analyzer` directly (user was explicit)
+
+❌ **WRONG**: User says "Analyze branch changes" → immediately launch `feature-analyzer`
+✅ **CORRECT**: User says "Analyze branch changes" → ASK: `job-orchestrator` or `feature-analyzer`?
+
+❌ **WRONG**: User says "Use feature-analyzer" → ask about orchestrator
+✅ **CORRECT**: User says "Use feature-analyzer" → invoke `feature-analyzer` directly (user was explicit)
+
+❌ **WRONG**: User says "Full review" → launch single review skill
+✅ **CORRECT**: User says "Full review" → go to `job-orchestrator` directly (implies orchestration)
+
+❌ **WRONG**: User says "Analyze variables in pipelines" → Load code-style-review rule
+✅ **CORRECT**: User says "Analyze variables in pipelines" → ASK: orchestrator or direct? Then load chosen skill
+
+❌ **WRONG**: Start analyzing current directory without asking for context
+✅ **CORRECT**: Ask for source/target/branch as required by feature-analyzer skill
+
+❌ **WRONG**: Use rule when user wants action ("Review my code" → load code-style-patterns.mdc)
+✅ **CORRECT**: Use skill when user wants action ("Review my code" → ASK orchestrator or skill)
+
+---
+
+## 🔄 Selection Protocol Summary
+
+1. **Read this file first** (AGENTS.md)
+2. **Identify user intent**: Analysis/Review/Implement → Check orchestrator routing | Standards/Reference → Rules
+3. **Orchestrator routing check** (Step 1.5): If user didn't name a specific skill → ASK: orchestrator or direct?
+4. **Select appropriate resource**:
+   - `job-orchestrator` if user chose orchestrator or request implies orchestration
+   - Specific skill if user chose direct or explicitly named a skill
+   - Core Rule Catalog for standards/guidelines
+5. **Load and follow** selected resource exactly
+6. **Do not load unrelated** resources
+7. **When in doubt**, ask one clarification question
+8. **When conflict**, prefer most task-specific resource
+
+---
+
+## Global Contract
+- All rule files are authored in English.
+- Final user-facing deliverables MUST be in Markdown.
+- Any code snippet MUST be inside fenced Markdown code blocks.
+- The response language MUST follow the language of the user query.
+- Load only the minimum set of rules/skills required for the current task.
+
+---
+
+## Maintenance Rules
+- Add new thematic rules only under `rules/core` as `.mdc`.
+- Add new skills under `~/goodea/goodai-base/skills/<skill-name>/`.
+- Keep this file updated with descriptions when rules/skills added/renamed/removed.
+- Source of truth: `~/goodea/goodai-base/AGENTS.md` (this file). `AGENTS.mdc` wraps it with frontmatter for Cursor.
+- `sync-skills.sh` syncs `AGENTS.md` to all tool targets and syncs all skill profiles from `~/goodea/goodai-base/skills/`.
+- `validate-skills-before-sync.sh` MUST run before `sync-skills.sh` for pre-sync validation.
+- Scripts usage and schema details: `~/goodea/goodai-base/scripts/README.md`.
+
+---
+
+## Job Documentation
+- Job documentation root: `~/goodea/goodai-base/jobs/`
+- Structure and conventions: `rules/core/jobs-documentation.mdc`
+- Created and maintained by `job-documenter` skill, driven by `job-orchestrator`

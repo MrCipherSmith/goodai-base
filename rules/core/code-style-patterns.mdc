@@ -1,0 +1,49 @@
+---
+description: "Code style and architecture patterns for TypeScript, React, and MobX."
+alwaysApply: false
+---
+
+# Code Style and Architecture Patterns
+
+## Purpose
+Enforce consistent code style and architecture patterns across TypeScript, React, and MobX code in the frontend project.
+
+## When To Apply
+Apply when reviewing or implementing TypeScript/React/MobX code in the frontend project.
+
+## TypeScript
+- Enforce strict typing; avoid `any`.
+- Use interfaces for component props.
+- Prefer `?.` and `??` over unsafe assertions.
+- Do not use imports like `from \"src/...\"`; use relative paths or approved aliases.
+
+## MobX Patterns
+
+For complete MobX store patterns, see `core/mobx-store-template.mdc`.
+
+Key principles (see canonical source for full detail with examples):
+- All state must be `makeObservable` with explicit decorators
+- Use `runInAction` for async state changes
+- Wrap React components with `observer`
+- Inter-store callbacks must be private (`private readonly onX = action(...)`)
+- Use equality guards (`=== value`) not truthy checks for computed flags
+- Implement bounce protection for bidirectional sync
+
+## React
+- Wrap observable-consuming components with `observer`.
+- Keep business logic in stores/services.
+- Avoid heavy logic in render.
+
+## Architecture
+- Service layer: IO/API only.
+- Store layer: business logic and state transitions.
+- Component layer: view rendering.
+
+## Review Flags
+- API calls directly in UI components.
+- Missing `observer` where store values are consumed.
+- Direct observable mutation outside actions.
+- Large inline render logic better suited for computed/store methods.
+- Public inter-store callbacks/handlers that should be `private` (e.g. `onChangeEditorState`, `onFireExecutorChange`).
+- Bidirectional store sync without equality guard — risk of infinite callback bounce.
+- Truthy guard (`if (x && x !== y)`) on optional/nullable field — blocks propagation of `undefined`/falsy clearing.

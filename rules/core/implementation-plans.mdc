@@ -1,0 +1,47 @@
+---
+description: "Rules for creating implementation plans in date-stamped requirement folders."
+alwaysApply: false
+---
+
+# Implementation Plans Rules
+
+## Purpose
+Define structure and storage for implementation plans.
+
+## When To Apply
+Apply when creating or updating an implementation plan document.
+
+## Location
+`~/goodea/goodai-base/docs/requirements/<requirement-name>/<YYYY-MM-DD>/`
+
+## Mandatory Behavior
+1. Ask for target location and folder name before creation.
+2. If requirement folder does not exist, create requirements first.
+3. Use a new date folder for every new plan iteration.
+4. Generate and keep synchronized language variants: `ru`, `en`, `ai`.
+
+## Required Plan Structure
+1. High-level plan
+2. Detailed plan
+3. Execution tracking with unchecked checkboxes
+
+## Output Contract
+- Plan files MUST be Markdown (`.md`).
+- Code or command examples MUST be fenced code blocks.
+
+## Template
+```markdown
+# <Plan Name>
+
+## 1. High-Level Plan
+- Objective:
+- Scope:
+
+## 2. Detailed Plan
+### Step 1
+### Step 2
+
+## 3. Execution Tracking
+- [ ] Step 1 completed
+- [ ] Step 2 completed
+```

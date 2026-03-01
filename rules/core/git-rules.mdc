@@ -1,0 +1,26 @@
+---
+description: "Git safety rules for protected paths and controlled apply-changes flow."
+alwaysApply: false
+---
+
+# Git Commit Rules
+
+## Purpose
+Prevent accidental commits and enforce controlled publishing flow.
+
+## When To Apply
+Apply before any git operation: commit, branch creation, or PR creation. Always loaded alongside commit-message-formatting.mdc.
+
+## Protected Paths
+- `.cursor/`: never commit.
+- `~/goodea/goodai-base/docs/`: do not commit by default unless explicitly approved by the user.
+- `~/goodea/goodai-base/jobs/`: do not commit by default unless explicitly approved by the user. Job documentation — never force-delete; contains orchestrator run artifacts.
+
+## Mandatory Behavior
+1. Ensure protected paths are covered in `.gitignore`.
+2. After rule/doc updates, ask user whether to apply changes.
+3. If approved: create branch from `main`, commit, and open PR to `main`.
+4. If declined: do not create branch/commit/PR.
+
+## Commit Message Rules
+Follow `core/commit-message-formatting.mdc`.

@@ -1,0 +1,40 @@
+---
+description: "Workflow for Beads BD task execution and follow-up actions."
+alwaysApply: false
+---
+
+# Beads BD Task Workflow
+
+## Purpose
+Standardize task handling when Beads tooling is requested. Ensures consistent use of Beads Design (BD) components, tokens, and composition patterns across the project.
+
+## When To Apply
+Apply when the user mentions Beads, BD tooling, or explicitly requests using Beads for the task.
+
+## Preconditions
+- User has confirmed this is a Beads/BD task
+- Beads tooling is available in the project
+
+## Beads Workflow Steps
+
+1. **Identify the Beads component or BD interaction requested** — Clarify which UI element or interaction pattern the task involves. Map the request to a specific Beads component name or BD interaction type.
+2. **Check existing Beads component library for reuse** — Search the Beads component library before creating anything new. Prefer composition of existing components over custom implementations.
+3. **Apply BD (Beads Design) tokens for colors, spacing, typography** — Use official BD design tokens for all visual properties. Do not use hardcoded color values, pixel sizes, or font stacks; reference tokens instead.
+4. **Follow Beads component composition patterns** — Assemble components according to documented Beads composition guidelines. Respect slot structures, prop contracts, and variant APIs defined by the library.
+5. **Validate against Beads accessibility requirements** — Confirm the implementation meets Beads accessibility standards: correct ARIA roles, keyboard navigation, focus management, and color contrast per BD spec.
+
+## Post-Task Actions
+- Offer to commit and push if changes were made
+- Update relevant documentation if BD workflow changed
+
+## Mandatory Behavior
+- Always check the Beads component library before introducing a custom component.
+- Always use BD tokens — never hardcode visual values.
+- Always validate accessibility before marking a task complete.
+- Report any missing tokens or components that required a workaround.
+
+## Output Contract
+- List which Beads components were used or reused.
+- List which BD tokens were applied.
+- Note any accessibility checks performed and their results.
+- Flag any deviations from standard Beads patterns and the reason for the deviation.
