@@ -128,6 +128,33 @@
         "documents_created": { "type": "array", "items": { "type": "string" } }
       }
     },
+    "metrics": {
+      "type": "object",
+      "description": "Timing and token usage per step",
+      "properties": {
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step_id": { "type": "string" },
+              "started_at": { "type": "string", "format": "date-time" },
+              "completed_at": { "type": "string", "format": "date-time" },
+              "duration_ms": { "type": "integer" },
+              "total_tokens": { "type": "integer" },
+              "status": { "type": "string" },
+              "retries": { "type": "integer" }
+            }
+          }
+        },
+        "total_duration_ms": { "type": "integer" },
+        "total_tokens": { "type": "integer" }
+      }
+    },
+    "jobs_root": {
+      "type": "string",
+      "description": "Resolved jobs root directory"
+    },
     "updated_at": {
       "type": "string",
       "format": "date-time",
