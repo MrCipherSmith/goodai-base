@@ -411,10 +411,16 @@ CONTEXT_RESULT:
 
 **Validate:** status must be `success`. If `error` → log warning, continue (context is helpful but not blocking).
 
-**After context is collected:** All subsequent sub-agents (task-implementer, reviewers) should be informed about the context document location:
+**After context is collected:** All subsequent sub-agents receive the **versioned** context path from state.json:
 ```
-CONTEXT_LOCATION: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_LOCATION: ~/goodea/goodai-base/jobs/<job-name>/ai/context_v<N>.md
 ```
+
+**Context versioning:** Never overwrite `context.md` — save snapshots as `context_v1.md`, `context_v2.md`, etc.
+- Version 1 is created during Step 2.3 (first collect)
+- Subsequent versions increment on each update
+- `state.json → context_doc.version` always points to the latest version
+- Sub-agents always read the path from `state.json`, not a hardcoded filename
 
 **Triggering context updates during execution:**
 
@@ -433,6 +439,7 @@ Task({
     JOB_NAME: <job-name>
     JOBS_ROOT: ~/goodea/goodai-base/jobs
     PROJECT_DIR: <project_dir>
+    CONTEXT_VERSION: <current version + 1>  ← write to context_v<N+1>.md
 
     DATA:
       TASK_DESCRIPTION: <original task description>
@@ -508,44 +515,56 @@ BRANCH_STATE:
 
 ### 2.5 Step: IMPLEMENT
 
-Dispatch `task-implementer` for each task in dependency order (sequential).
+Dispatch `task-implementer` for tasks. **Parallelize independent tasks** where possible.
+
+**Dependency-aware execution strategy:**
 
 ```
-FOR task in dependency_order:
-  IF task.dependencies are all completed:
-    
-    1. Construct task-implementer prompt
-       (use template from skills/task-implementer/orchestrator-prompt.md)
-       Fill in task fields from ANALYSIS_RESULT.tasks[task_id] as JSON object.
-       IMPORTANT: Include job context in the prompt:
-         JOB_NAME: <job-name>
-         CONTEXT_PATH: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
-    
-    2. Launch:
-       Task({
-         description: "Implement <task_id>: <task_name>",
-         subagent_type: "general",
-         prompt: <prompt with workspace set to worktree_path>
-       })
-    
-    3. Parse JSON result:
-       - status: success | partial | failed
-       - files_modified, files_created, files_deleted: arrays of paths
-       - commits: array of commit hashes
-       - lint_result, type_check_result, test_result, story_result: strings
-       - acceptance_criteria_met: "all" | "partial: <list>" | "none"
-       - notes: string
-    
-    4. Record: TASK_RESULTS[task_id] = result
-    
-    5. Decision:
-       - success → continue
-       - partial → log warnings, continue
-       - failed → STOP implementation, ask user
+# Build dependency graph from analysis
+# Group tasks into execution waves — tasks in the same wave have no dependencies on each other
 
+WAVES = topological_sort_into_waves(dependency_order, task_dependencies)
+
+# Example:
+# Wave 1: [task-1, task-2]    ← no dependencies, run in PARALLEL
+# Wave 2: [task-3]            ← depends on task-1, run after wave 1
+# Wave 3: [task-4, task-5]    ← depend on task-3, run in PARALLEL
+
+FOR wave in WAVES:
+  IF wave has 1 task:
+    # Sequential — single task
+    Launch task-implementer for the task
   ELSE:
-    ABORT("Dependency not met")
+    # PARALLEL — launch all tasks in this wave simultaneously
+    # IMPORTANT: parallel tasks must modify DIFFERENT files to avoid git conflicts
+    # If file overlap detected → fall back to sequential within this wave
+    Launch all task-implementers in a single turn
+    Wait for all to complete
+
+  FOR task in wave:
+    Parse JSON result:
+      - status: success | partial | failed
+      - files_modified, files_created, files_deleted: arrays of paths
+      - commits: array of commit hashes
+      - lint_result, type_check_result, test_result, story_result: strings
+      - acceptance_criteria_met: "all" | "partial: <list>" | "none"
+      - notes: string
+    
+    Record: TASK_RESULTS[task_id] = result
+    
+    Decision:
+      - success → continue
+      - partial → log warnings, continue
+      - failed → STOP implementation, ask user
 ```
+
+**Parallel safety check:** Before launching parallel tasks, verify no two tasks in the same wave share target_files. If overlap exists, split into sub-waves or run sequentially.
+
+**Each task-implementer receives only:**
+- Its specific task object (NOT other tasks)
+- `CONTEXT_PATH` for the job context document
+- `worktree_path` as workspace
+- `package_manager` and `run_command` from JOB_STATE
 
 **After all tasks, document:**
 ```
@@ -658,22 +677,37 @@ DATA:
 
 ### 2.7 Step: FIX (conditional)
 
-Only runs if NEEDS_FIX is true. Maximum 2 iterations.
+Only runs if NEEDS_FIX is true. Default max: **3 iterations** (`max_review_iterations`).
 
 ```
-FOR iteration in [1, 2]:
+UNRESOLVED_FINDINGS = all CRITICAL + WARNING findings from step 2.6
+
+FOR iteration in [1, 2, 3]:
   IF NOT NEEDS_FIX: BREAK
-  
-  1. Group findings by file
-  2. Construct fix prompt (task-implementer with task_type: "fix")
-  3. Launch task-implementer
-  4. Parse fix result
-  5. Re-run reviewers (step 2.6)
-  6. Recompute NEEDS_FIX
 
-IF still NEEDS_FIX after 2 iterations:
-  Log "Unresolved review issues" → continue to checks
+  1. Group UNRESOLVED_FINDINGS by file
+  2. Construct fix prompt — MUST include unresolved findings from previous attempt:
+
+     task_type: "fix"
+     findings: <UNRESOLVED_FINDINGS>
+     iteration: <N>
+     previously_unresolved: <findings that were in UNRESOLVED_FINDINGS last iteration but still present>
+         → Prefix: "These specific findings were NOT fixed in iteration <N-1>: [list]"
+
+  3. Launch task-implementer with fix prompt
+  4. Run sanity-check (step 2.5.5 logic) — verify commits were made
+  5. Re-run reviewers (step 2.6) — parallel dispatch
+  6. Recompute NEEDS_FIX from new findings
+  7. Update UNRESOLVED_FINDINGS = remaining CRITICAL + WARNING
+
+IF still NEEDS_FIX after max iterations:
+  Log "Unresolved after <N> iterations" with finding list → continue to checks
 ```
+
+**Fix prompt escalation pattern:**
+- Iteration 1: "Fix these findings: [list]"
+- Iteration 2: "These findings were NOT fixed in iteration 1: [subset]. Fix them now."
+- Iteration 3: "FINAL attempt. These findings remain after 2 fix passes: [subset]. This is the last fix iteration." 
 
 ### 2.8 Step: CHECKS
 
@@ -945,7 +979,7 @@ EOF
 |---------|---------|---------|-------------|
 | `skip_confirmation` | `true` | true/false | Skip confirmation for sub-agents |
 | `base_branch` | auto-detect | any | Base branch (auto-detect from repo default, or ask user) |
-| `max_review_iterations` | `2` | 1-3 | Max review → fix iterations |
+| `max_review_iterations` | `3` | 1-5 | Max review → fix iterations |
 | `create_pr` | `true` | true/false | Whether to propose PR at the end |
 | `auto_create_pr` | `false` | true/false | Auto-create PR without asking |
 | `review_mode` | `"code-review"` | `"code-review"` / `"individual"` | Use 4-agent parallel or individual reviewers |
@@ -993,7 +1027,7 @@ Each step failure is classified into one of three classes with different recover
 | Error | Class | Action |
 |-------|-------|--------|
 | Issue not found (404) | `terminal` | ABORT — issue-analyzer reports 404 |
-| Analysis returns 0 tasks | `terminal` | ABORT — "Issue could not be decomposed into tasks" |
+| Analysis returns 0 tasks | `recoverable` | Try smart fallback: (1) re-read issue with broader scope, (2) ask user to clarify, (3) if still 0 → ABORT |
 | Branch/worktree creation fails | `terminal` | ABORT — report git error. NEVER fall back to `git checkout -b` |
 | Interviewer `ready_to_proceed: false` | `terminal` | STOP — tell user which blockers remain |
 | Sub-agent returns malformed JSON | `retryable` | Retry with: "Output was malformed. Fix: [errors]. Try again." (max 2×) |
@@ -1019,22 +1053,57 @@ attempt 1: run step normally
 
 ---
 
+## Progress Notifications
+
+The orchestrator must keep the user informed during long-running execution. This is especially important for non-interactive channels (Telegram, Slack, CI).
+
+**At each phase transition:**
+```
+🔄 Phase 0 → Phase 1: Building execution plan...
+🔄 Phase 1 → Phase 2: Executing 7 steps...
+✅ Phase 2 → Phase 3: Execution complete, generating report...
+```
+
+**At each step transition (Phase 2):**
+```
+📋 Job: issue-4141--pipeline-validation
+├─ ✅ Analyze issue — 3 tasks found
+├─ ✅ Collect context — context.md ready
+├─ ✅ Prepare branch — feature/pipeline-validation
+├─ 🔄 Implement (2/3 tasks done)
+│  ├─ ✅ task-1: Add validation schema
+│  ├─ ✅ task-2: Implement validator
+│  └─ 🔄 task-3: Add integration tests...
+├─ ⏳ Review
+├─ ⏳ Fix (if needed)
+├─ ⏳ Final checks
+└─ ⏳ PR
+```
+
+**Minimum notification interval:** Every 30 seconds during long steps (implementation, review). This prevents the user from thinking the process is stuck.
+
+**If notification tools are unavailable** (no MCP, no Telegram): fall back to inline text output between steps.
+
+---
+
 ## Rules of Engagement
 
 1. **DO** ALWAYS collect context in Phase 0 — project directory is MANDATORY, never assume.
 2. **DO** build plans dynamically based on intent — not a fixed 8-phase pipeline.
 3. **DO** initialize job documentation before executing any step.
 4. **DO** document every step result via job-documenter.
-5. **DO** dispatch sub-agents sequentially to avoid git conflicts.
-6. **DO** respect dependency order when implementing tasks.
+5. **DO** parallelize independent tasks and reviewers where safe.
+6. **DO** respect dependency order — use wave-based execution for implementation.
 7. **DO** limit review → fix loop to max_review_iterations.
 8. **DO** present PR proposal to user before creating (unless auto_create_pr).
 9. **DO** tell user where documentation is stored at completion.
 10. **DO** ALWAYS use `git worktree add` for feature branches — NEVER `git checkout -b`.
 11. **DO** run ALL commands in the **worktree directory**, never in the original project.
 12. **DO** ask user for confirmation before extending plan (e.g., analyze → implement).
-13. **DO NOT** ask the user anything during execution (after Phase 0) — except for critical failures and plan extension decisions.
-14. **DO NOT** push the branch until user confirms (or auto_create_pr).
+13. **DO** send progress notifications at phase/step transitions and every 30s during long steps.
+14. **DO** use auto-detected `package_manager` and `run_command` — never hardcode `npm`.
+15. **DO NOT** ask the user anything during execution (after Phase 0) — except for critical failures and plan extension decisions.
+16. **DO NOT** push the branch until user confirms (or auto_create_pr).
 15. **DO NOT** skip job documentation — it's a core feature, not optional.
 16. **DO NOT** create job documentation for sub-agent results directly — orchestrator formats and sends to documenter.
 17. **DO** store the prompt used for each sub-agent step in `state.json → step.prompt` before dispatching — required for retry and resume.
