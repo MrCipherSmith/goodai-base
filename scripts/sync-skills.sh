@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Sync skills from ~/goodea/goodai-base/skills to all agent directories.
+# Sync skills from goodai-base/skills to all agent directories.
+# SKILL.<platform>.md → platform skill dir (falls back to SKILL.md)
+# SKILL.claude.md     → also synced to ~/.claude/commands/<name>.md (slash commands)
 
 set -u
 
@@ -11,7 +13,7 @@ SKILLS_DIR="$BASE_AI_DIR/skills"
 VALIDATOR="$BASE_AI_DIR/scripts/validate-skills-before-sync.sh"
 SCHEMA_FILE="$BASE_AI_DIR/rules/schemas/skill-workflow-result.schema.json"
 
-echo "Syncing skills from ~/goodea/goodai-base/skills"
+echo "Syncing skills from $BASE_AI_DIR/skills"
 echo ""
 
 if [ ! -d "$SKILLS_DIR" ]; then
@@ -41,6 +43,7 @@ declare -a TARGETS=(
     "$HOME/.antigravity/skills:antigravity"
     "$HOME/.config/zed/skills:zed"
     "$HOME/.config/opencode/skills:opencode"
+    "$HOME/.claude/skills:claude"
 )
 
 echo "Found $(find "$SKILLS_DIR" -maxdepth 1 -mindepth 1 -type d | wc -l | tr -d ' ') skills"
@@ -98,6 +101,34 @@ done
 
 if [ "$sync_errors" -gt 0 ]; then
     echo "Skills sync finished with errors: $sync_errors"
+    exit 1
+fi
+
+# Sync SKILL.claude.md → ~/.claude/commands/<name>.md (slash commands)
+CLAUDE_COMMANDS_DIR="$HOME/.claude/commands"
+echo "-> Syncing Claude slash commands to $CLAUDE_COMMANDS_DIR"
+mkdir -p "$CLAUDE_COMMANDS_DIR"
+claude_cmd_errors=0
+
+for skill_dir in "$SKILLS_DIR"/*/; do
+    [ -d "$skill_dir" ] || continue
+    skill_name=$(basename "$skill_dir")
+    source_file="$skill_dir/SKILL.claude.md"
+    target_file="$CLAUDE_COMMANDS_DIR/$skill_name.md"
+
+    if [ -f "$source_file" ]; then
+        if cp "$source_file" "$target_file"; then
+            echo "  OK   $skill_name → $target_file"
+        else
+            echo "  FAIL $skill_name: cannot copy to $target_file"
+            claude_cmd_errors=$((claude_cmd_errors + 1))
+        fi
+    fi
+done
+echo ""
+
+if [ "$claude_cmd_errors" -gt 0 ]; then
+    echo "Claude commands sync finished with errors: $claude_cmd_errors"
     exit 1
 fi
 

@@ -291,6 +291,105 @@ Intelligent agents for complex analysis and review tasks:
 - **Input**: JSON task object from issue-analyzer + workspace context (codebase_path, branch, issue_number)
 - **Output**: JSON result with status, files_modified, files_created, commits, lint_result, type_check_result, test_result, acceptance_criteria_met
 
+### Git Workflow Skills
+
+**`skills/commit`**
+- **Purpose**: Smart git commit — auto-stages changes, analyzes diff, generates conventional commit message
+- **Use When**: "/commit", "Commit changes", "Commit this"
+- **Key Features**: Conventional commit format; selective staging; never stages secrets; adapts to repo's commit style
+- **Args**: custom message, `--amend`, `-a`
+
+**`skills/push`**
+- **Purpose**: Smart git push with safety checks
+- **Use When**: "/push", "Push changes", "Push to remote"
+- **Key Features**: Auto-sets upstream; protects main/master from force push; warns on uncommitted changes
+
+**`skills/pr`**
+- **Purpose**: Smart Pull Request creation from branch changes
+- **Use When**: "/pr", "Create PR", "Open pull request"
+- **Key Features**: Analyzes ALL branch commits; structured body (Summary/Changes/Test plan); auto-pushes if needed
+- **Args**: `--draft`, `--base <branch>`, custom title
+
+**`skills/code-review`**
+- **Purpose**: Comprehensive code review with 4 parallel agents (correctness, security, performance, style)
+- **Use When**: "/code-review", "Full review", "Review PR", "Comprehensive review"
+- **Key Features**: 4 agents run in parallel; unified severity report (CRITICAL/HIGH/MEDIUM/LOW); optional auto-fix for low-severity; can post to GitHub PR
+- **Args**: PR number, `--fix`
+
+**`skills/feature-dev`**
+- **Purpose**: 7-phase feature development — requirements → design → implement → test → review → fix → PR
+- **Use When**: "/feature-dev", "Develop feature", "Build feature from scratch"
+- **Key Features**: Confirms requirements and design with user; autonomous implementation phases; self-review with fix loop; creates PR at the end
+- **Args**: description, `#<issue>`, `--resume`
+
+### Workflow & DevOps Skills
+
+**`skills/deploy`**
+- **Purpose**: Automated deployment pipeline — tests → build → deploy, with health check
+- **Use When**: "Deploy", "Deploy to staging/production", "Ship it", "Release"
+- **Key Features**: Auto-detects Docker Compose / PM2 / SSH / Vercel; stops on test/build failure; post-deploy verification
+- **Args**: target env (default: production), `--skip-tests`, `--dry-run`, `--rollback`
+
+**`skills/changelog`**
+- **Purpose**: Generate structured changelog from git commits between tags or date ranges
+- **Use When**: "Generate changelog", "Release notes", "What changed since v1.0"
+- **Key Features**: Groups by conventional commit type; extracts PR/issue references; supports `--prepend` to CHANGELOG.md
+
+**`skills/db-migrate`**
+- **Purpose**: Database migration lifecycle — create, apply, rollback, status
+- **Use When**: "Create migration", "Run migrations", "Migration status", "Rollback migration"
+- **Key Features**: Auto-detects Drizzle / Prisma / Knex / raw SQL; scaffolds SQL from migration name
+
+**`skills/dependency-update`**
+- **Purpose**: Safe dependency updates with compatibility checks and test verification
+- **Use When**: "Update dependencies", "Upgrade packages", "Bump versions"
+- **Key Features**: patch/minor auto; major requires analysis; always tests after update; rollback on failure
+
+### Quality & Analysis Skills
+
+**`skills/security-audit`**
+- **Purpose**: Security audit — dependency vulnerabilities, secrets scan, Docker image scan
+- **Use When**: "Security audit", "Check vulnerabilities", "Audit dependencies"
+- **Key Features**: Detects bun/npm/yarn; groups by severity; scans git history for leaked secrets
+
+**`skills/perf-check`**
+- **Purpose**: Performance analysis — bundle size, slow queries, async patterns, memory
+- **Use When**: "Performance check", "Bundle size", "Slow queries", "Perf audit"
+- **Key Features**: N+1 detection, await-in-loop scan, pgvector index check, Docker stats
+
+**`skills/test-gen`**
+- **Purpose**: Auto-generate tests for a file or module matching existing project patterns
+- **Use When**: "Generate tests for", "Write tests for", "Add test coverage"
+- **Key Features**: Discovers test framework and patterns; covers happy path + edge cases + errors; runs generated tests to verify
+
+### Meta / Context Skills
+
+**`skills/brainstorm`**
+- **Purpose**: Structured brainstorming — architecture decisions, problem solving, open exploration
+- **Use When**: "Brainstorm", "Explore options", "Architecture decision", "How should I approach X"
+- **Key Features**: 3 modes (architecture/problem-solving/creative); 3 parallel agents (Pragmatist/Innovator/Critic); ends with concrete recommendation
+- **Invoked by**: user directly; or any skill needing design exploration
+
+**`skills/interview`**
+- **Purpose**: Critical requirements interviewer — asks targeted questions one-by-one with answer options before expensive operations
+- **Use When**: "/interview", "Clarify requirements", "Ask questions first"; called by `job-orchestrator`/`feature-dev`/`prd-creator` as Phase 0
+- **Key Features**: One question at a time; A/B/C/D options; adapts follow-ups; skips answered questions; can trigger mini-brainstorm on ambiguous points; max 7 questions
+- **Input**: `{goal, context, domain, caller, known_facts}` from calling skill, or plain text from user
+- **Output**: `{decisions, constraints, assumptions, risks, refined_goal}`
+- **Invoked by**: `job-orchestrator` Phase 0; `feature-dev` Phase 1; or directly by user
+
+### Configuration Skills
+
+**`skills/hookify`**
+- **Purpose**: Create agent hooks from natural language descriptions
+- **Use When**: "/hookify", "Create hook", "Add hook", "Run lint after edit"
+- **Key Features**: Parses natural language to hook config; supports PreToolUse/PostToolUse/Stop events; previews before applying
+
+**`skills/claude-md-management`**
+- **Purpose**: Capture session learnings and persist into CLAUDE.md files
+- **Use When**: "/revise-claude-md", "Update CLAUDE.md", "Save learnings"
+- **Key Features**: Classifies insights into project/global/personal CLAUDE.md; diff preview before applying; avoids duplication
+
 ### PR & Comments Skills
 
 **`skills/pr-review-comments`**
