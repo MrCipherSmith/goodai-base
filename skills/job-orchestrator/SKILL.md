@@ -21,10 +21,10 @@ triggers:
   - "Full issue implementation"
 metadata:
   author: "goodea"
-  version: "2.0.0"
+  version: "3.0.0"
   category: "orchestration"
 license: "MIT"
-compatibility: "cursor,codex,zed,opencode"
+compatibility: "cursor,codex,zed,opencode,claude"
 ---
 
 # Job Orchestrator
@@ -80,33 +80,68 @@ Parse the user's request to identify the intent:
 | "Analyze issue #N" / "Study issue" | `analyze` | Analysis only: analyze → report. Then ask if user wants to implement. |
 | "Review my code" / "Review branch" | `review` | Review only: review → report |
 | "Analyze and implement" | `implement` | Same as implement |
-| Custom request | `custom` | Build plan dynamically based on description |
+| Custom request | `custom` | Run `interviewer` skill first, then build plan from output |
+
+**Ambiguity detection:** If the request uses vague words ("improve", "fix", "refactor") with no issue number or specific file — treat as `custom` regardless of other signals.
+
+### 0.1.5 Interviewer Gate (for `custom` and ambiguous requests)
+
+For `custom` intent OR any ambiguous request, invoke the `interviewer` skill **before** collecting standard context. This replaces the generic "What do you need?" question with a structured critical interview.
+
+**Invoke:**
+```
+Load skill: skills/interviewer/SKILL.md
+
+INPUT:
+  topic: <user's original request>
+  goal: "job-orchestrator — build execution plan"
+  context:
+    codebase_summary: <git log --oneline -10 if available>
+    existing_analysis: <any issue content already known>
+```
+
+**Map output:**
+- `derived_context` → `INTENT_STATE.task_description`
+- answers with `confidence: "certain"` → `INTENT_STATE.constraints`
+- `blockers` → surface to user (if non-empty, do NOT proceed)
+
+**Gate rule:**
+- `ready_to_proceed: false` → STOP. Tell user what blockers remain.
+- `ready_to_proceed: true` → continue to 0.2 with enriched context.
+
+**Skip** for `implement`/`analyze` with an issue number — requirements are in the issue.
 
 ### 0.2 Collect Required Context
 
-The orchestrator MUST collect all required context before proceeding. Use a structured question flow:
+The orchestrator MUST collect all required context before proceeding:
 
 **Always ask (mandatory):**
 
-1. **What to do** — if not obvious from the request. For `implement` and `analyze` intents, this is derived from the issue.
+1. **What to do** — for `implement`/`analyze`: from issue. For `custom`: from interviewer output (0.1.5).
 
-2. **Project directory** — NEVER assume. Always ask the user explicitly:
+2. **Project directory** — NEVER assume. Always ask explicitly:
    ```
    Which project directory should I use?
    ○ Type the full absolute path to your project
    (No default — always ask, never assume.)
    ```
 
-3. **Base branch** — default from "Projects links" for selected project (e.g. `develop-2`). Ask to confirm.
+3. **Base branch** — auto-detect from repo:
+   ```bash
+   # Detect default branch
+   git -C <project_dir> symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@'
+   # Fallback: check for main, master, develop
+   ```
+   Present detected branch and ask to confirm. No hardcoded default.
 
 **Intent-specific questions:**
 
 | Intent | Additional Questions |
 |--------|---------------------|
-| `implement` | Create PR? (default: yes). If user already said "no PR", skip. |
-| `analyze` | None — analysis is always produced. After analysis, ask if user wants to implement. |
+| `implement` | Create PR? (default: yes). Skip if user already stated. |
+| `analyze` | None — always produced. After: ask if user wants to implement. |
 | `review` | Which branch to review? (default: current branch) |
-| `custom` | What specific outcome do you need? |
+| `custom` | None — covered by interviewer in 0.1.5 |
 
 4. **Job name** — auto-generate based on context, ask user to confirm:
    ```
@@ -121,7 +156,30 @@ The orchestrator MUST collect all required context before proceeding. Use a stru
    - Code review: `review--<slug>`
    - Custom: `task--<slug>`
 
-### 0.3 Summarize and Confirm
+### 0.3 Interview for Implement Intent
+
+For `implement` intent, dispatch `interview` skill after collecting context to clarify implementation-specific ambiguities (complements 0.1.5 which handles `custom` intent):
+
+```
+Dispatch interview skill with:
+{
+  "goal": <issue title>,
+  "context": <collected context + issue body>,
+  "domain": "implement",
+  "caller": "job-orchestrator",
+  "known_facts": [project_dir, base_branch, issue details],
+  "max_questions": null
+}
+```
+
+**When to run:** `implement` intent only (if `run_interview: true`, default).
+**Skip for:** `analyze` (analysis reveals details), `review` (scoped by diff), `custom` (covered by 0.1.5).
+
+**Output → Phase 1:** `INTERVIEW_RESULT` feeds into plan building — informs task decomposition and architecture.
+
+**Skip if:** user says "just do it" / "skip questions", or `run_interview: false`.
+
+### 0.4 Summarize and Confirm
 
 Before proceeding, present a summary:
 
@@ -487,26 +545,48 @@ DATA:
 
 ### 2.6 Step: REVIEW
 
-Dispatch review skills on the whole branch.
+Dispatch review skills on the whole branch. **Launch all reviewers in parallel** for speed.
 
-**Determine reviewers:**
+**Primary approach — use `code-review` (4-agent parallel):**
 
-| Reviewer | Condition |
-|----------|-----------|
-| `code-ai-review` | Always |
-| `code-b091-review` | Always |
-| `code-style-review` | Always |
-| `code-mobx-store-review` | Only if `*.store.ts` files were modified |
+If the `code-review` skill is available, prefer it as the primary reviewer. It dispatches 4 agents in parallel (correctness, security, performance, style) and produces a unified severity report.
 
-Check: `git diff --name-only <merge_base>..HEAD | grep '\.store\.ts$'`
+```
+Launch code-review skill with:
+  scope: git diff <merge_base>..HEAD
+  output: unified report with CRITICAL/HIGH/MEDIUM/LOW findings
+```
 
-**Execute each reviewer** via skill loading mechanism. Collect findings:
+**Fallback — individual reviewers (if code-review unavailable or user prefers):**
+
+Determine and **dispatch all reviewers simultaneously** (not sequentially):
+
+| Reviewer | Condition | Launch |
+|----------|-----------|--------|
+| `code-ai-review` | Always | Parallel |
+| `code-b091-review` | Always | Parallel |
+| `code-style-review` | Always | Parallel |
+| `code-mobx-store-review` | Only if `*.store.ts` modified | Parallel |
+
+```
+# Launch ALL applicable reviewers in a SINGLE turn (parallel):
+Agent 1: code-ai-review (correctness, security)
+Agent 2: code-b091-review (architecture, logic)
+Agent 3: code-style-review (naming, patterns)
+Agent 4: code-mobx-store-review (if applicable)
+
+# Wait for all to complete, then merge results
+```
+
+**Collect and merge findings:**
 ```
 REVIEW_FINDINGS: [{
   reviewer: "<skill-name>",
   findings: [{ file, line, severity: CRITICAL|WARNING|INFO, message }]
 }]
 ```
+
+**Deduplicate:** If multiple reviewers flag the same file:line, merge into a single finding with the highest severity.
 
 **Classify:**
 ```
@@ -546,19 +626,39 @@ IF still NEEDS_FIX after 2 iterations:
 
 Run full project verification in the worktree.
 
+**First, detect the project stack and package manager:**
+
 ```bash
-npm run lint        # if fails → try npm run lint:fix:changed, re-run
-npm run type-check  # log result
-npm test            # log result
+# Auto-detect package manager (run once during PREPARE, cache result)
+if [ -f bun.lockb ]; then PM="bun"; RUNNER="bun run"
+elif [ -f pnpm-lock.yaml ]; then PM="pnpm"; RUNNER="pnpm run"
+elif [ -f yarn.lock ]; then PM="yarn"; RUNNER="yarn"
+elif [ -f package-lock.json ]; then PM="npm"; RUNNER="npm run"
+elif [ -f requirements.txt ] || [ -f pyproject.toml ]; then PM="python"; RUNNER=""
+elif [ -f go.mod ]; then PM="go"; RUNNER=""
+else PM="unknown"; RUNNER=""
+fi
 ```
 
-Record:
+**Run checks based on detected stack:**
+
+| Stack | Lint | Type-check | Test |
+|-------|------|------------|------|
+| Node (npm/bun/yarn/pnpm) | `$RUNNER lint` | `$RUNNER type-check` or `npx tsc --noEmit` | `$RUNNER test` |
+| Python | `ruff check .` or `flake8` | `mypy .` or `pyright` | `pytest` |
+| Go | `golangci-lint run` | (built into compiler) | `go test ./...` |
+
+If a check command is not available (no lint script, etc.), skip it with a note.
+
 ```
 FINAL_CHECKS:
-  lint: pass | <N errors, details>
-  type_check: pass | <N errors, details>
-  tests: pass | <N passed, M failed, details>
+  package_manager: <detected PM>
+  lint: pass | <N errors, details> | skipped (no lint script)
+  type_check: pass | <N errors, details> | skipped
+  tests: pass | <N passed, M failed, details> | skipped (no test script)
 ```
+
+> **Store `PM` and `RUNNER` in JOB_STATE** during the PREPARE step so all subsequent steps use the correct commands.
 
 ### 2.9 Step: REPORT
 
@@ -767,7 +867,7 @@ The orchestrator persists JOB_STATE to `jobs/<job-name>/state.json` for job resu
 
 **When to create:** During Phase 1.2 (Initialize Job Documentation) — write initial state after job docs are initialized.
 
-**When to update:** After every step completion in Phase 2 (EXECUTION) — update `plan.steps[i].status` and `plan.current_step`.
+**When to update:** After every step completion in Phase 2 (EXECUTION) — update `plan.steps[i].status`, `plan.steps[i].prompt` (store the prompt used), and `plan.current_step`.
 
 **How to write state.json:**
 ```bash
@@ -791,29 +891,78 @@ EOF
 | Setting | Default | Options | Description |
 |---------|---------|---------|-------------|
 | `skip_confirmation` | `true` | true/false | Skip confirmation for sub-agents |
-| `base_branch` | `develop-2` | any | Base branch for feature branch |
+| `base_branch` | auto-detect | any | Base branch (auto-detect from repo default, or ask user) |
 | `max_review_iterations` | `2` | 1-3 | Max review → fix iterations |
 | `create_pr` | `true` | true/false | Whether to propose PR at the end |
 | `auto_create_pr` | `false` | true/false | Auto-create PR without asking |
-| `reviewers` | `["code-ai-review", "code-b091-review", "code-style-review"]` | skill names | Mandatory reviewers |
+| `review_mode` | `"code-review"` | `"code-review"` / `"individual"` | Use 4-agent parallel or individual reviewers |
+| `reviewers` | `["code-ai-review", "code-b091-review", "code-style-review"]` | skill names | Individual reviewers (when review_mode=individual) |
 | `conditional_reviewers` | `{"code-mobx-store-review": "*.store.ts"}` | skill→pattern | Conditional reviewers |
 | `run_final_checks` | `true` | true/false | Run lint/type-check/test |
+| `run_interview` | `true` | true/false | Run interview skill in Phase 0 |
+
+## Budget Guards & Timeouts
+
+The orchestrator enforces resource limits to prevent runaway sub-agents:
+
+| Guard | Default | Description |
+|-------|---------|-------------|
+| `step_timeout_ms` | `300000` (5 min) | Max time per step. Kill agent if exceeded. |
+| `implementation_timeout_ms` | `600000` (10 min) | Max time for full implementation phase |
+| `total_job_timeout_ms` | `1800000` (30 min) | Max time for entire job. Abort to Phase 3 if exceeded. |
+| `max_retries_per_step` | `2` | Max retries for a failed step before asking user |
+
+**Timeout behavior:**
+- When a step times out → mark as `failed`, record partial results if any
+- Ask user: "Step X timed out after Y minutes. Retry / Skip / Abort?"
+- If total job timeout → force transition to Phase 3 (COMPLETION) with status "timeout"
+
+**Context passing rules (minimal context principle):**
+- `issue-analyzer`: receives only issue data + codebase paths (NOT previous job state)
+- `context-collector`: receives focus areas + analysis summary (NOT full analysis JSON)
+- `task-implementer`: receives only its specific task object + context.md path (NOT other tasks' results)
+- Reviewers: receive only the diff range + file list (NOT implementation details)
 
 ---
 
 ## Error Handling
 
-| Error | Action |
-|-------|--------|
-| Issue not found | ABORT — issue-analyzer will report 404 |
-| Analysis returns 0 tasks | ABORT — "Issue could not be decomposed" |
-| Branch/worktree creation fails | ABORT — report git error. NEVER fall back to `git checkout -b` |
-| Task implementation fails | STOP implementation, ask user whether to continue or abort |
-| Job-documenter returns error | Log warning, continue execution (documentation is non-blocking) |
-| All reviewers fail | Skip review, add warning to report |
-| Fix iteration produces new CRITICAL | Count toward max iterations |
-| Final checks fail | Include in report, still propose PR (user decides) |
-| gh CLI not available | Show PR data, user creates manually |
+Each step failure is classified into one of three classes with different recovery paths:
+
+| Class | Meaning | Action |
+|-------|---------|--------|
+| `terminal` | Unrecoverable — cannot continue | ABORT immediately, surface actionable message |
+| `retryable` | Transient failure (bad output, timeout) | Auto-retry up to 2× with **identical prompt**. After 2 failures → escalate to `recoverable` |
+| `recoverable` | Partial success or skippable failure | Ask user with specific "continue from here / skip step / abort" options |
+
+### Error Table
+
+| Error | Class | Action |
+|-------|-------|--------|
+| Issue not found (404) | `terminal` | ABORT — issue-analyzer reports 404 |
+| Analysis returns 0 tasks | `terminal` | ABORT — "Issue could not be decomposed into tasks" |
+| Branch/worktree creation fails | `terminal` | ABORT — report git error. NEVER fall back to `git checkout -b` |
+| Interviewer `ready_to_proceed: false` | `terminal` | STOP — tell user which blockers remain |
+| Sub-agent returns malformed JSON | `retryable` | Retry with: "Output was malformed. Fix: [errors]. Try again." (max 2×) |
+| Sub-agent timeout | `retryable` | Retry with identical prompt (max 2×) |
+| Task implementation fails | `recoverable` | Ask: "Step failed. Continue remaining tasks / skip this task / abort?" |
+| Job-documenter returns error | `recoverable` | Log warning, continue (documentation is non-blocking) |
+| All reviewers fail | `recoverable` | Skip review, add warning to report, continue to checks |
+| Fix loop exceeds max_review_iterations | `recoverable` | Log unresolved findings, continue to checks |
+| Final checks fail | `recoverable` | Include in report, still propose PR (user decides) |
+| gh CLI not available | `recoverable` | Print PR data, user creates manually |
+
+### Retry Protocol (for `retryable` errors)
+
+```
+attempt 1: run step normally
+→ failure: classify error
+→ if retryable: retry with EXACT same prompt + "Fix these errors: [list]"
+→ if fails again: escalate to recoverable → ask user
+→ if success: continue
+```
+
+**Critical:** On retry, use the **same prompt** stored in `state.json → step.prompt`. Never re-derive it — re-derivation causes drift.
 
 ---
 
@@ -835,3 +984,5 @@ EOF
 14. **DO NOT** push the branch until user confirms (or auto_create_pr).
 15. **DO NOT** skip job documentation — it's a core feature, not optional.
 16. **DO NOT** create job documentation for sub-agent results directly — orchestrator formats and sends to documenter.
+17. **DO** store the prompt used for each sub-agent step in `state.json → step.prompt` before dispatching — required for retry and resume.
+18. **DO** classify every step failure as `terminal`, `retryable`, or `recoverable` — never just abort or ask without classifying first.
