@@ -248,24 +248,32 @@ Based on intent, construct an ordered list of steps:
 **For `implement` intent:**
 ```
 PLAN:
-  1.  { id: "analyze",    type: "analyze",     agent: "issue-analyzer",      depends: [] }
-  2.  { id: "context",    type: "context",     agent: "context-collector",   depends: ["analyze"] }
-  3.  { id: "prepare",    type: "prepare",     agent: "orchestrator",        depends: ["context"] }
-  4.  { id: "implement",  type: "implement",   agent: "task-implementer",    depends: ["prepare"] }
-  5.  { id: "test-gen",   type: "test-gen",    agent: "test-gen",            depends: ["implement"], conditional: true }
-  6.  { id: "review",     type: "review",      agent: "reviewers",           depends: ["implement"] }
-  7.  { id: "fix",        type: "fix",         agent: "task-implementer",    depends: ["review"], conditional: true }
-  8.  { id: "checks",     type: "check",       agent: "orchestrator",        depends: ["fix"] }
-  9.  { id: "perf-check", type: "perf-check",  agent: "perf-check",          depends: ["checks"], conditional: true }
-  10. { id: "report",     type: "report",      agent: "orchestrator",        depends: ["checks"] }
-  11. { id: "pr",         type: "pr",          agent: "orchestrator",        depends: ["report"], conditional: true }
+  1.  { id: "analyze",       type: "analyze",   agent: "issue-analyzer",    depends: [] }
+  2.  { id: "context",       type: "context",   agent: "context-collector", depends: ["analyze"] }
+  3.  { id: "prepare",       type: "prepare",   agent: "orchestrator",      depends: ["context"] }
+  4.  { id: "implement",     type: "implement", agent: "task-implementer",  depends: ["prepare"] }
+  5.  { id: "sanity-check",  type: "check",     agent: "orchestrator",      depends: ["implement"] }
+  6.  { id: "test-gen",      type: "test",      agent: "test-gen",          depends: ["sanity-check"], conditional: true }
+  7.  { id: "review",        type: "review",    agent: "code-review",       depends: ["test-gen"] }
+  8.  { id: "security",      type: "security",  agent: "security-audit",    depends: ["implement"], conditional: true }
+  9.  { id: "fix",           type: "fix",       agent: "task-implementer",  depends: ["review"], conditional: true }
+  10. { id: "checks",        type: "check",     agent: "orchestrator",      depends: ["fix"] }
+  11. { id: "perf-check",    type: "perf",      agent: "perf-check",        depends: ["checks"], conditional: true }
+  12. { id: "report",        type: "report",    agent: "orchestrator",      depends: ["checks"] }
+  13. { id: "pr",            type: "pr",        agent: "orchestrator",      depends: ["report"], conditional: true }
+  14. { id: "deploy",        type: "deploy",    agent: "deploy",            depends: ["pr"], conditional: true }
 ```
 
-**Conditional steps:**
-- `test-gen`: only if implementer didn't create tests (auto-detected)
-- `perf-check`: only if frontend files modified (auto-detected)
-- `fix`: only if review found CRITICAL/WARNING
-- `pr`: only if `create_pr: true`
+**Conditional step triggers:**
+- `sanity-check`: always runs — verifies ≥1 commit was made
+- `test-gen`: no test files in diff after implement
+- `security`: diff touches auth/, api/, migrations, schema files, or `.env`
+- `fix`: review found CRITICAL/WARNING findings
+- `perf-check`: diff contains *.tsx, *.jsx, *.css, dist/, build/ files
+- `pr`: `create_pr: true`
+- `deploy`: user answers "yes" to post-PR staging deploy prompt
+
+Note: `security` runs in parallel with `review` (both depend on `implement` results, no overlap).
 
 **For `analyze` intent:**
 ```
@@ -1191,6 +1199,12 @@ EOF
 | `run_interview` | `true` | true/false | Run interview skill in Phase 0 |
 | `dry_run` | `false` | true/false | Plan-only mode: full Phase 0+1, no agent dispatch or git ops |
 | `log_prompt_sizes` | `true` | true/false | Store prompt char count per step in state.json for observability |
+| `plan_approval` | `true` | true/false | Show agent plan and ask approve/adjust before execution (1.3) |
+| `run_test_gen` | `true` | true/false | Auto-run test-gen if implementer skips tests |
+| `run_security_audit` | `true` | true/false | Auto-run security-audit if auth/API/DB files touched |
+| `run_perf_check` | `true` | true/false | Auto-run perf-check if frontend/bundle files changed |
+| `run_changelog` | `true` | true/false | Auto-generate changelog entry and include in PR description |
+| `run_deploy` | `ask` | `ask`/`true`/`false` | Post-PR deploy: ask user (ask), always deploy (true), never (false) |
 
 ## Dry-Run Mode
 
@@ -1341,6 +1355,12 @@ The orchestrator must keep the user informed during long-running execution. This
 18. **DO NOT** create job documentation for sub-agent results directly — orchestrator formats and sends to documenter.
 19. **DO** store the prompt used for each sub-agent step in `state.json → step.prompt` before dispatching — required for retry and resume.
 20. **DO** classify every step failure as `terminal`, `retryable`, or `recoverable` — never just abort or ask without classifying first.
+21. **DO** show agent-explicit plan in 1.3 and ask approve/adjust — unless `plan_approval: false`.
+22. **DO** run `sanity-check` after every implement step before dispatching review.
+23. **DO** auto-trigger `test-gen` if implementer produced no test files (unless `run_test_gen: false`).
+24. **DO** auto-trigger `security-audit` if diff touches auth/API/DB/env files (unless `run_security_audit: false`).
+25. **DO** include changelog entry in PR body (unless `run_changelog: false`).
+26. **DO NOT** deploy without user confirmation (unless `run_deploy: true` explicitly set).
 
 ---
 
