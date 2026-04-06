@@ -82,7 +82,32 @@ Parse the user's request to identify the intent:
 | "Analyze and implement" | `implement` | Same as implement |
 | Custom request | `custom` | Run `interviewer` skill first, then build plan from output |
 
-**Ambiguity detection:** If the request uses vague words ("improve", "fix", "refactor") with no issue number or specific file — treat as `custom` regardless of other signals.
+**Ambiguity detection:** If the request uses vague words ("improve", "fix", "refactor") with no issue number or specific file — trigger the **Interactive Approach Selection** below.
+
+### 0.1.1 Interactive Approach Selection (for ambiguous requests)
+
+When intent cannot be determined confidently, present options to the user:
+
+```
+I see several ways to approach this. Which fits best?
+
+  A) 🔍 Analysis only — decompose into tasks, show plan, stop
+  B) 🛠 Full implementation — analyze → implement → review → PR
+  C) 📋 Analysis + brainstorm — explore approaches before committing
+  D) 🔧 Review only — review current branch changes
+  E) 📝 Custom — describe what you need, I'll build the plan
+
+> pick a letter or describe your own approach
+```
+
+**Mapping:**
+- A → `analyze` intent
+- B → `implement` intent
+- C → `analyze` intent + trigger `brainstorm` after analysis
+- D → `review` intent
+- E → `custom` intent → proceed to 0.1.5 (interviewer gate)
+
+**Skip this step** when intent is clear (explicit issue number, "implement issue #N", "review my code").
 
 ### 0.1.5 Interviewer Gate (for `custom` and ambiguous requests)
 
@@ -177,7 +202,24 @@ Dispatch interview skill with:
 
 **Output → Phase 1:** `INTERVIEW_RESULT` feeds into plan building — informs task decomposition and architecture.
 
+**Brainstorm trigger:** If during interview the user answers "not sure" or the interview identifies an unresolved architectural question (high-impact decision with no clear answer), auto-trigger:
+```
+Dispatch brainstorm --quick with:
+  topic: <the specific architectural question>
+  context: <project stack + interview answers so far>
+```
+Present brainstorm result as enriched answer options, then continue interview.
+
 **Skip if:** user says "just do it" / "skip questions", or `run_interview: false`.
+
+### 0.3.1 Dependency Check
+
+If the issue or interview reveals the task is primarily about updating dependencies:
+```
+IF issue title/body contains "update", "upgrade", "bump", "dependency", "CVE":
+  Suggest: "This looks like a dependency update task. Use /dependency-update instead?"
+  IF user confirms → delegate to dependency-update skill, skip orchestrator pipeline
+```
 
 ### 0.4 Summarize and Confirm
 
@@ -206,16 +248,24 @@ Based on intent, construct an ordered list of steps:
 **For `implement` intent:**
 ```
 PLAN:
-  1. { id: "analyze",    type: "analyze",   agent: "issue-analyzer",      depends: [] }
-  2. { id: "context",    type: "context",   agent: "context-collector",   depends: ["analyze"] }
-  3. { id: "prepare",    type: "prepare",   agent: "orchestrator",        depends: ["context"] }
-  4. { id: "implement",  type: "implement", agent: "task-implementer",    depends: ["prepare"] }
-  5. { id: "review",     type: "review",    agent: "reviewers",           depends: ["implement"] }
-  6. { id: "fix",        type: "fix",       agent: "task-implementer",    depends: ["review"], conditional: true }
-  7. { id: "checks",     type: "check",     agent: "orchestrator",        depends: ["fix"] }
-  8. { id: "report",     type: "report",    agent: "orchestrator",        depends: ["checks"] }
-  9. { id: "pr",         type: "pr",        agent: "orchestrator",        depends: ["report"], conditional: true }
+  1.  { id: "analyze",    type: "analyze",     agent: "issue-analyzer",      depends: [] }
+  2.  { id: "context",    type: "context",     agent: "context-collector",   depends: ["analyze"] }
+  3.  { id: "prepare",    type: "prepare",     agent: "orchestrator",        depends: ["context"] }
+  4.  { id: "implement",  type: "implement",   agent: "task-implementer",    depends: ["prepare"] }
+  5.  { id: "test-gen",   type: "test-gen",    agent: "test-gen",            depends: ["implement"], conditional: true }
+  6.  { id: "review",     type: "review",      agent: "reviewers",           depends: ["implement"] }
+  7.  { id: "fix",        type: "fix",         agent: "task-implementer",    depends: ["review"], conditional: true }
+  8.  { id: "checks",     type: "check",       agent: "orchestrator",        depends: ["fix"] }
+  9.  { id: "perf-check", type: "perf-check",  agent: "perf-check",          depends: ["checks"], conditional: true }
+  10. { id: "report",     type: "report",      agent: "orchestrator",        depends: ["checks"] }
+  11. { id: "pr",         type: "pr",          agent: "orchestrator",        depends: ["report"], conditional: true }
 ```
+
+**Conditional steps:**
+- `test-gen`: only if implementer didn't create tests (auto-detected)
+- `perf-check`: only if frontend files modified (auto-detected)
+- `fix`: only if review found CRITICAL/WARNING
+- `pr`: only if `create_pr: true`
 
 **For `analyze` intent:**
 ```
@@ -271,22 +321,40 @@ Task({
 
 **Validate response:** status must be `success`. If `error` → report to user, ask how to proceed.
 
-### 1.3 Display Plan
+### 1.3 Display Plan + Agent Approval
 
-Show the plan to user with checkboxes:
+Show each step with its agent and status, then ask the user to approve or adjust:
 
 ```
-Job Orchestrator — Plan:
-- [ ] Analyze issue (issue-analyzer)
-- [ ] Collect context (context-collector)
-- [ ] Prepare feature branch
-- [ ] Implement tasks (task-implementer)
-- [ ] Review implementation (reviewers)
-- [ ] Fix review findings (if needed)
-- [ ] Final checks (lint, type-check, test)
-- [ ] Generate report
-- [ ] Propose draft PR
+Execution plan — <N> steps:
+
+  Step 1   analyze        issue-analyzer              → issue #<N>
+  Step 2   context        context-collector           → project context
+  Step 3   prepare        orchestrator                → feature branch
+  Step 4   implement      task-implementer × <tasks>  → <N> tasks (wave-parallel)
+  Step 5   sanity-check   orchestrator                → verify commits
+  Step 6   review         code-review × 4             → parallel agents
+  Step 7   fix            task-implementer            → [conditional: if issues found]
+  Step 8   checks         orchestrator                → lint + type-check + tests
+  Step 9   report         orchestrator                → final summary
+  Step 10  pr             orchestrator + gh CLI       → [conditional: create_pr=true]
+
+Optional (not in plan — add if needed):
+  + security-audit   auto-detect: auth/API/DB changes
+  + test-gen         auto-detect: if implementer skips tests
+  + perf-check       auto-detect: if frontend/bundle files changed
+  + deploy           ask after PR: "Deploy to staging?"
+
+Proceed? (yes / adjust: "skip fix", "add security-audit", "remove pr", etc.)
 ```
+
+**If user adjusts:**
+- Parse natural language: "skip fix" → mark `fix` step as disabled
+- "add security-audit" → insert `{ id: "security-audit", agent: "security-audit", depends: ["review"] }` after review
+- "remove pr" → set `create_pr: false`
+- Re-display updated plan and ask again
+
+**If `plan_approval: false`** (automation setting) → skip this display and proceed directly.
 
 ---
 
@@ -578,6 +646,37 @@ DATA:
   TASK: Implementation phase
 ```
 
+### 2.5.1 Post-Implementation Checkpoint
+
+After implementation completes, check if tests were created. If not, offer `test-gen`:
+
+```
+IF no test files in TASK_RESULTS.all_files:
+  Auto-trigger test-gen for new/modified source files
+  (skip test files, config files, types-only files)
+```
+
+Then present the implementation summary to user:
+
+```
+Implementation complete:
+  - <N>/<M> tasks ✅
+  - <X> files modified, <Y> files created
+  - Tests: <created by implementer | auto-generated by test-gen | none>
+
+What's next?
+  A) 🔍 Review → fix → PR (standard pipeline)
+  B) 👀 Show me the diff first — I'll review manually
+  C) 🚀 Skip review, go straight to PR
+  D) ⏹ Stop here — I'll continue manually
+```
+
+**Mapping:**
+- A → continue to REVIEW step (default if no response in 60s)
+- B → run `git diff <merge_base>..HEAD --stat` and `git diff <merge_base>..HEAD`, then re-ask
+- C → skip REVIEW and FIX steps, go to CHECKS → PR
+- D → skip to Phase 3 (COMPLETION) with status "paused"
+
 ### 2.5.5 Step: IMPLEMENT SANITY CHECK
 
 Lightweight verification after `task-implementer` completes, **before** launching review.
@@ -617,11 +716,33 @@ SANITY_CHECK:
 
 ### 2.6 Step: REVIEW
 
+#### 2.6.0 Review Strategy Selection
+
+If the user didn't specify a review approach, offer options:
+
+```
+How should I review the implementation?
+
+  A) 🚀 Quick (code-review 4-agent parallel) — ~30 sec
+  B) 📋 Thorough (individual reviewers: ai + b091 + style + mobx) — ~2 min
+  C) 🔒 Security-focused (code-review + security-audit) — ~1 min
+  D) ⏭ Skip review entirely
+
+> pick a letter (default: A)
+```
+
+**Auto-select** (skip this question) when:
+- `review_mode` is explicitly set in automation settings → use that
+- User already chose at Post-Implementation Checkpoint (2.5.1 option A) → use default (A)
+- Time pressure (total_job_timeout close) → use A (fastest)
+
+#### 2.6.1 Execute Review
+
 Dispatch review skills on the whole branch. **Launch all reviewers in parallel** for speed.
 
-**Primary approach — use `code-review` (4-agent parallel):**
+**Strategy A — `code-review` (4-agent parallel):**
 
-If the `code-review` skill is available, prefer it as the primary reviewer. It dispatches 4 agents in parallel (correctness, security, performance, style) and produces a unified severity report.
+Dispatches 4 agents in parallel (correctness, security, performance, style) and produces a unified severity report.
 
 ```
 Launch code-review skill with:
@@ -658,6 +779,15 @@ REVIEW_FINDINGS: [{
 }]
 ```
 
+**Strategy C — Security-focused:**
+
+Run `code-review` (4-agent) AND `security-audit` in parallel:
+```
+Agent group 1: code-review (correctness, security, performance, style)
+Agent group 2: security-audit (dependency vulnerabilities, secrets scan, OWASP patterns)
+```
+Merge findings from both into unified `REVIEW_FINDINGS`.
+
 **Deduplicate:** If multiple reviewers flag the same file:line, merge into a single finding with the highest severity.
 
 **Classify:**
@@ -674,6 +804,31 @@ DATA:
   TITLE: Code Review Results
   CONTENT: <findings summary for man/, structured findings for ai/>
 ```
+
+#### 2.6.2 Post-Review Checkpoint
+
+After review completes, present findings and ask user:
+
+```
+Review complete:
+  🔴 <N> CRITICAL  🟠 <M> HIGH  🟡 <K> MEDIUM  🔵 <L> LOW
+
+  A) 🔧 Auto-fix and continue (fix CRITICAL + HIGH, skip LOW)
+  B) 📋 Show all findings — I'll decide what to fix
+  C) ⏭ Skip fixes, proceed to PR as-is
+  D) ⏹ Stop — I'll fix manually
+```
+
+**Mapping:**
+- A → proceed to FIX step (default if CRITICAL > 0)
+- B → display all findings grouped by file, then re-ask A/C/D
+- C → skip FIX step, go to CHECKS (only if 0 CRITICAL — refuse if CRITICAL > 0)
+- D → skip to Phase 3 (COMPLETION) with status "paused"
+
+**Auto-proceed** (skip this question) when:
+- 0 findings → skip directly to CHECKS
+- Only INFO findings → skip FIX, go to CHECKS
+- `auto_create_pr: true` → auto-select A
 
 ### 2.7 Step: FIX (conditional)
 
@@ -747,6 +902,20 @@ FINAL_CHECKS:
 
 > **Store `PM` and `RUNNER` in JOB_STATE** during the PREPARE step so all subsequent steps use the correct commands.
 
+### 2.8.1 Step: PERF-CHECK (optional)
+
+Auto-trigger `perf-check` when frontend/bundle files were modified:
+
+```
+IF any modified file matches: *.tsx, *.jsx, *.css, *.scss, webpack.*, vite.*, next.config.*
+  AND project has build output (dist/, build/, .next/)
+  THEN:
+    Dispatch perf-check --bundle
+    Add findings to report (informational, not blocking)
+```
+
+Skip if no frontend files changed or no build output exists. Results are advisory — they don't block the PR.
+
 ### 2.9 Step: REPORT
 
 Aggregate all information into a human-readable summary.
@@ -815,6 +984,14 @@ CONTEXT_PATH: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
 
 `pr-issue-documenter` will analyze the branch diff and produce a structured PR description (Summary + Changes by area + Key Files table). Use its output as the `body` for the PR.
 
+**Enrich PR with changelog entry:**
+
+Dispatch `changelog` skill to generate a changelog snippet for this branch:
+```
+changelog <base_branch>..HEAD --format compact
+```
+Append the changelog snippet to the PR body under a `## Changelog` section.
+
 **Present to user:**
 ```
 Implementation complete. Draft PR proposal:
@@ -824,8 +1001,13 @@ Base: <base> ← <head>
 
 <pr-issue-documenter output>
 
-Create this draft PR? (yes/no)
+## Changelog
+<changelog snippet>
+
+Create this draft PR? (yes/no/edit)
 ```
+
+If user says "edit" → show the full body, let them modify before creating.
 
 **If confirmed:**
 ```bash
@@ -859,17 +1041,37 @@ Tell user:
 1. What was accomplished (summary)
 2. Where documentation is stored: `jobs/<job-name>/`
 3. PR URL (if created)
-4. Any unresolved issues
+4. Metrics summary (time, tokens)
+5. Any unresolved issues
 
 ```
-Job completed successfully.
+✅ Job completed successfully.
 
   Documentation: ~/goodea/goodai-base/jobs/<job-name>/
   Branch:        feature/<slug> (worktree: <path>)
   PR:            <URL or "not created">
+  Metrics:       <total time>, <total tokens>
   
   See jobs/<job-name>/README.md for the full job index.
 ```
+
+### 3.3 Post-Completion Options
+
+After presenting results, offer next steps:
+
+```
+What would you like to do next?
+
+  A) ✅ Done — nothing else needed
+  B) 🚀 Deploy to staging — run /deploy staging
+  C) 🔄 Start another job
+  D) 📝 Update CLAUDE.md with session learnings
+```
+
+- B → dispatch `deploy` skill with `staging` environment
+- D → dispatch `claude-md-management` skill
+
+**Auto-skip** if the job was `analyze` or `review` intent (no deploy makes sense).
 
 ---
 
