@@ -39,7 +39,20 @@
       "properties": {
         "name": { "type": "string" },
         "worktree_path": { "type": "string" },
-        "merge_base": { "type": "string" }
+        "merge_base": { "type": "string" },
+        "package_manager": { "type": "string", "enum": ["npm", "bun", "yarn", "pnpm", "python", "go", "unknown"] },
+        "run_command": { "type": "string", "description": "Command prefix for running scripts (e.g., 'npm run', 'bun run', 'yarn')" }
+      }
+    },
+    "interview": {
+      "type": "object",
+      "description": "Results from the interview skill (Phase 0.3)",
+      "properties": {
+        "decisions": { "type": "array", "items": { "type": "object" } },
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "assumptions": { "type": "array", "items": { "type": "string" } },
+        "risks": { "type": "array", "items": { "type": "string" } },
+        "refined_goal": { "type": "string" }
       }
     },
     "plan": {

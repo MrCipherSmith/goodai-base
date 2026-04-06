@@ -472,8 +472,20 @@ git -C <project_dir> worktree add ../<branch-slug> -b feature/<branch-slug> orig
 # Result worktree: /Users/user/Presight/Vantage/pipeline-validation
 # Result branch:   feature/pipeline-validation
 
-# Install dependencies if needed
-npm install --prefix <worktree_path>
+# Auto-detect package manager and install dependencies
+if [ -f <worktree_path>/bun.lockb ]; then
+  PM="bun"; RUNNER="bun run"; bun install --cwd <worktree_path>
+elif [ -f <worktree_path>/pnpm-lock.yaml ]; then
+  PM="pnpm"; RUNNER="pnpm run"; pnpm install --prefix <worktree_path>
+elif [ -f <worktree_path>/yarn.lock ]; then
+  PM="yarn"; RUNNER="yarn"; yarn --cwd <worktree_path>
+elif [ -f <worktree_path>/package-lock.json ]; then
+  PM="npm"; RUNNER="npm run"; npm install --prefix <worktree_path>
+elif [ -f <worktree_path>/requirements.txt ]; then
+  PM="python"; RUNNER=""; pip install -r <worktree_path>/requirements.txt
+elif [ -f <worktree_path>/go.mod ]; then
+  PM="go"; RUNNER=""; (cd <worktree_path> && go mod download)
+fi
 ```
 
 > **IMPORTANT**: After creating the worktree, ALL subsequent operations (implementation, review, lint, test, git) MUST run in the **worktree directory**, NOT in the original project directory.
@@ -486,7 +498,11 @@ BRANCH_STATE:
   worktree_path: <absolute path to worktree>
   project_dir: <original project directory — DO NOT modify>
   created_from_commit: <commit hash>
+  package_manager: <PM>
+  run_command: <RUNNER>
 ```
+
+> **Store `package_manager` and `run_command` in JOB_STATE** — all subsequent steps use these instead of hardcoded `npm`.
 
 **Document:** Update README via job-documenter (update-readme) with branch info.
 
