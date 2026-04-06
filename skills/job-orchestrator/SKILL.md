@@ -908,7 +908,7 @@ JOB_STATE:
     merge_base: <commit hash>
   
   plan:
-    steps: [{ id, type, agent, depends, status: pending|in_progress|completed|skipped|failed }]
+    steps: [{ id, type, agent, depends, status: pending|in_progress|completed|skipped|failed, prompt_chars: <int>, prompt_hash: <sha256 first 8 chars> }]
     current_step: <step_id>
   
   analysis:
@@ -987,6 +987,37 @@ EOF
 | `conditional_reviewers` | `{"code-mobx-store-review": "*.store.ts"}` | skill→pattern | Conditional reviewers |
 | `run_final_checks` | `true` | true/false | Run lint/type-check/test |
 | `run_interview` | `true` | true/false | Run interview skill in Phase 0 |
+| `dry_run` | `false` | true/false | Plan-only mode: full Phase 0+1, no agent dispatch or git ops |
+| `log_prompt_sizes` | `true` | true/false | Store prompt char count per step in state.json for observability |
+
+## Dry-Run Mode
+
+When `dry_run: true` is set (or `--dry-run` is passed):
+
+1. **Phase 0** runs fully — context collection, interviewer (if applicable), summary + confirm
+2. **Phase 1** runs fully — plan is built and displayed with step tree
+3. **Phase 2 is skipped entirely** — no sub-agents dispatched, no git operations
+4. **Output:** Full plan tree with agent names, input data shapes, dependencies:
+
+```
+Dry-run plan for: issue-4141--pipeline-validation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Step 1: analyze         [issue-analyzer]          → input: issue #4141
+Step 2: context         [context-collector]       → input: analysis result, project_dir
+Step 3: prepare         [orchestrator]            → creates: feature/pipeline-validation
+Step 4: implement       [task-implementer × 3]    → sequential, 3 tasks
+Step 5: sanity-check    [orchestrator]            → verifies commits exist
+Step 6: review          [code-review × 4]         → parallel
+Step 7: fix             [task-implementer]        → conditional: if NEEDS_FIX
+Step 8: checks          [orchestrator]            → lint + type-check + test
+Step 9: report          [orchestrator]            → aggregates all results
+Step 10: pr             [orchestrator + gh CLI]   → conditional: if create_pr
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Estimated sub-agent calls: 11-14 (varies with tasks and review findings)
+No changes will be made. Use without --dry-run to execute.
+```
+
+5. Ask user: "Execute this plan? (yes / adjust / abort)"
 
 ## Budget Guards & Timeouts
 
@@ -1104,7 +1135,93 @@ The orchestrator must keep the user informed during long-running execution. This
 14. **DO** use auto-detected `package_manager` and `run_command` — never hardcode `npm`.
 15. **DO NOT** ask the user anything during execution (after Phase 0) — except for critical failures and plan extension decisions.
 16. **DO NOT** push the branch until user confirms (or auto_create_pr).
-15. **DO NOT** skip job documentation — it's a core feature, not optional.
-16. **DO NOT** create job documentation for sub-agent results directly — orchestrator formats and sends to documenter.
-17. **DO** store the prompt used for each sub-agent step in `state.json → step.prompt` before dispatching — required for retry and resume.
-18. **DO** classify every step failure as `terminal`, `retryable`, or `recoverable` — never just abort or ask without classifying first.
+17. **DO NOT** skip job documentation — it's a core feature, not optional.
+18. **DO NOT** create job documentation for sub-agent results directly — orchestrator formats and sends to documenter.
+19. **DO** store the prompt used for each sub-agent step in `state.json → step.prompt` before dispatching — required for retry and resume.
+20. **DO** classify every step failure as `terminal`, `retryable`, or `recoverable` — never just abort or ask without classifying first.
+
+---
+
+## Configurable Jobs Root
+
+The jobs documentation root is configurable, not hardcoded:
+
+**Resolution order:**
+1. `GOODAI_JOBS_ROOT` environment variable (if set)
+2. Project-level CLAUDE.md `jobs_root` setting (if present)
+3. Default: `~/goodai-base/jobs/`
+
+```bash
+JOBS_ROOT="${GOODAI_JOBS_ROOT:-$(grep 'jobs_root:' <project>/CLAUDE.md | awk '{print $2}')}"
+JOBS_ROOT="${JOBS_ROOT:-$HOME/goodai-base/jobs}"
+```
+
+All references to `~/goodea/goodai-base/jobs/` in sub-agent prompts must use the resolved `JOBS_ROOT`.
+
+---
+
+## Post-Mortem (for failed/aborted jobs)
+
+When a job ends with status `aborted`, `timeout`, or has unresolved critical issues:
+
+1. **Auto-generate post-mortem** document:
+```markdown
+# Post-Mortem: <job-name>
+
+## Timeline
+- Phase 0 completed: <timestamp>
+- Phase 2, step "implement" started: <timestamp>
+- Step "task-3" failed after 2 retries: <timestamp>
+- Job aborted by user: <timestamp>
+
+## What Went Wrong
+- <Step name> failed with: <error class> — <error message>
+- Root cause hypothesis: <analysis>
+
+## What Worked
+- <N> tasks completed successfully
+- Context collection was accurate
+
+## Recommendations for Retry
+- Fix <specific issue> before re-running
+- Consider splitting task-3 into smaller subtasks
+- Increase step_timeout_ms if timeout was the issue
+```
+
+2. Save to `jobs/<job-name>/post-mortem.md`
+3. Include in final user message: "Post-mortem saved to `jobs/<job-name>/post-mortem.md`"
+
+---
+
+## Metrics Collection
+
+The orchestrator tracks timing and token usage for each step to enable optimization over time.
+
+**Collected per step:**
+```json
+{
+  "step_id": "implement",
+  "started_at": "2024-03-15T10:30:00Z",
+  "completed_at": "2024-03-15T10:35:22Z",
+  "duration_ms": 322000,
+  "total_tokens": 84500,
+  "status": "success",
+  "retries": 0
+}
+```
+
+**Saved to:** `jobs/<job-name>/metrics.json`
+
+**Aggregated in report:**
+```markdown
+## Metrics
+| Step | Duration | Tokens | Retries |
+|------|----------|--------|---------|
+| Analyze | 45s | 12K | 0 |
+| Context | 30s | 8K | 0 |
+| Implement | 5m 22s | 84K | 0 |
+| Review | 1m 10s | 25K | 0 |
+| **Total** | **7m 47s** | **129K** | **0** |
+```
+
+This data helps identify which steps are bottlenecks and whether budget guards need adjustment.
