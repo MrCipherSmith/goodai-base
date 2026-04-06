@@ -559,6 +559,43 @@ DATA:
   TASK: Implementation phase
 ```
 
+### 2.5.5 Step: IMPLEMENT SANITY CHECK
+
+Lightweight verification after `task-implementer` completes, **before** launching review.
+This catches the common LLM failure where a sub-agent claims success but made no actual changes.
+
+```bash
+# Run in worktree directory
+git diff --stat <merge_base>..HEAD
+git log <merge_base>..HEAD --oneline
+```
+
+**Gate conditions:**
+
+| Check | Pass | Fail action |
+|-------|------|-------------|
+| At least 1 commit exists | ≥1 commit | `retryable` — re-dispatch task-implementer with: "No commits were made. Implement the changes and commit them." |
+| At least 1 file modified | ≥1 file changed | Same as above |
+| Claimed files actually modified | All `files_modified` in diff | Log discrepancy as WARNING, continue |
+
+**If retry also produces no commits** → classify as `terminal`, ABORT with:
+```
+"task-implementer returned success twice but made no git changes.
+Please implement manually and re-run from the review step."
+```
+
+**Record:**
+```
+SANITY_CHECK:
+  commits: <count>
+  files_changed: <count>
+  lines_added: <N>
+  lines_removed: <N>
+  verified: true | false
+```
+
+---
+
 ### 2.6 Step: REVIEW
 
 Dispatch review skills on the whole branch. **Launch all reviewers in parallel** for speed.
