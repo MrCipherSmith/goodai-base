@@ -18,7 +18,7 @@ Before creating or editing a skill, ask and confirm:
 3. Agent profile scope (`Cursor`, `Codex`, `Zed`, `OpenCode`, or all)
 
 ## Source of Truth
-`~/goodea/goodai-base/skills/<skill-name>/`
+`~/goodai-base/skills/<skill-name>/`
 
 ## Required Source Layout
 - `SKILL.md` — canonical source of truth
@@ -47,7 +47,7 @@ Before creating or editing a skill, ask and confirm:
 
 ## Machine-Readable Contract
 Use canonical schema:
-- `~/goodea/goodai-base/rules/schemas/skill-workflow-result.schema.json`
+- `~/goodai-base/rules/schemas/skill-workflow-result.schema.json`
 
 Contract requirements:
 - One top-level JSON object only.
@@ -66,13 +66,13 @@ Contract requirements:
 Run before syncing skills:
 
 ```bash
-~/goodea/goodai-base/scripts/validate-skills-before-sync.sh
+~/goodai-base/scripts/validate-skills-before-sync.sh
 ```
 
 Then run sync:
 
 ```bash
-~/goodea/goodai-base/scripts/sync-skills.sh
+~/goodai-base/scripts/sync-skills.sh
 ```
 
 If validation fails, do not sync.
@@ -85,4 +85,4 @@ If validation fails, do not sync.
 - Do not create skills in `~/.cursor/skills-cursor/`.
 
 ## Apply Changes Workflow
-Changes under `~/goodea/goodai-base/skills/*` should be synced to tool directories using `sync-skills.sh`.
+Changes under `~/goodai-base/skills/*` should be synced to tool directories using `sync-skills.sh`.

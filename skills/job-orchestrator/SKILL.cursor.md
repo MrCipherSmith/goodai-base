@@ -65,7 +65,7 @@ Phase 3: COMPLETION          →  Final report, optional PR, tell user where doc
 ### 0.0 State Resumption Check
 
 Before asking any questions, check if an interrupted job exists:
-1. Look in `~/goodea/goodai-base/jobs/` for any directory containing an incomplete `state.json`.
+1. Look in `~/goodai-base/jobs/` for any directory containing an incomplete `state.json`.
 2. If found, ASK the user: "Found paused job '<job-name>'. Do you want to resume it or start a new orchestrated job?"
 3. If resume → Parse `state.json`, restore `JOB_STATE`, and jump directly to the first uncompleted step in Phase 2.
 4. If new → Proceed to 0.1.
@@ -196,7 +196,7 @@ Task({
 
     ACTION: init
     JOB_NAME: <job-name>
-    JOBS_ROOT: ~/goodea/goodai-base/jobs
+    JOBS_ROOT: ~/goodai-base/jobs
 
     DATA:
       TITLE: <job title>
@@ -331,7 +331,7 @@ Task({
 
     ACTION: collect
     JOB_NAME: <job-name>
-    JOBS_ROOT: ~/goodea/goodai-base/jobs
+    JOBS_ROOT: ~/goodai-base/jobs
     PROJECT_DIR: <project_dir>
 
     DATA:
@@ -356,7 +356,7 @@ CONTEXT_RESULT:
 
 **After context is collected:** All subsequent sub-agents (task-implementer, reviewers) should be informed about the context document location:
 ```
-CONTEXT_LOCATION: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_LOCATION: ~/goodai-base/jobs/<job-name>/ai/context.md
 ```
 
 **Triggering context updates during execution:**
@@ -374,7 +374,7 @@ Task({
 
     ACTION: update
     JOB_NAME: <job-name>
-    JOBS_ROOT: ~/goodea/goodai-base/jobs
+    JOBS_ROOT: ~/goodai-base/jobs
     PROJECT_DIR: <project_dir>
 
     DATA:
@@ -445,7 +445,7 @@ FOR task in dependency_order:
        (use template from skills/task-implementer/orchestrator-prompt.md)
        IMPORTANT: Include the job context location in the prompt:
          JOB_NAME: <job-name>
-         CONTEXT_PATH: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+         CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
     
     2. Launch:
        Task({
@@ -671,7 +671,7 @@ Tell user:
 ```
 Job completed successfully.
 
-  Documentation: ~/goodea/goodai-base/jobs/<job-name>/
+  Documentation: ~/goodai-base/jobs/<job-name>/
   Branch:        feature/<slug> (worktree: <path>)
   PR:            <URL or "not created">
   
@@ -724,7 +724,7 @@ JOB_STATE:
     dependency_order: [<task_ids>]
   
   context_doc:
-    path: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+    path: ~/goodai-base/jobs/<job-name>/ai/context.md
     version: <current version>
     status: collected | updated | not-collected
   
@@ -745,7 +745,7 @@ JOB_STATE:
     tests: <result>
   
   documentation:
-    job_path: ~/goodea/goodai-base/jobs/<job-name>
+    job_path: ~/goodai-base/jobs/<job-name>
     documents_created: [<paths>]
 ```
 

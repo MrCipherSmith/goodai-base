@@ -319,8 +319,8 @@ When dispatched by `job-orchestrator`, the prompt MAY include:
 
 ```
 JOB_NAME:     <job-name>
-JOBS_ROOT:    ~/goodea/goodai-base/jobs
-CONTEXT_PATH: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+JOBS_ROOT:    ~/goodai-base/jobs
+CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
 ```
 
 If `CONTEXT_PATH` is provided and the file exists, read it during Phase 2 (ANALYZE) to:

@@ -60,7 +60,7 @@ Phase 5: DOCUMENT    ->  Save via job-documenter, return result
 ```
 ACTION:      collect | update
 JOB_NAME:    <kebab-case job folder name>
-JOBS_ROOT:   ~/goodea/goodai-base/jobs
+JOBS_ROOT:   ~/goodai-base/jobs
 PROJECT_DIR: <absolute path to project directory>
 
 DATA:
@@ -128,7 +128,7 @@ If this is an update:
 
 Scan local sources for relevant context. Be selective — only include what is directly relevant to the task.
 
-### 2.1 Documentation (`~/goodea/goodai-base/docs/`)
+### 2.1 Documentation (`~/goodai-base/docs/`)
 
 ```
 1. List available docs:
@@ -142,7 +142,7 @@ Scan local sources for relevant context. Be selective — only include what is d
    - Summarize: 3-5 bullet points per doc, only task-relevant info
 ```
 
-### 2.2 Previous Jobs (`~/goodea/goodai-base/jobs/`)
+### 2.2 Previous Jobs (`~/goodai-base/jobs/`)
 
 ```
 1. List existing job folders:
@@ -154,7 +154,7 @@ Scan local sources for relevant context. Be selective — only include what is d
    - Note: "Previous job <name> addressed <related topic>"
 ```
 
-### 2.3 Rules (`~/goodea/goodai-base/rules/core/`)
+### 2.3 Rules (`~/goodai-base/rules/core/`)
 
 ```
 1. Based on focus_areas and task_description, identify applicable rules:
@@ -425,7 +425,7 @@ If JOB_NAME is provided, dispatch `job-documenter`:
 ```
 ACTION: add-document
 JOB_NAME: <JOB_NAME>
-JOBS_ROOT: ~/goodea/goodai-base/jobs
+JOBS_ROOT: ~/goodai-base/jobs
 
 DATA:
   DOC_TYPE:    context
@@ -443,7 +443,7 @@ For ACTION=update, use the same flow — `job-documenter` will overwrite the exi
 ### 5.2 Save directly (when running standalone without a job)
 
 If no JOB_NAME is provided:
-- Write context to `~/goodea/goodai-base/docs/context/<descriptive-slug>.md`
+- Write context to `~/goodai-base/docs/context/<descriptive-slug>.md`
 - Include full metadata block
 
 ### 5.3 Return Result
@@ -517,7 +517,7 @@ Load the skill from: skills/context-collector/SKILL.md
 
 ACTION: collect
 JOB_NAME: <job-name>
-JOBS_ROOT: ~/goodea/goodai-base/jobs
+JOBS_ROOT: ~/goodai-base/jobs
 PROJECT_DIR: <project path>
 
 DATA:
@@ -539,7 +539,7 @@ Load the skill from: skills/context-collector/SKILL.md
 
 ACTION: update
 JOB_NAME: <job-name>
-JOBS_ROOT: ~/goodea/goodai-base/jobs
+JOBS_ROOT: ~/goodai-base/jobs
 PROJECT_DIR: <project path>
 
 DATA:

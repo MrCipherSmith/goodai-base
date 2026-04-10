@@ -1,0 +1,13 @@
+# Job artifacts — contain per-project state and private paths
+jobs/
+
+# Machine-generated registry with absolute local paths
+skills/agents-registry.json
+
+# Claude Code local files
+.claude/settings.local.json
+.claude/projects/
+.claude/history.jsonl
+
+# OS
+.DS_Store
