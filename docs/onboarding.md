@@ -1,0 +1,175 @@
+# goodai-base Onboarding Guide
+
+Welcome to **goodai-base** — a shared knowledge base for AI-assisted development. This guide explains the core concepts and how to get started quickly.
+
+---
+
+## What is goodai-base?
+
+goodai-base is a structured repository of:
+
+- **Skills** — reusable workflows that Claude can execute on demand (code review, commit, feature analysis, etc.)
+- **Rules** — coding standards and guidelines that are automatically injected when relevant
+- **Scripts** — tooling to deploy, sync, and validate skills and rules across projects
+
+The goal: write your AI workflows once, deploy them everywhere.
+
+---
+
+## How Skills Work
+
+Skills live in `skills/<skill-name>/SKILL.md`. Each skill has YAML frontmatter defining its identity and a body describing the workflow.
+
+### Invoking a skill
+
+In Claude Code, prefix your request with the skill name as a slash command:
+
+```
+/commit
+/code-review
+/job-orchestrator
+```
+
+Claude matches the slash command against the skill catalog and loads the full workflow definition.
+
+### Skill frontmatter fields
+
+| Field | Purpose |
+| ----- | ------- |
+| `name` | Unique identifier (kebab-case) |
+| `description` | What the skill does — used for auto-detection |
+| `triggers` | Phrases that activate the skill |
+| `metadata.version` | Semantic version |
+| `metadata.category` | Grouping label (workflow, review, analysis, …) |
+| `metadata.agent_worthy` | If `true`, the skill can run as a native Claude Code sub-agent |
+
+### Auto-detection
+
+`scripts/detect-context.sh` scores incoming prompts against `rules.json` (which indexes all skills and rules). Matching skills are surfaced as suggestions; matching rules are injected as context.
+
+---
+
+## How Rules Work
+
+Rules live in `rules/core/<rule-name>.mdc`. They contain coding standards, patterns, and conventions for specific domains (TypeScript, MobX, NestJS, Git, etc.).
+
+### Auto-injection
+
+When you submit a prompt, `detect-context.sh` runs keyword and intent matching. If a rule's triggers match, its content is injected as context before Claude answers — you don't need to invoke rules manually.
+
+Rules with `alwaysApply: true` are always injected regardless of prompt content.
+
+### Manual loading
+
+You can reference a rule directly in your prompt:
+
+```
+Apply code-style-patterns to the following code: ...
+```
+
+---
+
+## How to Add a Skill
+
+1. **Create the skill directory and SKILL.md:**
+
+   ```bash
+   mkdir skills/my-skill
+   ```
+
+   Add `skills/my-skill/SKILL.md` with this frontmatter:
+
+   ```yaml
+   ---
+   name: my-skill
+   description: "Short description of what the skill does."
+   triggers:
+     - "/my-skill"
+     - "Run my skill"
+   metadata:
+     author: "your-name"
+     version: "1.0.0"
+     category: "workflow"
+   license: "MIT"
+   compatibility: "cursor,codex,claude"
+   ---
+
+   # My Skill
+
+   ## Purpose
+   ...
+   ```
+
+2. **Regenerate the registries:**
+
+   ```bash
+   scripts/generate-skill-registry.sh   # updates hooks/skill-registry.json
+   scripts/generate-rules-json.sh        # updates rules.json
+   ```
+
+3. **Add to AGENTS.md** under the Skills Catalog section so it appears in the routing table.
+
+4. **Validate before sync:**
+
+   ```bash
+   scripts/validate-skills-before-sync.sh
+   ```
+
+5. **Optional — make it a native sub-agent:**
+
+   Add `agent_worthy: true` under `metadata` in SKILL.md, then run:
+
+   ```bash
+   scripts/sync-agents.sh
+   ```
+
+   This generates a `.claude/agents/<skill-name>.md` file that Claude Code can spawn as a background agent.
+
+6. **Deploy to a project:**
+
+   ```bash
+   scripts/deploy-skill-hook.sh /path/to/your-project
+   ```
+
+   This installs the skill-evaluator hook into the target project's `.claude/` directory.
+
+---
+
+## Quick Reference
+
+| Resource | Location |
+| -------- | -------- |
+| All skills | [skill-catalog.md](./skill-catalog.md) |
+| All rules | [rules-catalog.md](./rules-catalog.md) |
+| Machine-readable skill catalog | [ai/skill-catalog.yaml](./ai/skill-catalog.yaml) |
+| Routing table | [AGENTS.md](../AGENTS.md) |
+| Unified trigger registry | [rules.json](../rules.json) |
+| Hook for projects | `scripts/deploy-skill-hook.sh` |
+| Sync sub-agents | `scripts/sync-agents.sh` |
+| Validate before sync | `scripts/validate-skills-before-sync.sh` |
+
+---
+
+## Useful Scripts
+
+```bash
+# Generate docs catalogs
+scripts/generate-skill-catalog.sh
+scripts/generate-rules-catalog.sh
+
+# Regenerate trigger registries
+scripts/generate-skill-registry.sh
+scripts/generate-rules-json.sh
+
+# Validate skill profiles and rules registry
+scripts/validate-skills-before-sync.sh
+
+# Sync agent_worthy skills to native agents
+scripts/sync-agents.sh
+
+# Deploy hook to a project
+scripts/deploy-skill-hook.sh /path/to/project
+
+# Test context detection
+echo "how do I review this code?" | scripts/detect-context.sh
+```
