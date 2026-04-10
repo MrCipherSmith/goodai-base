@@ -8,7 +8,7 @@ triggers:
   - "Gather requirements"
   - "What do you need to know"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "meta"
 license: "MIT"

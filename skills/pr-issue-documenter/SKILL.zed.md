@@ -6,7 +6,7 @@ triggers:
   - "Document PR changes"
   - "Create issue for PR"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "documentation"
 license: "MIT"
