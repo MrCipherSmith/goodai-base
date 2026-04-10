@@ -10,7 +10,7 @@ Total: 30 skills
 | `changelog` | Generate changelog from git commits between tags or date ranges. Groups by conventional commit ty... | 1.0.0 | workflow |
 | `claude-md-management` | Capture session learnings and persist into CLAUDE.md files. Extracts coding patterns, conventions... | 1.0.0 | configuration |
 | `code-ai-review` | Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current ... | 1.0.0 | review |
-| `code-b091-review` | Performs strict b091-style code review following code-review-b091-profile.mdc. Reviews current br... | 1.0.0 | review |
+| `code-boss-review` | Performs strict boss-style code review following code-review-boss-profile.mdc. Reviews current br... | 1.0.0 | review |
 | `code-mobx-store-review` | Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInA... | 1.1.0 | review |
 | `code-review` | Comprehensive code review with 4 parallel agents: correctness/logic, security, performance, style... | 1.0.0 | review |
 | `code-style-review` | Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch... | 1.0.0 | review |

@@ -8,7 +8,7 @@ Total: 19 rules
 | ---- | ----------- | ---- | -------------- |
 | `beads-workflow` | Workflow for Beads BD task execution and follow-up actions. | Orchestration | No |
 | `code-review-ai-assistant` | Baseline AI code review standards for correctness, architecture, safety, and maintainability. | Code Review | No |
-| `code-review-b091-profile` | b091-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
+| `code-review-boss-profile` | boss-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
 | `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
 | `commit-message-formatting` | Conventional commit formatting rules. | Git | No |
 | `documentation-management` | Manage project documentation in ~/goodai-base/docs with synchronized multilingual outputs. | Documentation | No |
