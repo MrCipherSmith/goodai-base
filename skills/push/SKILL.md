@@ -7,7 +7,7 @@ triggers:
   - "Push to remote"
   - "Push branch"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "workflow"
 license: "MIT"

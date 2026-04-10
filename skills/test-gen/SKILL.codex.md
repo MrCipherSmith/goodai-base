@@ -8,7 +8,7 @@ triggers:
   - "Add tests"
   - "Create test file"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "testing"
 license: "MIT"

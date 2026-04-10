@@ -8,7 +8,7 @@ triggers:
   - "Run task-implementer"
   - "Implement issue task"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "implementation"
 license: "MIT"

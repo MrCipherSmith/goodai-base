@@ -8,7 +8,7 @@ triggers:
   - "Migration status"
   - "Rollback migration"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "database"
 license: "MIT"

@@ -10,7 +10,7 @@ triggers:
   - "Add PR description"
   - "Document PR changes"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "documentation"
 license: "MIT"

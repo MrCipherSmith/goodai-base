@@ -8,7 +8,7 @@ triggers:
   - "Release notes"
   - "What's new"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "workflow"
 license: "MIT"

@@ -6,7 +6,7 @@ triggers:
   - "Check store changes"
   - "MobX review"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.1.0"
   category: "review"
 license: "MIT"

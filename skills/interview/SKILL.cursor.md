@@ -9,7 +9,7 @@ triggers:
   - "What do you need to know"
   - "Gather requirements"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "analysis"
 license: "MIT"

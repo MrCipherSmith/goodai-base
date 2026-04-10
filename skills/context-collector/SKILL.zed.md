@@ -10,7 +10,7 @@ triggers:
   - "Context for job"
   - "Research context"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "context"
 license: "MIT"

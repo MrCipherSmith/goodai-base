@@ -9,7 +9,7 @@ triggers:
   - "Why is it slow"
   - "Optimize performance"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "performance"
 license: "MIT"
