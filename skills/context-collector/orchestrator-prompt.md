@@ -64,7 +64,7 @@ DO NOT ask the user any questions. Execute all phases autonomously.
 
 ACTION: collect
 JOB_NAME: {{JOB_NAME}}
-JOBS_ROOT: ~/goodea/goodai-base/jobs
+JOBS_ROOT: ~/goodai-base/jobs
 PROJECT_DIR: {{PROJECT_DIR}}
 
 DATA:
@@ -91,7 +91,7 @@ DO NOT ask the user any questions. Execute the update flow autonomously.
 
 ACTION: update
 JOB_NAME: {{JOB_NAME}}
-JOBS_ROOT: ~/goodea/goodai-base/jobs
+JOBS_ROOT: ~/goodai-base/jobs
 PROJECT_DIR: {{PROJECT_DIR}}
 
 DATA:
@@ -128,7 +128,7 @@ CONTEXT_RESULT:
   action:       collect | update
   status:       success | error
   job_name:     <JOB_NAME or null>
-  context_path: ~/goodea/goodai-base/jobs/{{JOB_NAME}}/ai/context.md
+  context_path: ~/goodai-base/jobs/{{JOB_NAME}}/ai/context.md
   version:      <document version, e.g. 1.0>
   summary:      <2-3 sentences describing what was collected>
   sections_collected:

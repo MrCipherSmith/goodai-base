@@ -49,8 +49,8 @@ chmod +x scripts/validate-skills-before-sync.sh
 
 ## Notes
 
-- Jobs documentation goes to `~/goodea/goodai-base/jobs/`
-- All paths in rules reference `~/goodea/goodai-base/`
+- Jobs documentation goes to `~/goodai-base/jobs/`
+- All paths in rules reference `~/goodai-base/`
 
 ## Project Structure
 

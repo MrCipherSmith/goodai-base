@@ -104,9 +104,9 @@ If author == "b091":
 3. Ask: "Should I analyze b091's comments and suggest updates to core/code-review-b091-profile.mdc?"
 4. If user agrees:
    - Identify patterns in b091's feedback
-   - Update `~/goodea/goodai-base/rules/core/code-review-b091-profile.mdc`
-   - Update `~/goodea/goodai-base/AGENTS.md` if needed
-   - Run `~/goodea/goodai-base/scripts/sync-skills.sh`
+   - Update `~/goodai-base/rules/core/code-review-b091-profile.mdc`
+   - Update `~/goodai-base/AGENTS.md` if needed
+   - Run `~/goodai-base/scripts/sync-skills.sh`
    - Follow `rule-management-workflow.mdc`
 5. Extract general patterns, not personal phrases
 
@@ -181,4 +181,4 @@ ELSE:
   Proceed with standard workflow (analyze PR/commits directly)
 ```
 
-The job context path is: `~/goodea/goodai-base/jobs/<JOB_NAME>/ai/context.md`
+The job context path is: `~/goodai-base/jobs/<JOB_NAME>/ai/context.md`

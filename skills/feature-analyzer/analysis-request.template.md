@@ -73,7 +73,7 @@
 
 | Field | Value |
 |-------|-------|
-| Base Dir | `~/goodea/goodai-base/docs/analysis` |
+| Base Dir | `~/goodai-base/docs/analysis` |
 | Folder Name | |
 | Languages | `en, ru, ai` |
 | Include Metrics | `true` |

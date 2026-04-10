@@ -57,9 +57,9 @@ gh api repos/{owner}/{repo}/pulls/{pullNumber}/reviews
     - Не обновлять правило и промпт без явного согласия пользователя.
     - После разбора комментариев **обязательно спросить**: «Нужно ли учесть комментарии b091 и обновить правило и промпт (разделы 2–5 в core/code-review-b091-profile.mdc)?»
   - При согласии пользователя обновлять правило по **.cursor/rules/core/rule-management-workflow.mdc**:
-    1. Источник правил — **~/goodea/goodai-base/rules/** (мастер); обновить там `core/code-review-b091-profile.mdc`.
-    2. Обновить `~/goodea/goodai-base/AGENTS.md` при изменении индекса.
-    3. Запустить синхронизацию (`~/goodea/goodai-base/scripts/sync-skills.sh`) в workspace.
+    1. Источник правил — **~/goodai-base/rules/** (мастер); обновить там `core/code-review-b091-profile.mdc`.
+    2. Обновить `~/goodai-base/AGENTS.md` при изменении индекса.
+    3. Запустить синхронизацию (`~/goodai-base/scripts/sync-skills.sh`) в workspace.
   - Добавлять в правило только обобщённые паттерны/формулировки из комментариев b091 (как в разделах 2 и 2.11 правила core/code-review-b091-profile.mdc), без копирования личных фраз.
 
 - Если комментариев от b091 нет — сообщить об этом; правило не менять.
@@ -87,5 +87,5 @@ gh api repos/{owner}/{repo}/pulls/{pullNumber}/reviews
 - [ ] Извлечь owner, repo, pullNumber из ссылки пользователя.
 - [ ] Загрузить review comments, issue comments, reviews через MCP или gh.
 - [ ] Сгруппировать комментарии по автору и вывести сводку.
-- [ ] Если есть b091 — следовать разделу 7 правила core/code-review-b091-profile.mdc (спросить про обновление правила; при «да» — правило rule-management-workflow, источник ~/goodea/goodai-base/rules).
+- [ ] Если есть b091 — следовать разделу 7 правила core/code-review-b091-profile.mdc (спросить про обновление правила; при «да» — правило rule-management-workflow, источник ~/goodai-base/rules).
 - [ ] По каждому комментарию: объяснение + возможный фикс.

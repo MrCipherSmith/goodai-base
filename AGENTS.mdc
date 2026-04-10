@@ -154,8 +154,8 @@ SCAN Core Rule Catalog:
 Reference guidelines for coding standards and workflows:
 
 **Documentation & Planning:**
-- `core/documentation-management.mdc`: Documentation lifecycle and multilingual doc structure in `~/goodea/goodai-base/docs`.
-- `core/jobs-documentation.mdc`: Job documentation structure and conventions for `~/goodea/goodai-base/jobs`. Used by `job-orchestrator` and `job-documenter`.
+- `core/documentation-management.mdc`: Documentation lifecycle and multilingual doc structure in `~/goodai-base/docs`.
+- `core/jobs-documentation.mdc`: Job documentation structure and conventions for `~/goodai-base/jobs`. Used by `job-orchestrator` and `job-documenter`.
 - `core/implementation-plans.mdc`: Implementation plan format and storage.
 - `core/requirements-management.mdc`: Requirements document workflow and structure.
 
@@ -265,7 +265,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Use When**: Called by `job-orchestrator` — NOT invoked directly by users
 - **Actions**: init (create job folder), add-document, update-readme, finalize
 - **Standards**: `core/jobs-documentation.mdc`
-- **Output**: Persistent documentation in `~/goodea/goodai-base/jobs/<job-name>/`
+- **Output**: Persistent documentation in `~/goodai-base/jobs/<job-name>/`
 
 **`skills/context-collector`**
 - **Purpose**: Collects, summarizes, and maintains a unified context document for a job
@@ -339,7 +339,7 @@ Intelligent agents for complex analysis and review tasks:
 
    → feature-analyzer MATCHES (analysis task)
 
-4. LOAD skill from: ~/goodea/goodai-base/skills/feature-analyzer/SKILL.md
+4. LOAD skill from: ~/goodai-base/skills/feature-analyzer/SKILL.md
 
 5. FOLLOW skill instructions EXACTLY:
    - Skill has guard clause → MUST ask for source/target/branch FIRST
@@ -358,7 +358,7 @@ Intelligent agents for complex analysis and review tasks:
    - Request clearly implies orchestration ("full review")
    → Go directly to job-orchestrator. SKIP question.
 
-3. LOAD skill from: ~/goodea/goodai-base/skills/job-orchestrator/SKILL.md
+3. LOAD skill from: ~/goodai-base/skills/job-orchestrator/SKILL.md
 
 4. FOLLOW orchestrator workflow (Phase 0 → Phase 3)
 ```
@@ -418,16 +418,16 @@ Intelligent agents for complex analysis and review tasks:
 
 ## Maintenance Rules
 - Add new thematic rules only under `rules/core` as `.mdc`.
-- Add new skills under `~/goodea/goodai-base/skills/<skill-name>/`.
+- Add new skills under `~/goodai-base/skills/<skill-name>/`.
 - Keep this file updated with descriptions when rules/skills added/renamed/removed.
-- Source of truth: `~/goodea/goodai-base/AGENTS.md` (plain, no frontmatter). `AGENTS.mdc` wraps it with frontmatter for Cursor.
-- `sync-skills.sh` syncs `AGENTS.md` to all tool targets and syncs all skill profiles from `~/goodea/goodai-base/skills/`.
+- Source of truth: `~/goodai-base/AGENTS.md` (plain, no frontmatter). `AGENTS.mdc` wraps it with frontmatter for Cursor.
+- `sync-skills.sh` syncs `AGENTS.md` to all tool targets and syncs all skill profiles from `~/goodai-base/skills/`.
 - `validate-skills-before-sync.sh` MUST run before `sync-skills.sh` for pre-sync validation.
-- Scripts usage and schema details: `~/goodea/goodai-base/scripts/README.md`.
+- Scripts usage and schema details: `~/goodai-base/scripts/README.md`.
 
 ---
 
 ## Job Documentation
-- Job documentation root: `~/goodea/goodai-base/jobs/`
+- Job documentation root: `~/goodai-base/jobs/`
 - Structure and conventions: `rules/core/jobs-documentation.mdc`
 - Created and maintained by `job-documenter` skill, driven by `job-orchestrator`

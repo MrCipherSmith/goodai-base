@@ -41,7 +41,7 @@ WORKSPACE:
 
 JOB_CONTEXT (optional):
   job_name             → job folder name
-  context_path         → ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+  context_path         → ~/goodai-base/jobs/<job-name>/ai/context.md
 ```
 
 ## Step 2: Validate
@@ -91,7 +91,7 @@ ISSUE_TITLE:   <ISSUE_TITLE>
 
 <!-- If job context available: -->
 JOB_NAME:     <JOB_NAME>
-CONTEXT_PATH: ~/goodea/goodai-base/jobs/<JOB_NAME>/ai/context.md
+CONTEXT_PATH: ~/goodai-base/jobs/<JOB_NAME>/ai/context.md
 
 ═══════════════════════════════════════════════
   AUTOMATION SETTINGS
