@@ -166,7 +166,6 @@ Scan local sources for relevant context. Be selective — only include what is d
    | MobX stores | code-style-patterns.mdc, mobx-store-template.mdc |
    | API / DTOs | nestjs-dto.mdc, code-style-patterns.mdc |
    | Testing | playwright-testing.mdc, storybook-guidelines.mdc |
-   | Pipeline steps | pipeline-new-step-prompt.mdc |
    | General code | code-style-patterns.mdc, frontend-assistant.mdc |
    
 2. Read each applicable rule
