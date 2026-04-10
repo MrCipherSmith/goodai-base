@@ -8,7 +8,7 @@ triggers:
   - "Issue to tasks"
   - "Plan issue implementation"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "analysis"
 license: "MIT"

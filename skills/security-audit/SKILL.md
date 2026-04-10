@@ -10,7 +10,7 @@ triggers:
   - "npm audit"
   - "Dependency vulnerabilities"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "quality"
 license: "MIT"

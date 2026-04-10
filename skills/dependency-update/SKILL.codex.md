@@ -8,7 +8,7 @@ triggers:
   - "Check outdated"
   - "Update npm packages"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "maintenance"
 license: "MIT"

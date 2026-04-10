@@ -9,7 +9,7 @@ triggers:
   - "How should we approach"
   - "Compare approaches"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "ideation"
 license: "MIT"

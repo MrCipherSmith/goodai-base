@@ -8,7 +8,7 @@ triggers:
   - "Run lint after edit"
   - "Notify when done"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "configuration"
 license: "MIT"

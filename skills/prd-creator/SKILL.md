@@ -8,7 +8,7 @@ triggers:
   - "Draft PRD"
   - "Analyze requirements"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "planning"
 license: "MIT"

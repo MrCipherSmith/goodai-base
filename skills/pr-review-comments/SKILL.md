@@ -9,7 +9,7 @@ triggers:
   - "What did b091 write in PR"
   - "Update rule from b091 review"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "analysis"
 license: "MIT"

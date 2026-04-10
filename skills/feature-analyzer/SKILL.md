@@ -10,7 +10,7 @@ triggers:
   - "Backend to frontend analysis"
   - "Feature analyzer"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "2.4.0"
   category: "analysis"
 license: "MIT"

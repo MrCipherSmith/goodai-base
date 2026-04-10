@@ -8,7 +8,7 @@ triggers:
   - "Comprehensive review"
   - "4-agent review"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "review"
 license: "MIT"
