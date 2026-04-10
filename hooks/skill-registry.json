@@ -1,0 +1,608 @@
+{
+  "version": "1.0.0",
+  "generated_from": "AGENTS.md",
+  "hookConfig": {
+    "enabled": true,
+    "maxSuggestions": 3,
+    "globalMinScore": 4,
+    "wholeWordMatch": false
+  },
+  "skills": [
+    {
+      "name": "feature-analyzer",
+      "description": "Deep cross-repository analysis of feature branches",
+      "keywords": [
+        "analyze branch",
+        "cross-repo",
+        "investigate feature",
+        "study pipeline",
+        "analyze everything",
+        "study backend",
+        "feature analysis",
+        "branch changes",
+        "анализ ветки",
+        "изучи ветку"
+      ],
+      "patterns": [
+        "analyz.*branch",
+        "investigat.*feature",
+        "study.*change"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "job-orchestrator",
+      "description": "Dynamic orchestrator for full implementation/review/analysis pipelines",
+      "keywords": [
+        "implement issue",
+        "issue to pr",
+        "full implementation",
+        "orchestrate",
+        "auto-implement",
+        "run pipeline",
+        "full pipeline",
+        "analyze and implement",
+        "запускай",
+        "запусти пайплайн",
+        "full cycle",
+        "полный цикл",
+        "dispatch agents",
+        "run orchestrator",
+        "full workflow"
+      ],
+      "patterns": [
+        "implement.*issue\\s*#?\\d+",
+        "issue.*to.*pr",
+        "(run|start|launch).*(pipeline|orchestrat)",
+        "full.*(pipeline|cycle|workflow|implementation)",
+        "analyze.*and.*implement",
+        "полный.*цикл",
+        "запусти.*(пайплайн|агент)"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "code-ai-review",
+      "description": "General AI code review — correctness, type safety, security, performance",
+      "keywords": [
+        "review code",
+        "check my code",
+        "ai code review",
+        "code review",
+        "review changes",
+        "check code",
+        "review my code"
+      ],
+      "patterns": [
+        "review.*code",
+        "code.*review",
+        "check.*code"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "code-b091-review",
+      "description": "Logic-first code review in b091 style — architecture, layer correctness",
+      "keywords": [
+        "b091 review",
+        "logic review",
+        "b091",
+        "layer review",
+        "architecture review"
+      ],
+      "patterns": [
+        "b091.*review",
+        "logic.*review"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "code-style-review",
+      "description": "Code style and architecture review — TypeScript strictness, MobX patterns, React structure",
+      "keywords": [
+        "style review",
+        "architecture check",
+        "style check",
+        "typescript review",
+        "mobx review",
+        "react review",
+        "check style",
+        "style audit"
+      ],
+      "patterns": [
+        "style.*review",
+        "architecture.*check"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "code-mobx-store-review",
+      "description": "Targeted MobX store review — member ordering, accessibility, action binding",
+      "keywords": [
+        "store review",
+        "mobx store",
+        "review store",
+        "store files",
+        "check store"
+      ],
+      "patterns": [
+        "review.*store",
+        "store.*review"
+      ],
+      "paths": [
+        ".store.ts"
+      ],
+      "minScore": 4
+    },
+    {
+      "name": "context-collector",
+      "description": "Collects and maintains a unified context document for a job",
+      "keywords": [
+        "collect context",
+        "build context",
+        "gather context",
+        "research context",
+        "собери контекст",
+        "контекст"
+      ],
+      "patterns": [
+        "collect.*context",
+        "gather.*context",
+        "build.*context"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "issue-analyzer",
+      "description": "Decompose GitHub issue into atomic implementation tasks",
+      "keywords": [
+        "analyze issue",
+        "decompose issue",
+        "break down issue",
+        "issue tasks",
+        "issue decomposition",
+        "разбей issue",
+        "analyze #"
+      ],
+      "patterns": [
+        "analyz.*issue",
+        "decompos.*issue",
+        "break.*down.*issue"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "task-implementer",
+      "description": "Implement a single atomic task from issue-analyzer",
+      "keywords": [
+        "implement task",
+        "execute task",
+        "run task",
+        "task implementer",
+        "implement this task",
+        "запускай имплементатора"
+      ],
+      "patterns": [
+        "implement.*task",
+        "execute.*task"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "commit",
+      "description": "Smart git commit with auto-staging and conventional commit message",
+      "keywords": [
+        "commit",
+        "stage changes",
+        "git commit",
+        "commit changes",
+        "create commit",
+        "commit this",
+        "commit all"
+      ],
+      "patterns": [
+        "\\bcommit\\b"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "push",
+      "description": "Smart git push with safety checks and upstream setup",
+      "keywords": [
+        "push",
+        "push changes",
+        "push to remote",
+        "git push",
+        "push branch"
+      ],
+      "patterns": [
+        "\\bpush\\b"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "pr",
+      "description": "Smart Pull Request creation from branch changes",
+      "keywords": [
+        "create pr",
+        "open pull request",
+        "make pr",
+        "create pull request",
+        "open pr",
+        "pr create",
+        "pull request"
+      ],
+      "patterns": [
+        "create.*pr",
+        "open.*pr",
+        "pull.*request"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "code-review",
+      "description": "Comprehensive code review with 4 parallel agents",
+      "keywords": [
+        "full review",
+        "review pr",
+        "comprehensive review",
+        "review pull request",
+        "4 agent review",
+        "полное ревью",
+        "сделай ревью",
+        "проведи ревью",
+        "ревью кода",
+        "код ревью"
+      ],
+      "patterns": [
+        "(full|comprehensive|4.?agent).*review",
+        "review.*pr",
+        "полное.*ревью",
+        "(сделай|проведи).*ревью",
+        "ревью.*кода"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "feature-dev",
+      "description": "7-phase feature development from requirements to PR",
+      "keywords": [
+        "develop feature",
+        "build feature",
+        "feature from scratch",
+        "feature dev",
+        "new feature",
+        "implement feature"
+      ],
+      "patterns": [
+        "develop.*feature",
+        "build.*feature",
+        "new.*feature"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "deploy",
+      "description": "Automated deployment pipeline — tests → build → deploy",
+      "keywords": [
+        "deploy",
+        "deployment",
+        "ship it",
+        "release",
+        "deploy to staging",
+        "deploy to production",
+        "задеплой"
+      ],
+      "patterns": [
+        "\\bdeploy\\b",
+        "\\brelease\\b"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "changelog",
+      "description": "Generate structured changelog from git commits",
+      "keywords": [
+        "generate changelog",
+        "release notes",
+        "what changed",
+        "changelog",
+        "what's new",
+        "changes since"
+      ],
+      "patterns": [
+        "generat.*changelog",
+        "release.*notes",
+        "what.*changed"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "db-migrate",
+      "description": "Database migration lifecycle — create, apply, rollback, status",
+      "keywords": [
+        "create migration",
+        "run migrations",
+        "migration status",
+        "rollback migration",
+        "database migration",
+        "db migration",
+        "migrate"
+      ],
+      "patterns": [
+        "migrat",
+        "\\bdb\\b.*migr"
+      ],
+      "paths": [
+        "migrations/",
+        ".migration.ts",
+        ".migration.js"
+      ],
+      "minScore": 4
+    },
+    {
+      "name": "dependency-update",
+      "description": "Safe dependency updates with compatibility checks and test verification",
+      "keywords": [
+        "update dependencies",
+        "upgrade packages",
+        "bump versions",
+        "update packages",
+        "upgrade deps",
+        "npm update",
+        "bun update"
+      ],
+      "patterns": [
+        "update.*dep",
+        "upgrade.*pack",
+        "bump.*version"
+      ],
+      "paths": [
+        "package.json"
+      ],
+      "minScore": 4
+    },
+    {
+      "name": "security-audit",
+      "description": "Security audit — dependency vulnerabilities, secrets scan",
+      "keywords": [
+        "security audit",
+        "check vulnerabilities",
+        "audit dependencies",
+        "security check",
+        "vulnerability scan",
+        "secrets scan",
+        "npm audit"
+      ],
+      "patterns": [
+        "security.*audit",
+        "vuln.*scan",
+        "audit.*dep"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "perf-check",
+      "description": "Performance analysis — bundle size, slow queries, async patterns, memory",
+      "keywords": [
+        "performance check",
+        "bundle size",
+        "slow queries",
+        "perf audit",
+        "performance analysis",
+        "memory leak",
+        "optimization check"
+      ],
+      "patterns": [
+        "perf.*check",
+        "bundle.*size",
+        "slow.*quer"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "test-gen",
+      "description": "Auto-generate tests for a file or module matching existing project patterns",
+      "keywords": [
+        "generate tests",
+        "write tests",
+        "add test coverage",
+        "create tests",
+        "test generation",
+        "generate unit tests",
+        "написать тесты"
+      ],
+      "patterns": [
+        "generat.*test",
+        "write.*test",
+        "add.*test.*coverage"
+      ],
+      "paths": [
+        ".test.ts",
+        ".test.js",
+        ".spec.ts",
+        ".spec.js"
+      ],
+      "minScore": 4
+    },
+    {
+      "name": "brainstorm",
+      "description": "Structured brainstorming — architecture decisions, problem solving",
+      "keywords": [
+        "brainstorm",
+        "explore options",
+        "architecture decision",
+        "brain storm",
+        "design options",
+        "think through options",
+        "брейншторм",
+        "предложи варианты",
+        "накидай идеи",
+        "compare approaches",
+        "trade-offs",
+        "pros and cons",
+        "tech decision",
+        "how should i approach"
+      ],
+      "patterns": [
+        "\\bbrainstorm\\b",
+        "explore.*option",
+        "architecture.*decision",
+        "(pros.*cons|trade.?off)",
+        "compare.*approach",
+        "предложи.*вариант",
+        "накидай.*иде",
+        "как.*лучше.*(подойти|сделать|реализовать)"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "interview",
+      "description": "Critical requirements interviewer — asks targeted questions before expensive operations",
+      "keywords": [
+        "clarify requirements",
+        "ask questions first",
+        "clarify before",
+        "gather requirements",
+        "задай вопросы",
+        "уточни требования",
+        "спроси сначала",
+        "уточни перед",
+        "clarify scope",
+        "уточни скоп",
+        "requirements interview"
+      ],
+      "patterns": [
+        "clarif.*requirement",
+        "ask.*question.*first",
+        "(clarify|clarification).*(before|prior)",
+        "задай.*вопрос",
+        "уточни.*(требовани|скоп|задач)",
+        "спроси.*(сначала|перед)"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "hookify",
+      "description": "Create Claude Code hooks from natural language descriptions",
+      "keywords": [
+        "create hook",
+        "add hook",
+        "hookify",
+        "configure hook",
+        "new hook",
+        "hook when",
+        "hook for"
+      ],
+      "patterns": [
+        "creat.*hook",
+        "add.*hook",
+        "\\bhookify\\b"
+      ],
+      "paths": [
+        "settings.json",
+        ".claude/"
+      ],
+      "minScore": 4
+    },
+    {
+      "name": "claude-md-management",
+      "description": "Capture session learnings and persist into CLAUDE.md files",
+      "keywords": [
+        "update claude.md",
+        "save learnings",
+        "revise claude.md",
+        "update memory",
+        "claude md",
+        "persist learnings"
+      ],
+      "patterns": [
+        "update.*claude\\.md",
+        "save.*learning",
+        "revise.*claude"
+      ],
+      "paths": [
+        "CLAUDE.md"
+      ],
+      "minScore": 4
+    },
+    {
+      "name": "pr-review-comments",
+      "description": "Analyze PR review comments — group by author, suggest fixes",
+      "keywords": [
+        "analyze pr comments",
+        "pr review comments",
+        "what did reviewers say",
+        "review feedback",
+        "pr feedback",
+        "reviewer comments"
+      ],
+      "patterns": [
+        "pr.*comment",
+        "review.*comment",
+        "reviewer.*say"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "pr-issue-documenter",
+      "description": "Generate structured PR descriptions and issue documentation from branch changes",
+      "keywords": [
+        "add pr description",
+        "document pr",
+        "create issue for pr",
+        "describe pr changes",
+        "update pr and issue",
+        "pr description",
+        "pr summary",
+        "update issue"
+      ],
+      "patterns": [
+        "pr.*description",
+        "document.*pr",
+        "describ.*pr"
+      ],
+      "paths": [],
+      "minScore": 4
+    },
+    {
+      "name": "prd-creator",
+      "description": "Transforms unstructured user requests into structured Product Requirements Documents",
+      "keywords": [
+        "create prd",
+        "write prd",
+        "product requirements",
+        "prd",
+        "requirements document",
+        "feature requirements"
+      ],
+      "patterns": [
+        "creat.*prd",
+        "write.*prd",
+        "product.*requirement"
+      ],
+      "paths": [],
+      "minScore": 4
+    }
+  ]
+}
