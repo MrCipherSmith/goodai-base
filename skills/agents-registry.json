@@ -1,0 +1,25 @@
+{
+  "agents": [
+    {
+      "skill_name": "context-collector",
+      "source": "/home/altsay/goodai-base/skills/context-collector/SKILL.md",
+      "agent_path": "/home/altsay/.claude/agents/context-collector.md",
+      "generated_at": "2026-04-10T10:29:12Z",
+      "source_checksum": "c1cbc5168ee5d444acb68fd059f93cd34d22bf488a91c354a6140518a00d15c2"
+    },
+    {
+      "skill_name": "issue-analyzer",
+      "source": "/home/altsay/goodai-base/skills/issue-analyzer/SKILL.md",
+      "agent_path": "/home/altsay/.claude/agents/issue-analyzer.md",
+      "generated_at": "2026-04-10T10:29:12Z",
+      "source_checksum": "2342022ff860f7bb5967d3e46523e3e9acd803748a2cbfde892a0d02e8df6953"
+    },
+    {
+      "skill_name": "task-implementer",
+      "source": "/home/altsay/goodai-base/skills/task-implementer/SKILL.md",
+      "agent_path": "/home/altsay/.claude/agents/task-implementer.md",
+      "generated_at": "2026-04-10T10:29:12Z",
+      "source_checksum": "4ca35f4d23a64f060bfcd6fb124cbef989fbb296b7a28a4fbe14659a517e1c19"
+    }
+  ]
+}

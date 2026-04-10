@@ -11,6 +11,7 @@ metadata:
   author: "goodea"
   version: "1.0.0"
   category: "implementation"
+  agent_worthy: true
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode"
 ---

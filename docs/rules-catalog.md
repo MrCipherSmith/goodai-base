@@ -1,0 +1,27 @@
+# Rules Catalog
+
+_Auto-generated from `rules/core/*.mdc`. Do not edit manually._
+
+Total: 19 rules
+
+| Rule | Description | Area | Always Applied |
+| ---- | ----------- | ---- | -------------- |
+| `beads-workflow` | Workflow for Beads BD task execution and follow-up actions. | Orchestration | No |
+| `code-review-ai-assistant` | Baseline AI code review standards for correctness, architecture, safety, and maintainability. | Code Review | No |
+| `code-review-b091-profile` | b091-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
+| `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
+| `commit-message-formatting` | Conventional commit formatting rules. | Git | No |
+| `documentation-management` | Manage project documentation in ~/goodea/goodai-base/docs with synchronized multilingual outputs. | Documentation | No |
+| `frontend-assistant` | Frontend delivery guidelines for TypeScript, React, MobX, Ant Design, and Tailwind CSS. | Frontend | No |
+| `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
+| `implementation-plans` | Rules for creating implementation plans in date-stamped requirement folders. | Planning | No |
+| `jobs-documentation` | Job documentation structure and conventions for ~/goodea/goodai-base/jobs. Used by job-documenter... | Documentation | No |
+| `mobx-store-template` | Reference template and checklist for MobX store structure and async state handling. | MobX / State | No |
+| `model-selection` | Model selection workflow for sub-agents. Detects available models and allows user to choose. | AI / Models | No |
+| `nestjs-dto` | NestJS DTO standards for Swagger decorators, validation, and typing. | Backend / NestJS | No |
+| `pipeline-new-step-prompt` | Checklist for adding a new pipeline step type across model, store, UI, validation, and i18n. | Orchestration | No |
+| `playwright-testing` | Playwright E2E testing standards, test structure, and UI verification workflows. | Testing | No |
+| `requirements-management` | Rules for creating and updating requirement documents with multilingual outputs. | Planning | No |
+| `rule-management-workflow` | Workflow for adding or editing rules in the AGENTS.mdc + rules/core structure. | Meta | No |
+| `skills-storage-workflow` | Skill authoring, storage, and sync workflow for Cursor, Codex, Zed, and OpenCode. | Skills | No |
+| `storybook-guidelines` | Storybook setup, story authoring, and review checklist. | Storybook | No |
