@@ -1,13 +1,13 @@
 ---
 name: pr-review-comments
-description: "Fetches and analyzes PR review comments via GitHub MCP or gh CLI. Groups comments by author, provides explanation and fix suggestions for each. For b091 comments, proposes rule updates with user consent. Use when: user provides PR link, analyzing review feedback, extracting actionable items from code reviews."
+description: "Fetches and analyzes PR review comments via GitHub MCP or gh CLI. Groups comments by author, provides explanation and fix suggestions for each. For boss comments, proposes rule updates with user consent. Use when: user provides PR link, analyzing review feedback, extracting actionable items from code reviews."
 triggers:
   - "Analyze PR comments"
   - "Review comments for PR"
   - "Parse PR feedback"
   - "PR review comments"
-  - "What did b091 write in PR"
-  - "Update rule from b091 review"
+  - "What did boss write in PR"
+  - "Update rule from boss review"
 metadata:
   author: "MrCipherSmith"
   version: "1.0.0"
@@ -28,7 +28,7 @@ Collects, groups, and analyzes GitHub PR review comments to provide actionable i
 - "What did reviewers say about this PR?"
 - "Explain these review comments"
 - "Extract feedback from PR review"
-- Review mentions b091 feedback
+- Review mentions boss feedback
 
 ## Workflow
 
@@ -39,7 +39,7 @@ Task Progress:
 - [ ] Step 1: Parse PR URL and extract owner/repo/pullNumber
 - [ ] Step 2: Fetch all comment types via GitHub MCP
 - [ ] Step 3: Group comments by author
-- [ ] Step 4: Check for b091 comments and handle rule updates
+- [ ] Step 4: Check for boss comments and handle rule updates
 - [ ] Step 5: Analyze each comment with explanation and fix
 - [ ] Step 6: Generate structured report
 ```
@@ -96,15 +96,15 @@ Organize comments by `author.login`:
 ...
 ```
 
-### Step 4: Handle b091 Comments
+### Step 4: Handle boss Comments
 
-If author == "b091":
-1. Notify user: "PR contains comments from b091"
+If author == "boss":
+1. Notify user: "PR contains comments from boss"
 2. **NEVER update rules without explicit user consent**
-3. Ask: "Should I analyze b091's comments and suggest updates to core/code-review-b091-profile.mdc?"
+3. Ask: "Should I analyze boss's comments and suggest updates to core/code-review-boss-profile.mdc?"
 4. If user agrees:
-   - Identify patterns in b091's feedback
-   - Update `~/goodai-base/rules/core/code-review-b091-profile.mdc`
+   - Identify patterns in boss's feedback
+   - Update `~/goodai-base/rules/core/code-review-boss-profile.mdc`
    - Update `~/goodai-base/AGENTS.md` if needed
    - Run `~/goodai-base/scripts/sync-skills.sh`
    - Follow `rule-management-workflow.mdc`
@@ -165,7 +165,7 @@ Structure:
 
 1. Always group by author first
 2. Always provide explanation + fix for each
-3. For b091: ask before updating rules
+3. For boss: ask before updating rules
 4. Use code blocks for suggested fixes
 5. Include confidence level for each suggestion
 

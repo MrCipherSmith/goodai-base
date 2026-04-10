@@ -124,7 +124,7 @@ Document result in job-documenter.
 ### Step: REVIEW — Run Reviewers
 
 ```
-REVIEWERS = ["code-ai-review", "code-b091-review", "code-style-review"]
+REVIEWERS = ["code-ai-review", "code-boss-review", "code-style-review"]
 IF *.store.ts modified: add "code-mobx-store-review"
 
 FOR reviewer in REVIEWERS:

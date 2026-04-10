@@ -163,7 +163,7 @@ Reference guidelines for coding standards and workflows:
 
 **Review & Testing:**
 - `core/code-review-ai-assistant.mdc`: Default AI code review baseline.
-- `core/code-review-b091-profile.mdc`: b091-style review profile and tone constraints.
+- `core/code-review-boss-profile.mdc`: boss-style review profile and tone constraints.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
 - `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
 
@@ -214,10 +214,10 @@ Intelligent agents for complex analysis and review tasks:
 - **Output**: JSON findings object (blocker/major/minor severities)
 - **Invoked by**: `job-orchestrator` review loop, or directly
 
-**`skills/code-b091-review`**
-- **Purpose**: Direct logic-first review in b091 style — architecture, layer correctness, no duct-tape code
-- **Use When**: "b091 review", "logic review", called by `job-orchestrator` review loop
-- **Key Features**: Logic in correct layer, inter-store callbacks must be `private`, no premature optimization; follows `code-review-b091-profile.mdc`
+**`skills/code-boss-review`**
+- **Purpose**: Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code
+- **Use When**: "boss review", "logic review", called by `job-orchestrator` review loop
+- **Key Features**: Logic in correct layer, inter-store callbacks must be `private`, no premature optimization; follows `code-review-boss-profile.mdc`
 - **Output**: JSON findings object
 
 **`skills/code-style-review`**

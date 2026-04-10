@@ -106,12 +106,12 @@
             "type": "string",
             "enum": [
               "code-ai-review",
-              "code-b091-review",
+              "code-boss-review",
               "code-style-review",
               "code-mobx-store-review"
             ]
           },
-          "default": ["code-ai-review", "code-b091-review", "code-style-review"],
+          "default": ["code-ai-review", "code-boss-review", "code-style-review"],
           "description": "Review skills to always run"
         },
         "conditional_reviewers": {
