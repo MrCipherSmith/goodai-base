@@ -84,17 +84,17 @@
       "minScore": 4
     },
     {
-      "name": "code-b091-review",
-      "description": "Logic-first code review in b091 style — architecture, layer correctness",
+      "name": "code-boss-review",
+      "description": "Logic-first code review in boss style — architecture, layer correctness",
       "keywords": [
-        "b091 review",
+        "boss review",
         "logic review",
-        "b091",
+        "boss",
         "layer review",
         "architecture review"
       ],
       "patterns": [
-        "b091.*review",
+        "boss.*review",
         "logic.*review"
       ],
       "paths": [],

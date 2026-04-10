@@ -1,10 +1,10 @@
 ---
-name: code-b091-review
-description: "Performs strict b091-style code review following code-review-b091-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: b091 review requested, strict validation needed."
+name: code-boss-review
+description: "Performs strict boss-style code review following code-review-boss-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: boss review requested, strict validation needed."
 triggers:
-  - "Review as b091"
-  - "b091 style review"
-  - "b091 review"
+  - "Review as boss"
+  - "boss style review"
+  - "boss review"
 metadata:
   author: "MrCipherSmith"
   version: "1.0.0"
@@ -13,17 +13,17 @@ license: "MIT"
 compatibility: "cursor,codex,zed,opencode"
 ---
 
-# Code Review as b091 (current branch only)
+# Code Review as boss (current branch only)
 
 ## Workflow
 
 Copy this checklist and track progress:
 
 ```
-b091 Review Progress:
+boss Review Progress:
 - [ ] Step 1: Determine parent branch and calculate merge-base
 - [ ] Step 2: Collect git diff (committed + local changes)
-- [ ] Step 3: Apply b091 principles (logic in correct layer, no ducttape)
+- [ ] Step 3: Apply boss principles (logic in correct layer, no ducttape)
 - [ ] Step 4: Check types (no any, typed mocks)
 - [ ] Step 5: Verify conventions (currentState, I prefix, etc.)
 - [ ] Step 6: Challenge all assumptions
@@ -36,7 +36,7 @@ b091 Review Progress:
    - committed (`BASE_SHA..HEAD`)
    - local uncommitted (staged/unstaged/untracked)
 2. **Scope with explicit commit hash/range**: if the user explicitly provided a hash or range, review only the requested range; do not add local uncommitted changes unless separately requested.
-3. **b091 style/principles**: review strictly per `~/goodai-base/rules/core/code-review-b091-profile.mdc`.
+3. **boss style/principles**: review strictly per `~/goodai-base/rules/core/code-review-boss-profile.mdc`.
 4. **Output**: detailed report of issues with explanation and fix suggestions (minimal patches where straightforward).
 
 ## Scope Detection
@@ -77,9 +77,9 @@ git diff --name-status <FROM_SHA>..<TO_SHA>
 git diff <FROM_SHA>..<TO_SHA>
 ```
 
-## How to review (b091 style)
+## How to review (boss style)
 
-Apply the checklist and principles from `~/goodai-base/rules/core/code-review-b091-profile.mdc`. Key b091 emphases:
+Apply the checklist and principles from `~/goodai-base/rules/core/code-review-boss-profile.mdc`. Key boss emphases:
 
 - Logic must live in the correct layer (often the store), so it can be properly tested.
 - Against "patch/glue/ducttape": demand fixing the root cause, not masking symptoms.
@@ -94,12 +94,12 @@ Apply the checklist and principles from `~/goodai-base/rules/core/code-review-b0
 
 ## Output Format
 
-Write in the user's query language. Use b091 markers (e.g., `not today ;P`, "ducttape", "broken thinking") sparingly and only when relevant, never personal.
+Write in the user's query language. Use boss markers (e.g., `not today ;P`, "ducttape", "broken thinking") sparingly and only when relevant, never personal.
 
 Use this structure:
 
 ```markdown
-## Verdict (b091)
+## Verdict (boss)
 <OK / needs work / fundamentally wrong> + 1-3 most important points.
 
 ## Review Scope (current branch only)

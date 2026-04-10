@@ -732,7 +732,7 @@ If the user didn't specify a review approach, offer options:
 How should I review the implementation?
 
   A) 🚀 Quick (code-review 4-agent parallel) — ~30 sec
-  B) 📋 Thorough (individual reviewers: ai + b091 + style + mobx) — ~2 min
+  B) 📋 Thorough (individual reviewers: ai + boss + style + mobx) — ~2 min
   C) 🔒 Security-focused (code-review + security-audit) — ~1 min
   D) ⏭ Skip review entirely
 
@@ -765,14 +765,14 @@ Determine and **dispatch all reviewers simultaneously** (not sequentially):
 | Reviewer | Condition | Launch |
 |----------|-----------|--------|
 | `code-ai-review` | Always | Parallel |
-| `code-b091-review` | Always | Parallel |
+| `code-boss-review` | Always | Parallel |
 | `code-style-review` | Always | Parallel |
 | `code-mobx-store-review` | Only if `*.store.ts` modified | Parallel |
 
 ```
 # Launch ALL applicable reviewers in a SINGLE turn (parallel):
 Agent 1: code-ai-review (correctness, security)
-Agent 2: code-b091-review (architecture, logic)
+Agent 2: code-boss-review (architecture, logic)
 Agent 3: code-style-review (naming, patterns)
 Agent 4: code-mobx-store-review (if applicable)
 
@@ -952,7 +952,7 @@ Aggregate all information into a human-readable summary.
 ## Review Results
 ### code-ai-review
 - CRITICAL: <N>, WARNING: <N>, INFO: <N>
-### code-b091-review
+### code-boss-review
 - ...
 
 ## Unresolved Issues
@@ -1193,7 +1193,7 @@ EOF
 | `create_pr` | `true` | true/false | Whether to propose PR at the end |
 | `auto_create_pr` | `false` | true/false | Auto-create PR without asking |
 | `review_mode` | `"code-review"` | `"code-review"` / `"individual"` | Use 4-agent parallel or individual reviewers |
-| `reviewers` | `["code-ai-review", "code-b091-review", "code-style-review"]` | skill names | Individual reviewers (when review_mode=individual) |
+| `reviewers` | `["code-ai-review", "code-boss-review", "code-style-review"]` | skill names | Individual reviewers (when review_mode=individual) |
 | `conditional_reviewers` | `{"code-mobx-store-review": "*.store.ts"}` | skill→pattern | Conditional reviewers |
 | `run_final_checks` | `true` | true/false | Run lint/type-check/test |
 | `run_interview` | `true` | true/false | Run interview skill in Phase 0 |
