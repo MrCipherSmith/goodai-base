@@ -2,11 +2,10 @@
 
 _Auto-generated from `rules/core/*.mdc`. Do not edit manually._
 
-Total: 19 rules
+Total: 17 rules
 
 | Rule | Description | Area | Always Applied |
 | ---- | ----------- | ---- | -------------- |
-| `beads-workflow` | Workflow for Beads BD task execution and follow-up actions. | Orchestration | No |
 | `code-review-ai-assistant` | Baseline AI code review standards for correctness, architecture, safety, and maintainability. | Code Review | No |
 | `code-review-boss-profile` | boss-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
 | `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
@@ -19,7 +18,6 @@ Total: 19 rules
 | `mobx-store-template` | Reference template and checklist for MobX store structure and async state handling. | MobX / State | No |
 | `model-selection` | Model selection workflow for sub-agents. Detects available models and allows user to choose. | AI / Models | No |
 | `nestjs-dto` | NestJS DTO standards for Swagger decorators, validation, and typing. | Backend / NestJS | No |
-| `pipeline-new-step-prompt` | Checklist for adding a new pipeline step type across model, store, UI, validation, and i18n. | Orchestration | No |
 | `playwright-testing` | Playwright E2E testing standards, test structure, and UI verification workflows. | Testing | No |
 | `requirements-management` | Rules for creating and updating requirement documents with multilingual outputs. | Planning | No |
 | `rule-management-workflow` | Workflow for adding or editing rules in the AGENTS.mdc + rules/core structure. | Meta | No |
