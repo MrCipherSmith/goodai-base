@@ -11,11 +11,11 @@ Total: 19 rules
 | `code-review-b091-profile` | b091-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
 | `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
 | `commit-message-formatting` | Conventional commit formatting rules. | Git | No |
-| `documentation-management` | Manage project documentation in ~/goodea/goodai-base/docs with synchronized multilingual outputs. | Documentation | No |
+| `documentation-management` | Manage project documentation in ~/goodai-base/docs with synchronized multilingual outputs. | Documentation | No |
 | `frontend-assistant` | Frontend delivery guidelines for TypeScript, React, MobX, Ant Design, and Tailwind CSS. | Frontend | No |
 | `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
 | `implementation-plans` | Rules for creating implementation plans in date-stamped requirement folders. | Planning | No |
-| `jobs-documentation` | Job documentation structure and conventions for ~/goodea/goodai-base/jobs. Used by job-documenter... | Documentation | No |
+| `jobs-documentation` | Job documentation structure and conventions for ~/goodai-base/jobs. Used by job-documenter... | Documentation | No |
 | `mobx-store-template` | Reference template and checklist for MobX store structure and async state handling. | MobX / State | No |
 | `model-selection` | Model selection workflow for sub-agents. Detects available models and allows user to choose. | AI / Models | No |
 | `nestjs-dto` | NestJS DTO standards for Swagger decorators, validation, and typing. | Backend / NestJS | No |

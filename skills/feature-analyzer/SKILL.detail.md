@@ -227,7 +227,7 @@ grep -r "focus_keyword" --include="*.spec.ts" --include="*.test.ts" src/
 Generate **Feature Specification Document** instead of Change Analysis:
 
 ```
-~/goodea/goodai-base/docs/analysis/<feature>-current-state-<date>/
+~/goodai-base/docs/analysis/<feature>-current-state-<date>/
 ├── README.md
 ├── specification/
 │   ├── en/feature-specification.md
@@ -325,7 +325,7 @@ git_branch="$(git rev-parse --abbrev-ref HEAD)"
 git_sha="$(git rev-parse HEAD)"
 
 # Look for recent analysis (within last 7 days)
-find ~/goodea/goodai-base/docs/analysis/ -name "*.md" -mtime -7 | grep "${git_branch}"
+find ~/goodai-base/docs/analysis/ -name "*.md" -mtime -7 | grep "${git_branch}"
 ```
 
 ### Existing Report Detection
@@ -388,7 +388,7 @@ Analyzing only new changes...
 
 ### Cache Storage
 
-**Metadata file:** `~/goodea/goodai-base/docs/analysis/.cache/index.json`
+**Metadata file:** `~/goodai-base/docs/analysis/.cache/index.json`
 
 ```json
 {

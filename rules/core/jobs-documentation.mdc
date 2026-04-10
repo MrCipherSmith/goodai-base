@@ -1,5 +1,5 @@
 ---
-description: "Job documentation structure and conventions for ~/goodea/goodai-base/jobs. Used by job-documenter skill and job-orchestrator."
+description: "Job documentation structure and conventions for ~/goodai-base/jobs. Used by job-documenter skill and job-orchestrator."
 alwaysApply: false
 ---
 
@@ -7,7 +7,7 @@ alwaysApply: false
 
 ## Purpose
 
-Define how the agent creates and maintains persistent job documentation under `~/goodea/goodai-base/jobs/`.
+Define how the agent creates and maintains persistent job documentation under `~/goodai-base/jobs/`.
 Jobs are the documentation artifacts produced by the `job-orchestrator` pipeline — they capture the full lifecycle of an orchestrated task (analysis, implementation, review, etc.).
 
 ## When To Apply
@@ -29,7 +29,7 @@ Only orchestrator-driven work produces output in `jobs/`.
 ## Root Location
 
 ```
-~/goodea/goodai-base/jobs/
+~/goodai-base/jobs/
 ```
 
 ## Job Folder Naming

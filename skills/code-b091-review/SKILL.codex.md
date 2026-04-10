@@ -36,7 +36,7 @@ b091 Review Progress:
    - committed (`BASE_SHA..HEAD`)
    - local uncommitted (staged/unstaged/untracked)
 2. **Scope with explicit commit hash/range**: if the user explicitly provided a hash or range, review only the requested range; do not add local uncommitted changes unless separately requested.
-3. **b091 style/principles**: review strictly per `~/goodea/goodai-base/rules/core/code-review-b091-profile.mdc`.
+3. **b091 style/principles**: review strictly per `~/goodai-base/rules/core/code-review-b091-profile.mdc`.
 4. **Output**: detailed report of issues with explanation and fix suggestions (minimal patches where straightforward).
 
 ## Scope Detection
@@ -79,7 +79,7 @@ git diff <FROM_SHA>..<TO_SHA>
 
 ## How to review (b091 style)
 
-Apply the checklist and principles from `~/goodea/goodai-base/rules/core/code-review-b091-profile.mdc`. Key b091 emphases:
+Apply the checklist and principles from `~/goodai-base/rules/core/code-review-b091-profile.mdc`. Key b091 emphases:
 
 - Logic must live in the correct layer (often the store), so it can be properly tested.
 - Against "patch/glue/ducttape": demand fixing the root cause, not masking symptoms.
@@ -166,7 +166,7 @@ When dispatched by `job-orchestrator` as part of a job pipeline, the prompt MAY 
 
 ```
 JOB_NAME:     <job-name>
-CONTEXT_PATH: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
 ```
 
 If provided and the file exists, read the context document before starting the review. Use it to:
