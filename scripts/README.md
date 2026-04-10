@@ -4,12 +4,12 @@
 Utilities for synchronizing skills across agent environments.
 
 ## Canonical machine-readable schema
-`~/goodea/goodai-base/rules/schemas/skill-workflow-result.schema.json`
+`~/goodai-base/rules/schemas/skill-workflow-result.schema.json`
 
 This schema defines the orchestrator contract for skill workflow results (status, decision, errors, artifacts, timestamp).
 
 ## Validator script (pre-sync)
-`~/goodea/goodai-base/scripts/validate-skills-before-sync.sh`
+`~/goodai-base/scripts/validate-skills-before-sync.sh`
 
 Checks before sync:
 - schema file exists and passes sanity checks
@@ -19,7 +19,7 @@ Checks before sync:
 - skill name format is valid
 
 ## Sync script
-`~/goodea/goodai-base/scripts/sync-skills.sh`
+`~/goodai-base/scripts/sync-skills.sh`
 
 Behavior:
 - always runs validator first
@@ -30,8 +30,8 @@ Behavior:
 
 ## Manual run (recommended order)
 ```bash
-~/goodea/goodai-base/scripts/validate-skills-before-sync.sh
-~/goodea/goodai-base/scripts/sync-skills.sh
+~/goodai-base/scripts/validate-skills-before-sync.sh
+~/goodai-base/scripts/sync-skills.sh
 ```
 
 ## Targets
@@ -43,6 +43,6 @@ Behavior:
 
 ## Optional alias
 ```bash
-echo 'alias sync-skills="~/goodea/goodai-base/scripts/sync-skills.sh"' >> ~/.zshrc
+echo 'alias sync-skills="~/goodai-base/scripts/sync-skills.sh"' >> ~/.zshrc
 source ~/.zshrc
 ```

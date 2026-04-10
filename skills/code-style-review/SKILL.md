@@ -15,7 +15,7 @@ compatibility: "cursor,codex,zed,opencode"
 
 # Code Style Review
 
-Review only current branch changes from the point of divergence from the parent branch, strictly per `~/goodea/goodai-base/rules/core/code-style-patterns.mdc`.
+Review only current branch changes from the point of divergence from the parent branch, strictly per `~/goodai-base/rules/core/code-style-patterns.mdc`.
 
 ## Scope
 
@@ -64,7 +64,7 @@ git diff --find-renames <FROM_SHA>..<TO_SHA>
 
 Use only these changes as input for the review.
 
-## Review Checklist (per `~/goodea/goodai-base/rules/core/code-style-patterns.mdc`)
+## Review Checklist (per `~/goodai-base/rules/core/code-style-patterns.mdc`)
 
 ### TypeScript Strictness
 - `any` is forbidden (suggest `unknown` + type guards / correct types).
@@ -154,7 +154,7 @@ When dispatched by `job-orchestrator` as part of a job pipeline, the prompt MAY 
 
 ```
 JOB_NAME:     <job-name>
-CONTEXT_PATH: ~/goodea/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
 ```
 
 If provided and the file exists, read the context document before starting the review. Use it to:

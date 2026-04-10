@@ -10,8 +10,8 @@ for cmd in jq; do
   fi
 done
 
-SKILLS_DIR="${1:-$HOME/goodea/goodai-base/skills}"
-SCHEMA_FILE="${2:-$HOME/goodea/goodai-base/rules/schemas/skill-workflow-result.schema.json}"
+SKILLS_DIR="${1:-$HOME/goodai-base/skills}"
+SCHEMA_FILE="${2:-$HOME/goodai-base/rules/schemas/skill-workflow-result.schema.json}"
 
 if [ ! -d "$SKILLS_DIR" ]; then
     echo "Error: skills directory not found: $SKILLS_DIR"

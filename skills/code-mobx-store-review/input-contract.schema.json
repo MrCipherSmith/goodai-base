@@ -37,7 +37,7 @@
         },
         "context_path": {
           "type": "string",
-          "description": "Absolute path to context.md document, e.g. ~/goodea/goodai-base/jobs/<job-name>/ai/context.md"
+          "description": "Absolute path to context.md document, e.g. ~/goodai-base/jobs/<job-name>/ai/context.md"
         }
       }
     }

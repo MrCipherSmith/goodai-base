@@ -1,12 +1,12 @@
 ---
-description: "Manage project documentation in ~/goodea/goodai-base/docs with synchronized multilingual outputs."
+description: "Manage project documentation in ~/goodai-base/docs with synchronized multilingual outputs."
 alwaysApply: false
 ---
 
 # Documentation Management Rules
 
 ## Purpose
-Define how the agent creates and updates documentation under `~/goodea/goodai-base/docs`.
+Define how the agent creates and updates documentation under `~/goodai-base/docs`.
 
 ## When To Apply
 Apply when the user asks to create or update documentation, plans, requirements, communication notes, reports, or review artifacts.
@@ -15,12 +15,12 @@ Apply when the user asks to create or update documentation, plans, requirements,
 1. Ask for target location and folder name before writing any doc.
 2. Use date-stamped folders; never overwrite previous doc sets.
 3. Keep language variants synchronized.
-4. Update `~/goodea/goodai-base/docs/README.md` after doc changes.
+4. Update `~/goodai-base/docs/README.md` after doc changes.
 5. Ask whether to apply changes (branch/commit/PR) after edits.
 
 ## Required Locations
-- Root: `~/goodea/goodai-base/docs`
-- Standard pattern: `~/goodea/goodai-base/docs/<category>/<name>-<YYYY-MM-DD>/`
+- Root: `~/goodai-base/docs`
+- Standard pattern: `~/goodai-base/docs/<category>/<name>-<YYYY-MM-DD>/`
 
 ## Category Definitions
 

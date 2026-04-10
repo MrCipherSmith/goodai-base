@@ -13,8 +13,8 @@ Apply before any git operation: commit, branch creation, or PR creation. Always 
 
 ## Protected Paths
 - `.cursor/`: never commit.
-- `~/goodea/goodai-base/docs/`: do not commit by default unless explicitly approved by the user.
-- `~/goodea/goodai-base/jobs/`: do not commit by default unless explicitly approved by the user. Job documentation — never force-delete; contains orchestrator run artifacts.
+- `~/goodai-base/docs/`: do not commit by default unless explicitly approved by the user.
+- `~/goodai-base/jobs/`: do not commit by default unless explicitly approved by the user. Job documentation — never force-delete; contains orchestrator run artifacts.
 
 ## Mandatory Behavior
 1. Ensure protected paths are covered in `.gitignore`.

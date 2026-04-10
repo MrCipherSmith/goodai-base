@@ -34,7 +34,7 @@ Test model selection: I want to run feature-analyzer but use a different model t
 ## Manual Test Command
 
 ```bash
-~/goodea/goodai-base/scripts/detect-models.sh
+~/goodai-base/scripts/detect-models.sh
 ```
 
 Should output:

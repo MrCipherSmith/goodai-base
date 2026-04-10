@@ -12,7 +12,7 @@ Standardize how requirement sets are created and maintained.
 Apply when creating or updating requirement documents.
 
 ## Location
-`~/goodea/goodai-base/docs/requirements/<requirement-name>/<YYYY-MM-DD>/`
+`~/goodai-base/docs/requirements/<requirement-name>/<YYYY-MM-DD>/`
 
 ## Mandatory Behavior
 1. Ask for target location and requirement folder name before writing.
