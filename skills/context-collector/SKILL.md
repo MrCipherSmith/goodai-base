@@ -13,6 +13,7 @@ metadata:
   author: "goodea"
   version: "1.0.0"
   category: "context"
+  agent_worthy: true
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode"
 ---
