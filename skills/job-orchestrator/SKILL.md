@@ -20,7 +20,7 @@ triggers:
   - "Run issue pipeline"
   - "Full issue implementation"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "3.0.0"
   category: "orchestration"
 license: "MIT"

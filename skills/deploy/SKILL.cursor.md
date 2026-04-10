@@ -8,7 +8,7 @@ triggers:
   - "Deploy staging"
   - "Ship it"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "ops"
 license: "MIT"

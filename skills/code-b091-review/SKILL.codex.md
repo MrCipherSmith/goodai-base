@@ -6,7 +6,7 @@ triggers:
   - "b091 style review"
   - "b091 review"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "review"
 license: "MIT"

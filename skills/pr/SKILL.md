@@ -8,7 +8,7 @@ triggers:
   - "Create pull request"
   - "Make PR"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "workflow"
 license: "MIT"

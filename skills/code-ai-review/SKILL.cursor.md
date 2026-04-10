@@ -7,7 +7,7 @@ triggers:
   - "Check this code"
   - "Review code"
 metadata:
-  author: "goodea"
+  author: "MrCipherSmith"
   version: "1.0.0"
   category: "review"
 license: "MIT"
