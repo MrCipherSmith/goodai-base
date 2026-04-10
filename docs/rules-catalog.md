@@ -15,7 +15,7 @@ Total: 19 rules
 | `frontend-assistant` | Frontend delivery guidelines for TypeScript, React, MobX, Ant Design, and Tailwind CSS. | Frontend | No |
 | `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
 | `implementation-plans` | Rules for creating implementation plans in date-stamped requirement folders. | Planning | No |
-| `jobs-documentation` | Job documentation structure and conventions for ~/goodai-base/jobs. Used by job-documenter... | Documentation | No |
+| `jobs-documentation` | Job documentation structure and conventions for ~/goodai-base/jobs. Used by job-documenter skill ... | Documentation | No |
 | `mobx-store-template` | Reference template and checklist for MobX store structure and async state handling. | MobX / State | No |
 | `model-selection` | Model selection workflow for sub-agents. Detects available models and allows user to choose. | AI / Models | No |
 | `nestjs-dto` | NestJS DTO standards for Swagger decorators, validation, and typing. | Backend / NestJS | No |
