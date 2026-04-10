@@ -148,26 +148,6 @@
       }
     },
     {
-      "id": "beads-workflow",
-      "type": "rule",
-      "path": "rules/core/beads-workflow.mdc",
-      "description": "Beads/BD workflow when Beads tooling is requested",
-      "triggers": {
-        "keywords": ["beads", "beads workflow", "bd workflow", "beads tooling"],
-        "intents": ["beads conventions", "how to use beads"]
-      }
-    },
-    {
-      "id": "pipeline-new-step-prompt",
-      "type": "rule",
-      "path": "rules/core/pipeline-new-step-prompt.mdc",
-      "description": "Required checklist for adding a new pipeline step type",
-      "triggers": {
-        "keywords": ["pipeline step", "new step type", "add pipeline step", "pipeline checklist"],
-        "intents": ["how to add pipeline step", "pipeline step checklist"]
-      }
-    },
-    {
       "id": "rule-management-workflow",
       "type": "rule",
       "path": "rules/core/rule-management-workflow.mdc",

@@ -174,8 +174,7 @@ Reference guidelines for coding standards and workflows:
 **Development Workflow:**
 - `core/git-rules.mdc`: Commit safety, protected paths, and apply-changes gate.
 - `core/commit-message-formatting.mdc`: Conventional commit format policy.
-- `core/beads-workflow.mdc`: Beads/BD workflow when Beads tooling is requested.
-- `core/pipeline-new-step-prompt.mdc`: Required checklist for adding a new pipeline step type.
+
 
 **System Management:**
 - `core/rule-management-workflow.mdc`: Add/edit/sync workflow for rule files and rule metadata.
