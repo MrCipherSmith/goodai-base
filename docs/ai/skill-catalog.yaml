@@ -21,11 +21,11 @@ skills:
     version: 1.0.0
     category: review
     path: skills/code-ai-review
-  - name: code-b091-review
-    description: 'Performs strict b091-style code review following code-review-b091-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: b091 review requested, strict validation needed.'
+  - name: code-boss-review
+    description: 'Performs strict boss-style code review following code-review-boss-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: boss review requested, strict validation needed.'
     version: 1.0.0
     category: review
-    path: skills/code-b091-review
+    path: skills/code-boss-review
   - name: code-mobx-store-review
     description: 'Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInAction, state typing, View-Store boundaries. Use when: reviewing MobX changes, state management validation.'
     version: 1.1.0
@@ -122,7 +122,7 @@ skills:
     category: documentation
     path: skills/pr-issue-documenter
   - name: pr-review-comments
-    description: 'Fetches and analyzes PR review comments via GitHub MCP or gh CLI. Groups comments by author, provides explanation and fix suggestions for each. For b091 comments, proposes rule updates with user consent. Use when: user provides PR link, analyzing review feedback, extracting actionable items from code reviews.'
+    description: 'Fetches and analyzes PR review comments via GitHub MCP or gh CLI. Groups comments by author, provides explanation and fix suggestions for each. For boss comments, proposes rule updates with user consent. Use when: user provides PR link, analyzing review feedback, extracting actionable items from code reviews.'
     version: 1.0.0
     category: analysis
     path: skills/pr-review-comments

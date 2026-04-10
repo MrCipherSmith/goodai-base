@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://goodai-base.local/schemas/code-b091-review/output-contract.schema.json",
-  "title": "Code B091 Review Output Contract",
-  "description": "Structured output from code-b091-review. Returned as Markdown report following the SKILL.md output format.",
+  "$id": "https://goodai-base.local/schemas/code-boss-review/output-contract.schema.json",
+  "title": "Code Boss Review Output Contract",
+  "description": "Structured output from code-boss-review. Returned as Markdown report following the SKILL.md output format.",
   "type": "object",
   "additionalProperties": false,
   "required": ["branch", "merge_base", "scope_mode", "summary", "findings"],

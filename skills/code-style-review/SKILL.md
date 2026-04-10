@@ -143,7 +143,7 @@ Generate report in Markdown strictly per this template:
 | Naming conventions, file organization, import order | YES | — |
 | TypeScript patterns, component/hook structure | YES | — |
 | Architecture pattern compliance | YES | — |
-| Logic correctness, type safety deep dives | NO | `code-ai-review` or `code-b091-review` |
+| Logic correctness, type safety deep dives | NO | `code-ai-review` or `code-boss-review` |
 | MobX store internals | NO | `code-mobx-store-review` |
 
 ---

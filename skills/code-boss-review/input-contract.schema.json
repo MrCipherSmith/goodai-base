@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://goodai-base.local/schemas/code-b091-review/input-contract.schema.json",
-  "title": "Code B091 Review Input Contract",
-  "description": "Input contract for code-b091-review skill. All fields are optional — the skill collects scope from git context.",
+  "$id": "https://goodai-base.local/schemas/code-boss-review/input-contract.schema.json",
+  "title": "Code Boss Review Input Contract",
+  "description": "Input contract for code-boss-review skill. All fields are optional — the skill collects scope from git context.",
   "type": "object",
   "additionalProperties": false,
   "properties": {

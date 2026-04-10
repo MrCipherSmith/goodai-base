@@ -98,13 +98,13 @@
       }
     },
     {
-      "id": "code-review-b091-profile",
+      "id": "code-review-boss-profile",
       "type": "rule",
-      "path": "rules/core/code-review-b091-profile.mdc",
-      "description": "b091-style review profile and tone constraints",
+      "path": "rules/core/code-review-boss-profile.mdc",
+      "description": "boss-style review profile and tone constraints",
       "triggers": {
-        "keywords": ["b091", "b091 style", "b091 review", "logic review profile", "layer correctness"],
-        "intents": ["b091 review standards", "logic-first review"]
+        "keywords": ["boss", "boss style", "boss review", "logic review profile", "layer correctness"],
+        "intents": ["boss review standards", "logic-first review"]
       }
     },
     {
@@ -218,13 +218,13 @@
       }
     },
     {
-      "id": "code-b091-review",
+      "id": "code-boss-review",
       "type": "skill",
-      "path": "skills/code-b091-review/SKILL.md",
-      "description": "Logic-first code review in b091 style",
+      "path": "skills/code-boss-review/SKILL.md",
+      "description": "Logic-first code review in boss style",
       "triggers": {
-        "keywords": ["b091 review", "logic review", "b091"],
-        "intents": ["b091 style review", "logic-first code review"]
+        "keywords": ["boss review", "logic review", "boss"],
+        "intents": ["boss style review", "logic-first code review"]
       }
     },
     {

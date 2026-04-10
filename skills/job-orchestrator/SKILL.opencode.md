@@ -492,7 +492,7 @@ Dispatch review skills on the whole branch.
 | Reviewer | Condition |
 |----------|-----------|
 | `code-ai-review` | Always |
-| `code-b091-review` | Always |
+| `code-boss-review` | Always |
 | `code-style-review` | Always |
 | `code-mobx-store-review` | Only if `*.store.ts` files were modified |
 
@@ -586,7 +586,7 @@ Aggregate all information into a human-readable summary.
 ## Review Results
 ### code-ai-review
 - CRITICAL: <N>, WARNING: <N>, INFO: <N>
-### code-b091-review
+### code-boss-review
 - ...
 
 ## Unresolved Issues
@@ -760,7 +760,7 @@ JOB_STATE:
 | `max_review_iterations` | `2` | 1-3 | Max review → fix iterations |
 | `create_pr` | `true` | true/false | Whether to propose PR at the end |
 | `auto_create_pr` | `false` | true/false | Auto-create PR without asking |
-| `reviewers` | `["code-ai-review", "code-b091-review", "code-style-review"]` | skill names | Mandatory reviewers |
+| `reviewers` | `["code-ai-review", "code-boss-review", "code-style-review"]` | skill names | Mandatory reviewers |
 | `conditional_reviewers` | `{"code-mobx-store-review": "*.store.ts"}` | skill→pattern | Conditional reviewers |
 | `run_final_checks` | `true` | true/false | Run lint/type-check/test |
 

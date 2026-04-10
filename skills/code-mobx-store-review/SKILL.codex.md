@@ -232,7 +232,7 @@ Review flags:
 | Store structure, actions, computed, reactions, async runInAction | YES | — |
 | View↔Store boundary violations | YES | — |
 | General code quality, readability, tests | NO | `code-ai-review` |
-| b091-style logic enforcement | NO | `code-b091-review` |
+| boss-style logic enforcement | NO | `code-boss-review` |
 | Naming/style/architecture patterns outside stores | NO | `code-style-review` |
 
 ---

@@ -24,7 +24,7 @@ Fetches and analyzes PR comments from GitHub.
 
 3. **Group by author**
 
-4. **For b091 comments**:
+4. **For boss comments**:
    - Suggest rule updates (with user approval)
 
 5. **Analyze each**:
