@@ -1,0 +1,153 @@
+# Machine-readable skill catalog for hook/agent consumption
+# Auto-generated from skills/*/SKILL.md — do not edit manually
+skills:
+  - name: brainstorm
+    description: 'Structured brainstorming with multiple thinking perspectives (Pragmatist, Innovator, Critic). Generates ideas, evaluates trade-offs via comparison matrix, produces actionable recommendation. Use for architecture decisions, feature ideation, problem solving, tech choices, naming.'
+    version: 1.0.0
+    category: ideation
+    path: skills/brainstorm
+  - name: changelog
+    description: 'Generate changelog from git commits between tags or date ranges. Groups by conventional commit type (features, fixes, performance, etc.), links PRs and issues. Supports output to file or prepend to existing CHANGELOG.md.'
+    version: 1.0.0
+    category: workflow
+    path: skills/changelog
+  - name: claude-md-management
+    description: 'Capture session learnings and persist into CLAUDE.md files. Extracts coding patterns, conventions, commands, and gotchas discovered during work. Classifies into project-level vs global vs personal CLAUDE.md. Shows diff preview before applying.'
+    version: 1.0.0
+    category: configuration
+    path: skills/claude-md-management
+  - name: code-ai-review
+    description: 'Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current branch changes from merge-base by default, including both committed and local uncommitted changes. Use when: code review requested, checking branch changes, reviewing implementation quality.'
+    version: 1.0.0
+    category: review
+    path: skills/code-ai-review
+  - name: code-b091-review
+    description: 'Performs strict b091-style code review following code-review-b091-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: b091 review requested, strict validation needed.'
+    version: 1.0.0
+    category: review
+    path: skills/code-b091-review
+  - name: code-mobx-store-review
+    description: 'Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInAction, state typing, View-Store boundaries. Use when: reviewing MobX changes, state management validation.'
+    version: 1.1.0
+    category: review
+    path: skills/code-mobx-store-review
+  - name: code-review
+    description: 'Comprehensive code review with 4 parallel agents: correctness/logic, security, performance, style/maintainability. Produces unified severity report (CRITICAL/HIGH/MEDIUM/LOW). Use for thorough PR reviews and pre-merge checks.'
+    version: 1.0.0
+    category: review
+    path: skills/code-review
+  - name: code-style-review
+    description: 'Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch changes. Checks naming, organization, patterns, TypeScript usage. Use when: style validation needed, architecture review.'
+    version: 1.0.0
+    category: review
+    path: skills/code-style-review
+  - name: commit
+    description: 'Smart git commit: auto-stages changes, analyzes diff, generates conventional commit message. Supports custom messages, amend, and selective staging. Use when committing code changes with meaningful messages.'
+    version: 1.0.0
+    category: workflow
+    path: skills/commit
+  - name: context-collector
+    description: 'Collects, summarizes, and maintains a unified context document for a job. Gathers relevant local documentation (docs/, jobs/, rules), identifies libraries/patterns/references, fetches external documentation via web, extracts best practices, and produces a single context document that all sub-agents can reference during the job lifecycle. Can be invoked by job-orchestrator or directly by user.'
+    version: 1.0.0
+    category: context
+    path: skills/context-collector
+  - name: db-migrate
+    description: 'Database migration management: create, apply, rollback, check status. Auto-detects Prisma, TypeORM, Knex, Sequelize, Drizzle, Alembic, raw SQL. Shows migration SQL preview before applying.'
+    version: 1.0.0
+    category: database
+    path: skills/db-migrate
+  - name: dependency-update
+    description: 'Smart dependency updates: check outdated packages, classify by risk (patch/minor/major), update with compatibility verification. Runs tests after each major update, rollbacks on failure. Creates atomic commits per group.'
+    version: 1.0.0
+    category: maintenance
+    path: skills/dependency-update
+  - name: deploy
+    description: 'Automated deployment pipeline: pre-flight checks (tests, lint, type-check, build), then deploy to target environment. Auto-detects Docker Compose, PM2, SSH, Vercel, Railway. Post-deploy health verification.'
+    version: 1.0.0
+    category: ops
+    path: skills/deploy
+  - name: feature-analyzer
+    description: 'Deep cross-repository analysis of feature branches: requires explicit context gathering from user (source/target repos, branch), git diff analysis, mandatory Deep Dive with code examples, API contract analysis, and structured documentation. Use when: analyzing branch changes across repos, planning feature implementation, understanding backend→frontend contracts. NEVER start analysis without explicit user confirmation of source, target, and branch.'
+    version: 2.4.0
+    category: analysis
+    path: skills/feature-analyzer
+  - name: feature-dev
+    description: '7-phase feature development workflow: requirements → design → implement → test → review → fix → PR. Full cycle from idea or GitHub issue to merge-ready PR. Confirms requirements and design with user before autonomous execution.'
+    version: 1.0.0
+    category: workflow
+    path: skills/feature-dev
+  - name: hookify
+    description: 'Create Claude Code / Cursor hooks from natural language descriptions. Generates hook config JSON for settings.json with proper event matchers and commands. Supports PreToolUse, PostToolUse, Stop, Notification events.'
+    version: 1.0.0
+    category: configuration
+    path: skills/hookify
+  - name: interview
+    description: 'Critical requirements interviewer: asks targeted clarifying questions one-by-one before expensive operations. Identifies uncertainty zones, provides answer options, adapts follow-ups based on responses. Can trigger mini-brainstorm on ambiguous points. Use before implementation, design, or migration to gather precise context.'
+    version: 1.0.0
+    category: analysis
+    path: skills/interview
+  - name: interviewer
+    description: 'Critical requirements interviewer that gathers precise context before complex tasks. Asks one focused question at a time (with A/B/C options where applicable). Skips questions already answered by provided context. Can be called by other skills as a sub-agent or directly by the user. Outputs structured context for the calling skill.'
+    version: 1.0.0
+    category: meta
+    path: skills/interviewer
+  - name: issue-analyzer
+    description: 'Autonomous GitHub issue analysis and decomposition into atomic implementation tasks. Fetches issue data via gh CLI, analyzes codebase for affected areas, decomposes into a structured JSON object with full context for implementer sub-agents. Use when: decomposing issues for AI implementation, planning task breakdown, preparing work for task-implementer agents.'
+    version: 1.0.0
+    category: analysis
+    path: skills/issue-analyzer
+  - name: job-documenter
+    description: 'Creates and maintains structured job documentation in jobs/. Called by job-orchestrator to initialize job folders, create analysis/report/review documents, and maintain the job README. Follows jobs-documentation.mdc conventions.'
+    version: 1.0.0
+    category: documentation
+    path: skills/job-documenter
+  - name: job-orchestrator
+    description: 'Dynamic orchestrator that collects context from user, builds an execution plan based on intent, dispatches sub-agents (analyzers, reviewers, implementers), and maintains persistent job documentation via job-documenter. Replaces issue-orchestrator with a flexible, intent-driven pipeline.'
+    version: 3.0.0
+    category: orchestration
+    path: skills/job-orchestrator
+  - name: perf-check
+    description: 'Performance analysis: bundle size measurement, Lighthouse audit, dependency weight analysis, code-level anti-pattern detection (N+1, missing memoization, heavy imports). Produces prioritized report with optimization suggestions.'
+    version: 1.0.0
+    category: performance
+    path: skills/perf-check
+  - name: pr
+    description: 'Smart Pull Request creation: analyzes all branch commits, generates structured title and description with Summary/Changes/Test plan, creates PR via gh CLI. Auto-pushes if branch not on remote.'
+    version: 1.0.0
+    category: workflow
+    path: skills/pr
+  - name: pr-issue-documenter
+    description: 'Analyzes PR commits/diff and generates structured descriptions for PRs and linked GitHub issues. Creates sub-issues, checks for contradictions with existing descriptions, updates parent issues. Use when: documenting PR changes, adding PR description, creating issue for PR, updating issue body.'
+    version: 1.0.0
+    category: documentation
+    path: skills/pr-issue-documenter
+  - name: pr-review-comments
+    description: 'Fetches and analyzes PR review comments via GitHub MCP or gh CLI. Groups comments by author, provides explanation and fix suggestions for each. For b091 comments, proposes rule updates with user consent. Use when: user provides PR link, analyzing review feedback, extracting actionable items from code reviews.'
+    version: 1.0.0
+    category: analysis
+    path: skills/pr-review-comments
+  - name: prd-creator
+    description: 'Transforms unstructured user requests into structured, complete, and testable Product Requirements Documents (PRD). Operates in Direct Mode for user interaction and Orchestrated Mode for pipelined multi-agent workflows.'
+    version: 1.0.0
+    category: planning
+    path: skills/prd-creator
+  - name: push
+    description: 'Smart git push with safety checks: verifies branch status, sets upstream if needed, protects main/master from force push. Handles common push issues automatically.'
+    version: 1.0.0
+    category: workflow
+    path: skills/push
+  - name: security-audit
+    description: 'Security audit: runs npm/bun/yarn audit for dependency vulnerabilities, scans for accidentally committed secrets, checks Docker images if present. Groups findings by severity (critical → high → moderate → low). Produces remediation report.'
+    version: 1.0.0
+    category: quality
+    path: skills/security-audit
+  - name: task-implementer
+    description: 'Autonomous implementation agent that receives a single atomic task (JSON task object from issue-analyzer) and implements it end-to-end: researches codebase, plans changes, writes code, creates tests/stories as needed, verifies via lint/type-check/test, and reports results. Use when: implementing a single decomposed task from issue-analyzer, executing code changes autonomously.'
+    version: 1.0.0
+    category: implementation
+    path: skills/task-implementer
+  - name: test-gen
+    description: 'Auto-generate tests for a file or module. Discovers project testing patterns (Jest/Vitest/Pytest), analyzes code structure, creates unit and integration tests matching existing conventions. Verifies all tests pass.'
+    version: 1.0.0
+    category: testing
+    path: skills/test-gen
