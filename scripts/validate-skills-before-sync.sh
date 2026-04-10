@@ -125,3 +125,15 @@ if [ "$errors" -gt 0 ]; then
 fi
 
 echo "Validation passed: $validated skill profile file(s) checked."
+
+# Run rules.json validation (non-blocking if script missing)
+VALIDATE_RULES_SCRIPT="$(dirname "$0")/validate-rules-json.sh"
+if [ -x "$VALIDATE_RULES_SCRIPT" ]; then
+    echo ""
+    echo "Running rules.json validation..."
+    if ! bash "$VALIDATE_RULES_SCRIPT"; then
+        echo ""
+        echo "rules.json validation failed. Fix errors before syncing."
+        exit 1
+    fi
+fi

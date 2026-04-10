@@ -1,0 +1,44 @@
+name: Sync Docs Catalogs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'skills/**'
+      - 'rules/**'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Generate skill catalog
+        run: bash scripts/generate-skill-catalog.sh
+
+      - name: Generate rules catalog
+        run: bash scripts/generate-rules-catalog.sh
+
+      - name: Commit updated docs
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/skill-catalog.md docs/ai/skill-catalog.yaml docs/rules-catalog.md
+          if git diff --cached --quiet; then
+            echo "No catalog changes to commit."
+          else
+            git commit -m "chore(docs): regenerate skill and rules catalogs [skip ci]"
+            git push
+          fi
