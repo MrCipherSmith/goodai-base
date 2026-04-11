@@ -1,0 +1,27 @@
+{
+  "name": "goodai-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "bun test",
+    "detect-context": "bun src/detect-context.ts",
+    "detect-models": "bun src/detect-models.ts",
+    "sync-skills": "bun src/sync-skills.ts",
+    "sync-agents": "bun src/sync-agents.ts",
+    "generate-skill-catalog": "bun src/generate-skill-catalog.ts",
+    "generate-rules-catalog": "bun src/generate-rules-catalog.ts",
+    "generate-skill-registry": "bun src/generate-skill-registry.ts",
+    "generate-rules-json": "bun src/generate-rules-json.ts",
+    "generate-agents": "bun src/generate-agents.ts",
+    "validate-rules-json": "bun src/validate-rules-json.ts",
+    "validate-skills-before-sync": "bun src/validate-skills-before-sync.ts",
+    "deploy-skill-hook": "bun src/deploy-skill-hook.ts"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.0.0"
+  }
+}
