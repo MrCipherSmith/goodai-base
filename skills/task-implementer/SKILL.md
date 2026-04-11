@@ -9,7 +9,7 @@ triggers:
   - "Implement issue task"
 metadata:
   author: "MrCipherSmith"
-  version: "1.0.0"
+  version: "1.1.0"
   category: "implementation"
   agent_worthy: true
 license: "MIT"
@@ -76,6 +76,7 @@ TASK: (from JSON object passed by orchestrator)
   existing_tests:       array of file path strings (may be empty)
   existing_stories:     array of file path strings (may be empty)
   module_patterns:      string: how similar code is written in this module
+  test_case_specs:      optional — provided by tests-creator (RED-phase test stubs already committed)
 ```
 
 **1.2 Extract from workspace context:**
@@ -105,6 +106,18 @@ ASSERT target_files IS NOT EMPTY      → otherwise ABORT("No target files")
 ASSERT codebase_path EXISTS           → otherwise ABORT("Codebase path not found")
 ASSERT branch IS NOT EMPTY            → otherwise ABORT("Wrong branch checked out")
 ```
+
+**1.5 TDD Check (if `test_case_specs` is present):**
+
+If the task object contains `test_case_specs` (provided by `tests-creator`):
+1. Read each test file listed in `test_case_specs.test_files`
+2. Run the tests using `test_case_specs.run_command` — confirm they FAIL
+3. If tests pass already → report `DONE_WITH_CONCERNS` (tests may not be testing the right thing)
+4. Note: **implementation goal is to make these tests GREEN** — do not rewrite or delete them
+
+If `test_case_specs` is absent:
+- The task was not pre-processed by `tests-creator`
+- Write tests as part of Phase 4 (standard mode) following `tdd-workflow.mdc`
 
 ### Phase 2: RESEARCH
 
@@ -205,13 +218,25 @@ CHANGE_PLAN:
 
 Execute the change plan. Write production-quality code.
 
-**4.1 Implementation order:**
+**4.0 TDD Mode Selection:**
+
+- **TDD Mode** (when `test_case_specs` is present): tests already exist and are RED. Skip to writing implementation code that makes them GREEN. Do NOT write new tests — only write code that satisfies the existing stubs.
+- **Standard Mode** (no `test_case_specs`): write tests first (per `tdd-workflow.mdc`), then implementation.
+
+**4.1 Implementation order (Standard Mode):**
 1. Types and interfaces first (shared types, DTOs)
-2. Service/API layer changes
-3. Store/logic layer changes
-4. Component/UI layer changes
-5. Tests
+2. Write failing tests for each acceptance criterion (RED)
+3. Service/API layer implementation (make service tests GREEN)
+4. Store/logic layer implementation (make store tests GREEN)
+5. Component/UI layer implementation (make component tests GREEN)
 6. Stories (if needed)
+
+**4.1 Implementation order (TDD Mode — test_case_specs provided):**
+1. Read all test stubs from `test_case_specs.test_files`
+2. Understand the expected API shape from test assertions
+3. Implement types/interfaces to satisfy test imports
+4. Implement code layer by layer until all tests are GREEN
+5. Stories (if needed)
 
 **4.2 Code standards (always follow):**
 - TypeScript strict mode — no `any`, no `as` casts unless justified

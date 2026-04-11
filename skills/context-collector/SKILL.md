@@ -11,7 +11,7 @@ triggers:
   - "Research context"
 metadata:
   author: "MrCipherSmith"
-  version: "1.0.0"
+  version: "1.1.0"
   category: "context"
   agent_worthy: true
 license: "MIT"
@@ -170,9 +170,15 @@ Scan local sources for relevant context. Be selective — only include what is d
    |------------|---------------|
    | React components | code-style-patterns.mdc, frontend-assistant.mdc, storybook-guidelines.mdc |
    | MobX stores | code-style-patterns.mdc, mobx-store-template.mdc |
-   | API / DTOs | nestjs-dto.mdc, code-style-patterns.mdc |
-   | Testing | playwright-testing.mdc, storybook-guidelines.mdc |
+   | API / DTOs | nestjs-dto.mdc, code-style-patterns.mdc, api-contracts.mdc |
+   | Testing | playwright-testing.mdc, storybook-guidelines.mdc, tdd-workflow.mdc |
    | General code | code-style-patterns.mdc, frontend-assistant.mdc |
+   | TDD / test-first | tdd-workflow.mdc |
+   | Architecture / layers | clean-architecture.mdc, solid-principles.mdc |
+   | Error handling | error-handling.mdc |
+   | Database / ORM | database-patterns.mdc |
+   | Security | security-baseline.mdc |
+   | Async code | async-patterns.mdc |
    
 2. Read each applicable rule
 3. Extract: specific conventions, required patterns, prohibited practices
@@ -196,6 +202,38 @@ Scan local sources for relevant context. Be selective — only include what is d
    - Key patterns to follow for consistency
 ```
 
+### 2.5 Test Framework Detection (`PROJECT_DIR`)
+
+Always detect the test framework — `tests-creator` and `task-implementer` both need this.
+
+```
+1. Read package.json:
+   - Check "dependencies" and "devDependencies" for:
+     vitest, jest, @jest/*, mocha, jasmine, bun:test, pytest, go test
+   
+2. Check for config files:
+   - vitest.config.ts / vitest.config.js
+   - jest.config.ts / jest.config.js
+   - .mocharc.* / mocha.opts
+
+3. Read 2-3 existing test files (*.test.ts, *.spec.ts, test_*.py):
+   - Import style (global vs explicit import)
+   - Describe/it/test nesting depth
+   - Assertion style (expect().toBe vs assert.equal)
+   - Mock library (vi.fn / jest.fn / sinon)
+   - Fixture patterns (factories, builders, inline data)
+   - Test file location convention (co-located vs __tests__/)
+
+4. Summarize as "Test Framework Context":
+   framework: <vitest|jest|bun:test|mocha|pytest>
+   import_style: esm | cjs | global
+   file_pattern: "*.test.ts" | "*.spec.ts"
+   file_location: co-located | __tests__ | tests/
+   mock_library: vi | jest | sinon
+   run_command: "bun test" | "npx vitest run" | "npm test"
+   example_test_file: <path to a representative test>
+```
+
 **Output of Phase 2:**
 ```
 LOCAL_CONTEXT:
@@ -203,6 +241,7 @@ LOCAL_CONTEXT:
   related_jobs:      [{job_name, relevance, key_findings}]
   applicable_rules:  [{rule, key_conventions: [string]}]
   codebase_patterns: [{area, patterns: [string], example_files: [path]}]
+  test_framework:    {framework, import_style, file_pattern, file_location, mock_library, run_command, example_test_file}
 ```
 
 ---

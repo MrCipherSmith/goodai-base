@@ -48,7 +48,7 @@ skills:
     path: skills/commit
   - name: context-collector
     description: 'Use when a job needs a unified context document — gathering docs, libraries, and references for sub-agents before execution.'
-    version: 1.0.0
+    version: 1.1.0
     category: context
     path: skills/context-collector
   - name: db-migrate
@@ -93,7 +93,7 @@ skills:
     path: skills/interviewer
   - name: issue-analyzer
     description: 'Use when decomposing a GitHub issue into atomic tasks for AI implementation, planning task breakdown, or preparing work for task-implementer agents.'
-    version: 1.0.0
+    version: 1.1.0
     category: analysis
     path: skills/issue-analyzer
   - name: job-documenter
@@ -143,7 +143,7 @@ skills:
     path: skills/security-audit
   - name: task-implementer
     description: 'Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing autonomous code changes from a JSON task object.'
-    version: 1.0.0
+    version: 1.1.0
     category: implementation
     path: skills/task-implementer
   - name: test-gen
@@ -151,3 +151,8 @@ skills:
     version: 1.0.0
     category: testing
     path: skills/test-gen
+  - name: tests-creator
+    description: 'Use when writing test cases BEFORE implementation — converts acceptance criteria into failing test stubs that task-implementer will make pass. Mandatory step in the TDD pipeline between issue-analyzer and task-implementer.'
+    version: 1.0.0
+    category: testing
+    path: skills/tests-creator

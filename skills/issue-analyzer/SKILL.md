@@ -9,7 +9,7 @@ triggers:
   - "Plan issue implementation"
 metadata:
   author: "MrCipherSmith"
-  version: "1.0.0"
+  version: "1.1.0"
   category: "analysis"
   agent_worthy: true
 license: "MIT"
@@ -231,7 +231,8 @@ Convert the task list into a structured JSON object for reliable machine parsing
       "context": "<relevant code context, key types, function signatures>",
       "existing_tests": ["src/path/file.test.ts"],
       "existing_stories": [],
-      "module_patterns": "<how similar code is written in this module>"
+      "module_patterns": "<how similar code is written in this module>",
+      "requires_tests_creator": true
     },
     {
       "task_id": "task-2",
@@ -245,7 +246,8 @@ Convert the task list into a structured JSON object for reliable machine parsing
       "context": "<context>",
       "existing_tests": [],
       "existing_stories": [],
-      "module_patterns": "<patterns>"
+      "module_patterns": "<patterns>",
+      "requires_tests_creator": true
     }
   ],
   "dependency_order": ["task-1", "task-2"]
@@ -284,6 +286,7 @@ Use `STATUS: BLOCKED` only if the issue cannot be fetched (404) or the codebase 
 - `dependencies` lists task_ids that must complete before this task
 - All string arrays may be empty `[]` but not omitted
 - `context` and `module_patterns` may be empty string if not applicable
+- `requires_tests_creator` is always `true` — orchestrator must dispatch `tests-creator` before `task-implementer` for each task
 - Output the JSON block as the **final message** to the orchestrator, preceded by a brief summary (issue type, number of tasks, overall complexity)
 
 **Return format** (final message to orchestrator):
