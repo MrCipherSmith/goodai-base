@@ -1,6 +1,6 @@
 ## Summary
 
-<!-- What does this PR add or change? -->
+<!-- What does this PR add or change, and WHY? -->
 
 ## Type
 
@@ -11,7 +11,14 @@
 - [ ] Infrastructure / scripts
 - [ ] Documentation
 
-## Checklist
+## Skill/Rule quality checklist
+
+- [ ] `description:` is a trigger condition ("Use when X"), not a workflow summary
+- [ ] If the skill enforces a non-obvious process — Red Flags table added with ≥3 first-person rationalizations
+- [ ] If the skill is for orchestrators/interactive sessions only — `<SUBAGENT-STOP>` guard added after frontmatter
+- [ ] If a subagent skill — `## Reporting Results` section present with STATUS: protocol
+
+## Mechanics checklist
 
 - [ ] `AGENTS.md` updated if adding a skill or rule
 - [ ] Catalogs regenerated (`./scripts/generate-skill-catalog.sh` / `generate-rules-catalog.sh`)

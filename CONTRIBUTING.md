@@ -11,6 +11,28 @@
 
 The CI pipeline regenerates catalogs automatically on merge to `main`.
 
+### Skill description format
+
+The `description:` field in SKILL.md frontmatter must be a **trigger condition**, not a workflow summary:
+
+```yaml
+# ✅ Correct — trigger condition
+description: "Use when committing changes and a well-structured commit message is needed."
+
+# ❌ Wrong — workflow summary
+description: "Auto-stages changes, analyzes diff, generates conventional commit message."
+```
+
+Agents read the description to decide whether to load the skill. A workflow summary gives no routing signal and causes agents to skip the skill body.
+
+### Anti-rationalization
+
+If your skill enforces a non-obvious rule or process, add a **Red Flags** section with first-person rationalizations an agent might use to skip the step, and concrete rebuttals. See `skills/code-review/SKILL.md` for an example.
+
+### SUBAGENT-STOP
+
+If your skill is meant for interactive sessions or orchestrator-level use only (not for dispatched subagents), add a `<SUBAGENT-STOP>` block immediately after the YAML frontmatter closing `---`. See `skills/job-orchestrator/SKILL.md` for an example.
+
 ## Adding a rule
 
 1. Create `rules/core/<name>.mdc` with a YAML frontmatter block:
@@ -34,5 +56,6 @@ The CI pipeline regenerates catalogs automatically on merge to `main`.
 ## Pull requests
 
 - One skill or rule per PR where possible
-- Include a short description of what the skill/rule does and when it should be used
+- The PR description must explain **when** the skill/rule is used, not just what it does
 - If modifying an existing skill, bump the `version` field in `SKILL.md`
+- Run `./scripts/sync-skills.sh` before submitting — PRs that break sync are rejected
