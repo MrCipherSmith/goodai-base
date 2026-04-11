@@ -2,7 +2,7 @@
 
 _Auto-generated from `rules/core/*.mdc`. Do not edit manually._
 
-Total: 25 rules
+Total: 26 rules
 
 | Rule | Description | Area | Always Applied |
 | ---- | ----------- | ---- | -------------- |
@@ -18,6 +18,7 @@ Total: 25 rules
 | `error-handling` | Error handling standards: Result pattern, explicit typed errors, no silent failures, no throw-eve... | General | No |
 | `frontend-assistant` | Frontend delivery guidelines for TypeScript, React, MobX, Ant Design, and Tailwind CSS. | Frontend | No |
 | `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
+| `implementation-doc-mandate` | Documentation mandate for all implementing agents: spec document at start, change report at end. ... | Planning | No |
 | `implementation-plans` | Rules for creating implementation plans in date-stamped requirement folders. | Planning | No |
 | `jobs-documentation` | Job documentation structure and conventions for ~/goodai-base/jobs. Used by job-documenter skill ... | Documentation | No |
 | `mobx-store-template` | Reference template and checklist for MobX store structure and async state handling. | MobX / State | No |
