@@ -319,6 +319,36 @@
       }
     },
     {
+      "id": "implementation-doc-mandate",
+      "type": "rule",
+      "path": "rules/core/implementation-doc-mandate.mdc",
+      "description": "Mandatory documentation for all implementing agents — spec before code, change report after. Covers all agents: job-orchestrator, feature-dev, task-implementer. Iron Laws + Red Flags table.",
+      "triggers": {
+        "keywords": [
+          "mandatory",
+          "documentation",
+          "implementing",
+          "agents",
+          "spec",
+          "before",
+          "code",
+          "change",
+          "report",
+          "after",
+          "covers",
+          "job-orchestrator",
+          "feature-dev",
+          "task-implementer",
+          "iron",
+          "laws",
+          "red",
+          "flags",
+          "table"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "code-review-ai-assistant",
       "type": "rule",
       "path": "rules/core/code-review-ai-assistant.mdc",
@@ -831,7 +861,7 @@
       "id": "feature-dev",
       "type": "skill",
       "path": "skills/feature-dev/SKILL.md",
-      "description": "7-phase feature development — requirements → design → implement → test → review → fix → PR",
+      "description": "8-phase feature development — requirements+spec → design → prepare → tests-creator → implement → verify → review → deliver+report",
       "triggers": {
         "keywords": [
           "develop feature",

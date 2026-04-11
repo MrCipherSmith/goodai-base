@@ -172,6 +172,9 @@ Reference guidelines for coding standards and workflows:
 - `core/security-baseline.mdc`: No secrets in code, parameterized queries, input validation, dependency hygiene.
 - `core/async-patterns.mdc`: Promise.all for parallelism, mandatory timeouts, no unhandled rejections, no event loop blockage.
 
+**Implementation Process:**
+- `core/implementation-doc-mandate.mdc`: Mandatory documentation for all implementing agents — spec before code, change report after. Covers all agents: job-orchestrator, feature-dev, task-implementer. Iron Laws + Red Flags table.
+
 **Review & Testing:**
 - `core/code-review-ai-assistant.mdc`: Default AI code review baseline.
 - `core/code-review-boss-profile.mdc`: boss-style review profile and tone constraints.
@@ -365,9 +368,10 @@ Intelligent agents for complex analysis and review tasks:
 - **Args**: PR number, `--fix`
 
 **`skills/feature-dev`**
-- **Purpose**: 7-phase feature development — requirements → design → implement → test → review → fix → PR
+- **Purpose**: 8-phase feature development — requirements+spec → design → prepare → tests-creator → implement → verify → review → deliver+report
 - **Use When**: "/feature-dev", "Develop feature", "Build feature from scratch"
-- **Key Features**: Confirms requirements and design with user; autonomous implementation phases; self-review with fix loop; creates PR at the end
+- **Key Features**: Saves spec before code; TDD via tests-creator (Phase 4, mandatory); code-verifier gate (Phase 6, mandatory); change report at end; autonomous Phases 4-7
+- **Version**: v2.0.0
 - **Args**: description, `#<issue>`, `--resume`
 
 ### Workflow & DevOps Skills

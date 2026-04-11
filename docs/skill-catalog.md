@@ -21,7 +21,7 @@ Total: 32 skills
 | `dependency-update` | Use when checking for outdated packages or upgrading dependencies with compatibility verification. | 1.0.0 | maintenance |
 | `deploy` | Use when deploying to any environment (staging, production) or when a deployment pipeline needs t... | 1.0.0 | ops |
 | `feature-analyzer` | Use when analyzing feature branch changes across repos, planning implementation, or understanding... | 2.4.0 | analysis |
-| `feature-dev` | Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided... | 1.0.0 | workflow |
+| `feature-dev` | Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided... | 2.0.0 | workflow |
 | `hookify` | Use when adding automated hook behavior to Claude Code or Cursor from a natural language descript... | 1.0.0 | configuration |
 | `interview` | Use before implementation, design, or migration when requirements are unclear and targeted clarif... | 1.0.0 | analysis |
 | `interviewer` | Use when requirements are ambiguous and precise clarification is needed before proceeding with a ... | 1.0.0 | meta |
