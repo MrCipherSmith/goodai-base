@@ -1,6 +1,6 @@
 ---
 name: feature-analyzer
-description: "Deep cross-repository analysis of feature branches: requires explicit context gathering from user (source/target repos, branch), git diff analysis, mandatory Deep Dive with code examples, API contract analysis, and structured documentation. Use when: analyzing branch changes across repos, planning feature implementation, understanding backend→frontend contracts. NEVER start analysis without explicit user confirmation of source, target, and branch."
+description: "Use when analyzing feature branch changes across repos, planning implementation, or understanding backend→frontend contracts. NEVER start without explicit user confirmation of source, target, and branch."
 triggers:
   - "Analyze branch"
   - "Analyze changes"
@@ -16,6 +16,12 @@ metadata:
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode"
 ---
+
+<SUBAGENT-STOP>
+If you were dispatched as a subagent to execute a specific task, skip this skill entirely.
+This skill is for orchestrators and interactive session-level routing only.
+Proceed directly with your assigned task.
+</SUBAGENT-STOP>
 
 # Feature Analyzer
 

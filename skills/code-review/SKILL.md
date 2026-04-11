@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: "Comprehensive code review with 4 parallel agents: correctness/logic, security, performance, style/maintainability. Produces unified severity report (CRITICAL/HIGH/MEDIUM/LOW). Use for thorough PR reviews and pre-merge checks."
+description: "Use when a thorough PR review or pre-merge check is needed, covering correctness, security, performance, and style via 4 parallel agents."
 triggers:
   - "/code-review"
   - "Full review"
@@ -18,6 +18,35 @@ compatibility: "cursor,codex,zed,opencode,claude"
 # Code Review (4-Agent)
 
 Comprehensive code review that dispatches 4 specialized agents in parallel for deep analysis.
+
+## Review Stages — Required Order
+
+### Stage 1: Spec Compliance
+Answer first: **Did the implementation build exactly what was specified — nothing more, nothing less?**
+
+Checklist:
+- [ ] All acceptance criteria from the task/issue are met
+- [ ] Nothing was added beyond the task scope
+- [ ] Nothing from the task scope was omitted
+- [ ] Behavior matches the specification
+
+**Gate:** If Stage 1 fails (scope drift, missing criteria, added features) → report immediately as CRITICAL. Do NOT proceed to Stage 2 until spec compliance is confirmed.
+
+> **Note on parallel execution:** When this skill dispatches 4 parallel review agents, Stage 1 (Spec Compliance) is evaluated by the correctness/logic agent as its primary mandate. If that agent reports a CRITICAL spec failure, the orchestrator must discard Stage 2 findings as premature and request spec remediation first. The Stage 2 agents (security, performance, style) run concurrently but their findings are conditional on Stage 1 passing.
+
+### Stage 2: Code Quality
+Only after Stage 1 passes — answer: **Is the implementation well-crafted?**
+
+Checklist:
+- [ ] Logic is correct and handles edge cases
+- [ ] No security vulnerabilities
+- [ ] Performance is acceptable
+- [ ] Code is readable and maintainable
+- [ ] Tests cover key scenarios
+
+**IRON LAW: SPEC COMPLIANCE REVIEW ALWAYS COMES FIRST. STAGE 2 DOES NOT BEGIN UNTIL STAGE 1 IS CONFIRMED.**
+
+---
 
 ## Workflow
 
@@ -103,3 +132,15 @@ Collect all 4 agent results and produce a single report:
 - Include positive feedback — don't make it only negative
 - If the diff is huge (>2000 lines), split into chunks and review each
 - Be strict but fair — only flag real issues, not style preferences
+
+## Red Flags — Stop and re-read this skill if you are thinking:
+
+| Rationalization | Why it's wrong |
+|---|---|
+| "The code looks fine at a glance, I'll do a quick review" | Glancing is not reviewing — bugs hide in details, not impressions |
+| "This is a small change, detailed review isn't needed" | Small changes cause production incidents; size is not a proxy for safety |
+| "The author said the tests pass, so it's probably fine" | Tests passing means tests pass, not that the code is correct or secure |
+| "I'll mention it as INFO, not CRITICAL, to avoid friction" | Downgrading severity to soften feedback conceals real risk from the team |
+| "I already understand the pattern — no need to read the full file" | Bugs live in the gap between what you expect and what's actually there |
+
+**IRON LAW: EVERY FINDING THAT COULD CAUSE A BUG OR SECURITY ISSUE IS CRITICAL, REGARDLESS OF PR SIZE.**

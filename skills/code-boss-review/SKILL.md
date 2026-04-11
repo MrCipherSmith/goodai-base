@@ -1,6 +1,6 @@
 ---
 name: code-boss-review
-description: "Performs strict boss-style code review following code-review-boss-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: boss review requested, strict validation needed."
+description: "Use when a boss-style or strict code review is requested, needing direct no-fluff feedback focused on logic correctness."
 triggers:
   - "Review as boss"
   - "boss style review"
@@ -14,6 +14,33 @@ compatibility: "cursor,codex,zed,opencode"
 ---
 
 # Code Review as boss (current branch only)
+
+## Review Stages — Required Order
+
+### Stage 1: Spec Compliance
+Answer first: **Did the implementation build exactly what was specified — nothing more, nothing less?**
+
+Checklist:
+- [ ] All acceptance criteria from the task/issue are met
+- [ ] Nothing was added beyond the task scope
+- [ ] Nothing from the task scope was omitted
+- [ ] Behavior matches the specification
+
+**Gate:** If Stage 1 fails (scope drift, missing criteria, added features) → report immediately as CRITICAL. Do NOT proceed to Stage 2 until spec compliance is confirmed.
+
+### Stage 2: Code Quality
+Only after Stage 1 passes — answer: **Is the implementation well-crafted?**
+
+Checklist:
+- [ ] Logic is correct and handles edge cases
+- [ ] No security vulnerabilities
+- [ ] Performance is acceptable
+- [ ] Code is readable and maintainable
+- [ ] Tests cover key scenarios
+
+**IRON LAW: SPEC COMPLIANCE REVIEW ALWAYS COMES FIRST. STAGE 2 DOES NOT BEGIN UNTIL STAGE 1 IS CONFIRMED.**
+
+---
 
 ## Workflow
 

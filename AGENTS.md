@@ -99,6 +99,8 @@ ELSE (user did NOT name a specific skill, e.g., "review my code", "analyze branc
 
 **MATCH user request to skill description:**
 
+> **Skill description format:** All skill `description:` fields use trigger-condition format — they say "Use when X", not "This skill does X". Match user intent against these trigger conditions, not against workflow summaries.
+
 ```
 User: "Analyze everything related to variables in pipelines"
 
@@ -170,6 +172,8 @@ Reference guidelines for coding standards and workflows:
 **Development Workflow:**
 - `core/git-rules.mdc`: Commit safety, protected paths, and apply-changes gate.
 - `core/commit-message-formatting.mdc`: Conventional commit format policy.
+- `rules/core/subagent-status-protocol.md` — Subagent response format: required STATUS: prefix, four status types (DONE/DONE_WITH_CONCERNS/BLOCKED/NEEDS_CONTEXT), orchestrator handling logic
+- `rules/core/subagent-context-construction.md` — Explicit context construction for orchestrator→subagent dispatches: required fields, minimality principle, dispatch template
 
 
 **System Management:**
@@ -498,6 +502,24 @@ Intelligent agents for complex analysis and review tasks:
 6. **Do not load unrelated** resources
 7. **When in doubt**, ask one clarification question
 8. **When conflict**, prefer most task-specific resource
+
+---
+
+## 🛡️ Agent Discipline
+
+Six improvements govern how agents and orchestrators behave in this system:
+
+1. **Trigger-condition skill descriptions** — Every skill's `description:` field must describe WHEN to use the skill ("Use when X"), not what the skill does. The agent reads this field to decide whether to load the skill; a workflow summary gives no routing signal.
+
+2. **Anti-rationalization guards** — Key skills and rules contain Red Flags tables and Iron Laws. These are non-negotiable constraints the agent must not rationalize around. If a Red Flag applies, stop and surface it to the user.
+
+3. **SUBAGENT-STOP guards** — Meta-skills (orchestrators, task-distributors) carry `SUBAGENT-STOP` tags at the top of their body. A subagent that encounters this tag must halt and return `STATUS: BLOCKED` — it is not permitted to self-invoke orchestrator workflows.
+
+4. **Subagent status protocol** — Every subagent response must begin with `STATUS: <type>`. Valid types: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, `NEEDS_CONTEXT`. Orchestrators read this prefix before deciding next action. See `rules/core/subagent-status-protocol.md`.
+
+5. **Two-stage review** — Code review skills run Stage 1 (spec compliance: does the code do what was specified?) before Stage 2 (code quality: is it well-written?). Stage 2 may not begin until Stage 1 produces a passing result or explicit waiver.
+
+6. **Explicit context construction** — Orchestrators must build an explicit context block for every subagent dispatch. Subagents must not infer context from conversation history. Each dispatch is self-contained. See `rules/core/subagent-context-construction.md`.
 
 ---
 
