@@ -160,7 +160,8 @@ for (const dirName of dirEntries) {
     console.log(`  [DRY] ${action}: ${skillName} → ${agentPath}`);
   } else {
     // Build agent frontmatter
-    const fmLines = ['---', `name: ${skillName}`, `description: "${description}"`];
+    const escapedDescription = description.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const fmLines = ['---', `name: ${skillName}`, `description: "${escapedDescription}"`];
     if (model) fmLines.push(`model: ${model}`);
     if (tools) fmLines.push(`tools: ${tools}`);
     fmLines.push('---');
@@ -175,10 +176,12 @@ for (const dirName of dirEntries) {
     console.log(`  ${action}: ${skillName} → ${agentPath}`);
   }
 
-  if (action === 'Generate') {
-    countGenerated++;
-  } else {
-    countUpdated++;
+  if (!dryRun) {
+    if (action === 'Generate') {
+      countGenerated++;
+    } else {
+      countUpdated++;
+    }
   }
 
   // Record registry entry

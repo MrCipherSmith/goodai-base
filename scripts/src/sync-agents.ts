@@ -10,9 +10,9 @@
 import { resolve, join } from 'node:path';
 import { homedir } from 'node:os';
 import { readFileSync } from 'node:fs';
-import { parseArgs, getFlag, getOption } from './shared/args.ts';
-import { sha256File } from './shared/checksum.ts';
-import { fileExists, expandHome } from './shared/fs-utils.ts';
+import { parseArgs, getFlag, getOption } from './shared/args';
+import { sha256File } from './shared/checksum';
+import { fileExists, expandHome } from './shared/fs-utils';
 
 const REPO_ROOT = resolve(import.meta.dir, '../../');
 const REGISTRY_FILE = join(REPO_ROOT, 'skills/agents-registry.json');

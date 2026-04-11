@@ -22,8 +22,8 @@ export function parseAgentsMd(content: string): AgentsMdData {
   const ruleSectionMatch = content.match(/##\s+📖\s+Core Rule Catalog([\s\S]*?)(?=\n##\s|$)/);
   if (ruleSectionMatch?.[1]) {
     const ruleSection = ruleSectionMatch[1];
-    // Match lines like: - `core/filename.mdc` — description
-    const rulePattern = /`core\/([^`]+\.mdc)`[^—–-]*[—–-]\s*(.+)/g;
+    // Match lines like: - `core/filename.mdc`: description  OR  `core/filename.mdc` — description
+    const rulePattern = /`core\/([^`]+\.mdc)`\s*[—:–]\s*(.+)/g;
     let match;
     while ((match = rulePattern.exec(ruleSection)) !== null) {
       rules.push({

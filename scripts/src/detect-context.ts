@@ -8,12 +8,12 @@
 // Exit code: always 0 (fail-open — must never block Claude)
 
 import { createHash } from 'node:crypto';
-import { appendFileSync, mkdirSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { fileExists, readTextFile } from './shared/fs-utils.js';
 
-const EMPTY = '{"matched_rules":[],"matched_skills":[]}';
+const EMPTY = '{"matched_rules": [], "matched_skills": []}';
 const LOG_FILE = resolve(homedir(), '.claude/logs/context-activation.log');
 
 // Resolve repo root relative to this script (scripts/src/ -> scripts/ -> repo root)
@@ -54,7 +54,7 @@ function readPrompt(): string {
   }
   // Read from stdin synchronously
   try {
-    return require('fs').readFileSync('/dev/stdin', 'utf8');
+    return readFileSync('/dev/stdin', 'utf8');
   } catch {
     return '';
   }
@@ -152,7 +152,8 @@ function main(): void {
     }
 
     const result = match(prompt);
-    const output = JSON.stringify(result);
+    // Match Python json.dumps default: spaces after ":" and ","
+    const output = JSON.stringify(result).replace(/":/g, '": ').replace(/,/g, ', ');
 
     // Log activation event (non-blocking) only when something matched
     if (result.matched_rules.length > 0 || result.matched_skills.length > 0) {
