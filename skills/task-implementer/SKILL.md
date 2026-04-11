@@ -9,7 +9,7 @@ triggers:
   - "Implement issue task"
 metadata:
   author: "MrCipherSmith"
-  version: "1.1.0"
+  version: "1.2.0"
   category: "implementation"
   agent_worthy: true
 license: "MIT"
@@ -153,15 +153,28 @@ If the orchestrator provided `JOB_NAME` and `CONTEXT_PATH`:
 
 **2.4 Load relevant rules (from `module_patterns` or by detection):**
 
-Based on what you're implementing, load and follow the relevant project rules:
+Based on what you're implementing, load and follow the relevant project rules.
 
-| Task Type | Relevant Rules |
+**Always load (all task types):**
+- `tdd-workflow.mdc` — red-green-refactor, STATUS: DONE requires passing tests
+- `error-handling.mdc` — Result pattern, no silent failures
+- `solid-principles.mdc` — SRP, OCP, DIP (load for any task that creates new classes/services)
+
+**Load by task type:**
+
+| Task Type | Additional Rules |
 |-----------|---------------|
 | `ui_component` | `code-style-patterns.mdc`, `frontend-assistant.mdc`, `storybook-guidelines.mdc` |
 | `store_logic` | `code-style-patterns.mdc`, `mobx-store-template.mdc` |
-| `service_api` | `code-style-patterns.mdc`, `nestjs-dto.mdc` |
-| `fix` | Load rules based on the files being fixed |
-| `mixed` | Load all applicable rules |
+| `service_api` | `code-style-patterns.mdc`, `nestjs-dto.mdc`, `api-contracts.mdc` |
+| `fix` | Rules based on the files being fixed; always `error-handling.mdc` |
+| `mixed` | All applicable rules above |
+
+**Load when detected:**
+- Database/ORM files touched → `database-patterns.mdc`
+- Auth, API keys, user input → `security-baseline.mdc`
+- `async`/`await` or queue code → `async-patterns.mdc`
+- New architectural layers or modules → `clean-architecture.mdc`
 
 Rules are located at:
 - OpenCode: `~/goodai-base/rules/core/<rule>.mdc`
