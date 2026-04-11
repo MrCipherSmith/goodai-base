@@ -163,11 +163,21 @@ Reference guidelines for coding standards and workflows:
 - `core/mobx-store-template.mdc`: Reference structure for MobX stores.
 - `core/nestjs-dto.mdc`: NestJS DTO and validation annotation standards.
 
+**Engineering Standards (Language-Agnostic):**
+- `core/solid-principles.mdc`: SOLID principles for agent-generated code — Single Responsibility, Open/Closed, Dependency Inversion. Iron Laws + Red Flags table.
+- `core/error-handling.mdc`: Result pattern, typed domain errors, no silent failures, no unhandled rejections.
+- `core/api-contracts.mdc`: OpenAPI-first design, semantic versioning, no breaking changes without major version bump.
+- `core/clean-architecture.mdc`: Layer isolation, dependency direction, no cross-layer leakage (domain must not import frameworks).
+- `core/database-patterns.mdc`: No N+1 queries, indexes before deploy, backward-compatible migrations, transactions.
+- `core/security-baseline.mdc`: No secrets in code, parameterized queries, input validation, dependency hygiene.
+- `core/async-patterns.mdc`: Promise.all for parallelism, mandatory timeouts, no unhandled rejections, no event loop blockage.
+
 **Review & Testing:**
 - `core/code-review-ai-assistant.mdc`: Default AI code review baseline.
 - `core/code-review-boss-profile.mdc`: boss-style review profile and tone constraints.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
 - `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
+- `core/tdd-workflow.mdc`: Red-green-refactor cycle, test-first mandate, no-done-without-green invariant. Loaded with `task-implementer` and `tests-creator`.
 
 **Development Workflow:**
 - `core/git-rules.mdc`: Commit safety, protected paths, and apply-changes gate.
@@ -252,7 +262,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Key Features**:
   - 4-phase dynamic pipeline: Context Collection → Plan Building → Execution → Completion
   - Intent-driven: adapts plan to implement, analyze, review, or custom workflows
-  - Dispatches issue-analyzer, context-collector, task-implementer, and review skills as sub-agents
+  - Dispatches issue-analyzer, context-collector, tests-creator, task-implementer, and review skills as sub-agents
   - Persistent job documentation via job-documenter in `jobs/<job-name>/`
   - Dynamic plan extension (e.g., analyze → user confirms → implement)
   - Review-fix loop (max 2 iterations)
@@ -284,15 +294,33 @@ Intelligent agents for complex analysis and review tasks:
 **`skills/issue-analyzer`**
 - **Purpose**: Decompose GitHub issue into atomic implementation tasks
 - **Use When**: "Analyze issue", "Decompose issue", "Break down issue"
-- **Output**: JSON object with `issue` metadata, `tasks` array (each with task_id, target_files, acceptance_criteria, context, module_patterns), and `dependency_order`
+- **Output**: JSON object with `issue` metadata, `tasks` array (each with task_id, target_files, acceptance_criteria, context, module_patterns, `requires_tests_creator: true`), and `dependency_order`
 - **Scope**: Read-only analysis, no code modifications
+- **Version**: v1.1.0 — tasks now include `requires_tests_creator` flag; orchestrator must dispatch `tests-creator` before `task-implementer`
+
+**`skills/tests-creator`** ⭐ TDD — RUNS BEFORE TASK-IMPLEMENTER
+- **Purpose**: Converts acceptance criteria into failing test stubs (RED phase of TDD) before any implementation code is written
+- **Use When**:
+  - Orchestrator dispatches before `task-implementer` for each task (mandatory in TDD pipeline)
+  - "Create tests", "Write tests first", "Generate test specs", "TDD test stubs"
+  - Task object contains `requires_tests_creator: true` (always true from issue-analyzer v1.1.0+)
+- **Key Features**:
+  - Detects test framework from project (vitest/jest/pytest/bun:test)
+  - Maps each acceptance criterion to happy path + edge cases + error path tests
+  - Writes forward-declared test stubs that fail until implementation
+  - Commits test files and verifies RED state before reporting
+  - Emits `test_case_specs` block for task-implementer consumption
+- **Pipeline position**: issue-analyzer → **tests-creator** → task-implementer
+- **Output**: Committed test files (RED) + `TEST_CASE_SPECS` report
+- **Version**: v1.0.0
 
 **`skills/task-implementer`**
-- **Purpose**: Implement a single atomic task from issue-analyzer
+- **Purpose**: Implement a single atomic task from issue-analyzer, following TDD when test stubs are provided
 - **Use When**: "Implement task", "Execute task scenario"
-- **Features**: 6-phase workflow (Receive → Research → Plan → Implement → Verify → Report)
-- **Input**: JSON task object from issue-analyzer + workspace context (codebase_path, branch, issue_number)
+- **Features**: 6-phase workflow (Receive → Research → Plan → Implement → Verify → Report); TDD mode when `test_case_specs` provided (makes RED tests GREEN); standard mode writes tests first
+- **Input**: JSON task object from issue-analyzer + optional `test_case_specs` from tests-creator + workspace context
 - **Output**: JSON result with status, files_modified, files_created, commits, lint_result, type_check_result, test_result, acceptance_criteria_met
+- **Version**: v1.1.0 — TDD mode added; reads `test_case_specs` from tests-creator when present
 
 ### Git Workflow Skills
 
