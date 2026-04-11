@@ -11,20 +11,40 @@
       "id": "documentation-management",
       "type": "rule",
       "path": "rules/core/documentation-management.mdc",
-      "description": "Documentation lifecycle and multilingual doc structure",
+      "description": "Documentation lifecycle and multilingual doc structure in `~/goodai-base/docs`",
       "triggers": {
-        "keywords": ["documentation", "docs", "write docs", "update docs", "doc structure", "multilingual doc"],
-        "intents": ["how to document", "documentation standards", "doc lifecycle"]
+        "keywords": [
+          "documentation",
+          "docs",
+          "write docs",
+          "update docs",
+          "doc structure",
+          "multilingual doc"
+        ],
+        "intents": [
+          "how to document",
+          "documentation standards",
+          "doc lifecycle"
+        ]
       }
     },
     {
       "id": "jobs-documentation",
       "type": "rule",
       "path": "rules/core/jobs-documentation.mdc",
-      "description": "Job documentation structure and conventions for jobs/",
+      "description": "Job documentation structure and conventions for `~/goodai-base/jobs`. Used by `job-orchestrator` and `job-documenter`",
       "triggers": {
-        "keywords": ["job documentation", "jobs folder", "job docs", "job structure", "job conventions"],
-        "intents": ["how to document a job", "job folder structure"]
+        "keywords": [
+          "job documentation",
+          "jobs folder",
+          "job docs",
+          "job structure",
+          "job conventions"
+        ],
+        "intents": [
+          "how to document a job",
+          "job folder structure"
+        ]
       }
     },
     {
@@ -33,8 +53,17 @@
       "path": "rules/core/implementation-plans.mdc",
       "description": "Implementation plan format and storage",
       "triggers": {
-        "keywords": ["implementation plan", "plan format", "plan storage", "write a plan", "create plan"],
-        "intents": ["how to write an implementation plan", "plan structure"]
+        "keywords": [
+          "implementation plan",
+          "plan format",
+          "plan storage",
+          "write a plan",
+          "create plan"
+        ],
+        "intents": [
+          "how to write an implementation plan",
+          "plan structure"
+        ]
       }
     },
     {
@@ -43,8 +72,16 @@
       "path": "rules/core/requirements-management.mdc",
       "description": "Requirements document workflow and structure",
       "triggers": {
-        "keywords": ["requirements", "requirements document", "prd format", "requirements workflow"],
-        "intents": ["how to write requirements", "requirements structure"]
+        "keywords": [
+          "requirements",
+          "requirements document",
+          "prd format",
+          "requirements workflow"
+        ],
+        "intents": [
+          "how to write requirements",
+          "requirements structure"
+        ]
       }
     },
     {
@@ -53,8 +90,20 @@
       "path": "rules/core/code-style-patterns.mdc",
       "description": "Architecture and style patterns for TS/React/MobX",
       "triggers": {
-        "keywords": ["code style", "typescript patterns", "react patterns", "mobx patterns", "architecture patterns", "style guide", "ts style"],
-        "intents": ["how to write typescript", "code style standards", "react conventions"]
+        "keywords": [
+          "code style",
+          "typescript patterns",
+          "react patterns",
+          "mobx patterns",
+          "architecture patterns",
+          "style guide",
+          "ts style"
+        ],
+        "intents": [
+          "how to write typescript",
+          "code style standards",
+          "react conventions"
+        ]
       }
     },
     {
@@ -63,8 +112,19 @@
       "path": "rules/core/frontend-assistant.mdc",
       "description": "Frontend delivery standards for TS/React/MobX/AntD/Tailwind",
       "triggers": {
-        "keywords": ["frontend standards", "antd", "tailwind", "react component", "frontend delivery", "ui standards"],
-        "intents": ["how to write frontend", "frontend conventions", "react delivery standards"]
+        "keywords": [
+          "frontend standards",
+          "antd",
+          "tailwind",
+          "react component",
+          "frontend delivery",
+          "ui standards"
+        ],
+        "intents": [
+          "how to write frontend",
+          "frontend conventions",
+          "react delivery standards"
+        ]
       }
     },
     {
@@ -73,8 +133,20 @@
       "path": "rules/core/mobx-store-template.mdc",
       "description": "Reference structure for MobX stores",
       "triggers": {
-        "keywords": ["mobx store", "store template", "makeobservable", "runinaction", "mobx structure", "observable", "store structure"],
-        "intents": ["how to write a mobx store", "store conventions", "mobx patterns"]
+        "keywords": [
+          "mobx store",
+          "store template",
+          "makeobservable",
+          "runinaction",
+          "mobx structure",
+          "observable",
+          "store structure"
+        ],
+        "intents": [
+          "how to write a mobx store",
+          "store conventions",
+          "mobx patterns"
+        ]
       }
     },
     {
@@ -83,8 +155,22 @@
       "path": "rules/core/nestjs-dto.mdc",
       "description": "NestJS DTO and validation annotation standards",
       "triggers": {
-        "keywords": ["dto", "nestjs", "class-validator", "validation annotation", "nestjs dto", "nest dto", "isstring", "isnotEmpty"],
-        "intents": ["how to write dto", "nestjs standards", "create dto", "dto validation"]
+        "keywords": [
+          "dto",
+          "nestjs",
+          "class-validator",
+          "validation annotation",
+          "nestjs dto",
+          "nest dto",
+          "isstring",
+          "isnotEmpty"
+        ],
+        "intents": [
+          "how to write dto",
+          "nestjs standards",
+          "create dto",
+          "dto validation"
+        ]
       }
     },
     {
@@ -93,8 +179,17 @@
       "path": "rules/core/code-review-ai-assistant.mdc",
       "description": "Default AI code review baseline",
       "triggers": {
-        "keywords": ["code review baseline", "ai review standards", "review checklist", "review guidelines"],
-        "intents": ["how to do code review", "review standards", "code review baseline"]
+        "keywords": [
+          "code review baseline",
+          "ai review standards",
+          "review checklist",
+          "review guidelines"
+        ],
+        "intents": [
+          "how to do code review",
+          "review standards",
+          "code review baseline"
+        ]
       }
     },
     {
@@ -103,18 +198,38 @@
       "path": "rules/core/code-review-boss-profile.mdc",
       "description": "boss-style review profile and tone constraints",
       "triggers": {
-        "keywords": ["boss", "boss style", "boss review", "logic review profile", "layer correctness"],
-        "intents": ["boss review standards", "logic-first review"]
+        "keywords": [
+          "boss",
+          "boss style",
+          "boss review",
+          "logic review profile",
+          "layer correctness"
+        ],
+        "intents": [
+          "boss review standards",
+          "logic-first review"
+        ]
       }
     },
     {
       "id": "playwright-testing",
       "type": "rule",
       "path": "rules/core/playwright-testing.mdc",
-      "description": "Playwright E2E testing standards, UI verification, visual regression",
+      "description": "Playwright E2E testing standards, UI verification, and visual regression workflows",
       "triggers": {
-        "keywords": ["playwright", "e2e test", "end-to-end", "visual regression", "ui test", "playwright test"],
-        "intents": ["how to write playwright tests", "e2e standards", "playwright conventions"]
+        "keywords": [
+          "playwright",
+          "e2e test",
+          "end-to-end",
+          "visual regression",
+          "ui test",
+          "playwright test"
+        ],
+        "intents": [
+          "how to write playwright tests",
+          "e2e standards",
+          "playwright conventions"
+        ]
       }
     },
     {
@@ -123,8 +238,20 @@
       "path": "rules/core/storybook-guidelines.mdc",
       "description": "Storybook authoring and review standards",
       "triggers": {
-        "keywords": ["storybook", "story", "storiesof", "storyobj", "meta storyobj", "stories", "csf"],
-        "intents": ["how to write storybook", "storybook standards", "story conventions"]
+        "keywords": [
+          "storybook",
+          "story",
+          "storiesof",
+          "storyobj",
+          "meta storyobj",
+          "stories",
+          "csf"
+        ],
+        "intents": [
+          "how to write storybook",
+          "storybook standards",
+          "story conventions"
+        ]
       }
     },
     {
@@ -133,8 +260,18 @@
       "path": "rules/core/git-rules.mdc",
       "description": "Commit safety, protected paths, and apply-changes gate",
       "triggers": {
-        "keywords": ["git rules", "commit safety", "protected branch", "apply-changes", "git policy"],
-        "intents": ["git conventions", "commit rules", "branch protection"]
+        "keywords": [
+          "git rules",
+          "commit safety",
+          "protected branch",
+          "apply-changes",
+          "git policy"
+        ],
+        "intents": [
+          "git conventions",
+          "commit rules",
+          "branch protection"
+        ]
       }
     },
     {
@@ -143,8 +280,20 @@
       "path": "rules/core/commit-message-formatting.mdc",
       "description": "Conventional commit format policy",
       "triggers": {
-        "keywords": ["commit message", "conventional commit", "commit format", "commit style", "feat:", "fix:", "chore:"],
-        "intents": ["how to write commit message", "commit conventions", "commit format"]
+        "keywords": [
+          "commit message",
+          "conventional commit",
+          "commit format",
+          "commit style",
+          "feat:",
+          "fix:",
+          "chore:"
+        ],
+        "intents": [
+          "how to write commit message",
+          "commit conventions",
+          "commit format"
+        ]
       }
     },
     {
@@ -153,8 +302,18 @@
       "path": "rules/core/rule-management-workflow.mdc",
       "description": "Add/edit/sync workflow for rule files and rule metadata",
       "triggers": {
-        "keywords": ["rule management", "add rule", "edit rule", "sync rules", "rule workflow"],
-        "intents": ["how to add a rule", "rule authoring", "rule sync"]
+        "keywords": [
+          "rule management",
+          "add rule",
+          "edit rule",
+          "sync rules",
+          "rule workflow"
+        ],
+        "intents": [
+          "how to add a rule",
+          "rule authoring",
+          "rule sync"
+        ]
       }
     },
     {
@@ -163,18 +322,41 @@
       "path": "rules/core/skills-storage-workflow.mdc",
       "description": "Skill authoring best practices and sync workflow for Cursor, Codex, Zed, OpenCode",
       "triggers": {
-        "keywords": ["skill authoring", "skill storage", "skill sync", "create skill", "write skill"],
-        "intents": ["how to create a skill", "skill conventions", "skill sync workflow"]
+        "keywords": [
+          "skill authoring",
+          "skill storage",
+          "skill sync",
+          "create skill",
+          "write skill"
+        ],
+        "intents": [
+          "how to create a skill",
+          "skill conventions",
+          "skill sync workflow"
+        ]
       }
     },
     {
       "id": "model-selection",
       "type": "rule",
       "path": "rules/core/model-selection.mdc",
-      "description": "Model selection workflow for sub-agents",
+      "description": "Model selection workflow for sub-agents. Run `detect-models.sh` to see available models",
       "triggers": {
-        "keywords": ["model selection", "which model", "choose model", "claude model", "sub-agent model", "opus", "sonnet", "haiku"],
-        "intents": ["how to select model", "model for sub-agent", "which claude model"]
+        "keywords": [
+          "model selection",
+          "which model",
+          "choose model",
+          "claude model",
+          "sub-agent model",
+          "opus",
+          "sonnet",
+          "haiku"
+        ],
+        "intents": [
+          "how to select model",
+          "model for sub-agent",
+          "which claude model"
+        ]
       }
     },
     {
@@ -183,68 +365,150 @@
       "path": "skills/feature-analyzer/SKILL.md",
       "description": "Deep cross-repository analysis of feature branches",
       "triggers": {
-        "keywords": ["analyze branch", "cross-repo", "investigate feature", "study pipeline", "feature analysis", "branch changes", "анализ ветки"],
-        "intents": ["analyze branch changes", "investigate feature implementation", "cross-repo analysis"]
+        "keywords": [
+          "analyze branch",
+          "cross-repo",
+          "investigate feature",
+          "study pipeline",
+          "feature analysis",
+          "branch changes",
+          "анализ ветки"
+        ],
+        "intents": [
+          "analyze branch changes",
+          "investigate feature implementation",
+          "cross-repo analysis"
+        ]
       }
     },
     {
       "id": "code-ai-review",
       "type": "skill",
       "path": "skills/code-ai-review/SKILL.md",
-      "description": "General AI code review — correctness, type safety, security, performance",
+      "description": "General AI code review — correctness, type safety, security, performance, error handling",
       "triggers": {
-        "keywords": ["review code", "check my code", "ai code review", "code review", "review changes"],
-        "intents": ["review code changes", "check code quality", "ai review"]
+        "keywords": [
+          "review code",
+          "check my code",
+          "ai code review",
+          "code review",
+          "review changes"
+        ],
+        "intents": [
+          "review code changes",
+          "check code quality",
+          "ai review"
+        ]
       }
     },
     {
       "id": "code-boss-review",
       "type": "skill",
       "path": "skills/code-boss-review/SKILL.md",
-      "description": "Logic-first code review in boss style",
+      "description": "Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code",
       "triggers": {
-        "keywords": ["boss review", "logic review", "boss"],
-        "intents": ["boss style review", "logic-first code review"]
+        "keywords": [
+          "boss review",
+          "logic review",
+          "boss"
+        ],
+        "intents": [
+          "boss style review",
+          "logic-first code review"
+        ]
       }
     },
     {
       "id": "code-style-review",
       "type": "skill",
       "path": "skills/code-style-review/SKILL.md",
-      "description": "Code style and architecture review",
+      "description": "Code style and architecture review — TypeScript strictness, MobX patterns, React structure",
       "triggers": {
-        "keywords": ["style review", "architecture check", "style check", "typescript review"],
-        "intents": ["style review", "architecture review"]
+        "keywords": [
+          "style review",
+          "architecture check",
+          "style check",
+          "typescript review"
+        ],
+        "intents": [
+          "style review",
+          "architecture review"
+        ]
       }
     },
     {
       "id": "code-mobx-store-review",
       "type": "skill",
       "path": "skills/code-mobx-store-review/SKILL.md",
-      "description": "Targeted MobX store review",
+      "description": "Targeted MobX store review — member ordering, accessibility modifiers, action binding, bidirectional sync",
       "triggers": {
-        "keywords": ["store review", "mobx store review", "review store"],
-        "intents": ["review mobx store", "store review"]
+        "keywords": [
+          "store review",
+          "mobx store review",
+          "review store"
+        ],
+        "intents": [
+          "review mobx store",
+          "store review"
+        ]
       }
     },
     {
       "id": "job-orchestrator",
       "type": "skill",
       "path": "skills/job-orchestrator/SKILL.md",
-      "description": "Dynamic orchestrator for full implementation/review/analysis pipelines",
+      "description": "Dynamic orchestrator that builds execution plans based on user intent",
       "triggers": {
-        "keywords": ["implement issue", "issue to pr", "full review", "full implementation", "orchestrate", "полное ревью", "auto-implement"],
-        "intents": ["implement github issue", "full review pipeline", "orchestrated implementation"]
+        "keywords": [
+          "implement issue",
+          "issue to pr",
+          "full review",
+          "full implementation",
+          "orchestrate",
+          "полное ревью",
+          "auto-implement"
+        ],
+        "intents": [
+          "implement github issue",
+          "full review pipeline",
+          "orchestrated implementation"
+        ]
+      }
+    },
+    {
+      "id": "job-documenter",
+      "type": "skill",
+      "path": "skills/job-documenter/SKILL.md",
+      "description": "Creates and maintains structured job documentation in `jobs/`",
+      "triggers": {
+        "keywords": [
+          "creates",
+          "maintains",
+          "structured",
+          "job",
+          "documentation",
+          "jobs"
+        ],
+        "intents": []
       }
     },
     {
       "id": "context-collector",
       "type": "skill",
       "path": "skills/context-collector/SKILL.md",
-      "description": "Collects and maintains a unified context document for a job",
+      "description": "Collects, summarizes, and maintains a unified context document for a job",
       "triggers": {
-        "keywords": ["collect context", "build context", "gather context", "research context", "собери контекст"],
-        "intents": ["collect context for job", "gather research context"]
+        "keywords": [
+          "collect context",
+          "build context",
+          "gather context",
+          "research context",
+          "собери контекст"
+        ],
+        "intents": [
+          "collect context for job",
+          "gather research context"
+        ]
       }
     },
     {
@@ -253,8 +517,17 @@
       "path": "skills/issue-analyzer/SKILL.md",
       "description": "Decompose GitHub issue into atomic implementation tasks",
       "triggers": {
-        "keywords": ["analyze issue", "decompose issue", "break down issue", "issue tasks", "issue decomposition"],
-        "intents": ["analyze github issue", "decompose issue into tasks"]
+        "keywords": [
+          "analyze issue",
+          "decompose issue",
+          "break down issue",
+          "issue tasks",
+          "issue decomposition"
+        ],
+        "intents": [
+          "analyze github issue",
+          "decompose issue into tasks"
+        ]
       }
     },
     {
@@ -263,18 +536,35 @@
       "path": "skills/task-implementer/SKILL.md",
       "description": "Implement a single atomic task from issue-analyzer",
       "triggers": {
-        "keywords": ["implement task", "execute task", "run task", "task implementer", "запускай имплементатора"],
-        "intents": ["implement atomic task", "execute implementation task"]
+        "keywords": [
+          "implement task",
+          "execute task",
+          "run task",
+          "task implementer",
+          "запускай имплементатора"
+        ],
+        "intents": [
+          "implement atomic task",
+          "execute implementation task"
+        ]
       }
     },
     {
       "id": "commit",
       "type": "skill",
       "path": "skills/commit/SKILL.md",
-      "description": "Smart git commit with conventional message generation",
+      "description": "Smart git commit — auto-stages changes, analyzes diff, generates conventional commit message",
       "triggers": {
-        "keywords": ["commit", "stage changes", "git commit", "commit changes"],
-        "intents": ["create git commit", "commit staged changes"]
+        "keywords": [
+          "commit",
+          "stage changes",
+          "git commit",
+          "commit changes"
+        ],
+        "intents": [
+          "create git commit",
+          "commit staged changes"
+        ]
       }
     },
     {
@@ -283,8 +573,16 @@
       "path": "skills/push/SKILL.md",
       "description": "Smart git push with safety checks",
       "triggers": {
-        "keywords": ["push", "push changes", "git push", "push branch"],
-        "intents": ["push to remote", "git push"]
+        "keywords": [
+          "push",
+          "push changes",
+          "git push",
+          "push branch"
+        ],
+        "intents": [
+          "push to remote",
+          "git push"
+        ]
       }
     },
     {
@@ -293,48 +591,91 @@
       "path": "skills/pr/SKILL.md",
       "description": "Smart Pull Request creation from branch changes",
       "triggers": {
-        "keywords": ["create pr", "open pull request", "make pr", "pull request"],
-        "intents": ["create pull request", "open pr"]
+        "keywords": [
+          "create pr",
+          "open pull request",
+          "make pr",
+          "pull request"
+        ],
+        "intents": [
+          "create pull request",
+          "open pr"
+        ]
       }
     },
     {
       "id": "code-review",
       "type": "skill",
       "path": "skills/code-review/SKILL.md",
-      "description": "Comprehensive code review with 4 parallel agents",
+      "description": "Comprehensive code review with 4 parallel agents (correctness, security, performance, style)",
       "triggers": {
-        "keywords": ["full review", "review pr", "comprehensive review", "review pull request"],
-        "intents": ["comprehensive code review", "full pr review"]
+        "keywords": [
+          "full review",
+          "review pr",
+          "comprehensive review",
+          "review pull request"
+        ],
+        "intents": [
+          "comprehensive code review",
+          "full pr review"
+        ]
       }
     },
     {
       "id": "feature-dev",
       "type": "skill",
       "path": "skills/feature-dev/SKILL.md",
-      "description": "7-phase feature development from requirements to PR",
+      "description": "7-phase feature development — requirements → design → implement → test → review → fix → PR",
       "triggers": {
-        "keywords": ["develop feature", "build feature", "feature from scratch", "new feature"],
-        "intents": ["develop new feature", "build feature from scratch"]
+        "keywords": [
+          "develop feature",
+          "build feature",
+          "feature from scratch",
+          "new feature"
+        ],
+        "intents": [
+          "develop new feature",
+          "build feature from scratch"
+        ]
       }
     },
     {
       "id": "deploy",
       "type": "skill",
       "path": "skills/deploy/SKILL.md",
-      "description": "Automated deployment pipeline — tests → build → deploy",
+      "description": "Automated deployment pipeline — tests → build → deploy, with health check",
       "triggers": {
-        "keywords": ["deploy", "deployment", "ship it", "release", "deploy to staging", "deploy to production", "задеплой"],
-        "intents": ["deploy application", "release to production"]
+        "keywords": [
+          "deploy",
+          "deployment",
+          "ship it",
+          "release",
+          "deploy to staging",
+          "deploy to production",
+          "задеплой"
+        ],
+        "intents": [
+          "deploy application",
+          "release to production"
+        ]
       }
     },
     {
       "id": "changelog",
       "type": "skill",
       "path": "skills/changelog/SKILL.md",
-      "description": "Generate structured changelog from git commits",
+      "description": "Generate structured changelog from git commits between tags or date ranges",
       "triggers": {
-        "keywords": ["generate changelog", "release notes", "what changed", "changelog"],
-        "intents": ["generate changelog", "create release notes"]
+        "keywords": [
+          "generate changelog",
+          "release notes",
+          "what changed",
+          "changelog"
+        ],
+        "intents": [
+          "generate changelog",
+          "create release notes"
+        ]
       }
     },
     {
@@ -343,78 +684,146 @@
       "path": "skills/db-migrate/SKILL.md",
       "description": "Database migration lifecycle — create, apply, rollback, status",
       "triggers": {
-        "keywords": ["create migration", "run migrations", "migration status", "rollback migration", "database migration"],
-        "intents": ["create database migration", "run db migrations"]
+        "keywords": [
+          "create migration",
+          "run migrations",
+          "migration status",
+          "rollback migration",
+          "database migration"
+        ],
+        "intents": [
+          "create database migration",
+          "run db migrations"
+        ]
       }
     },
     {
       "id": "dependency-update",
       "type": "skill",
       "path": "skills/dependency-update/SKILL.md",
-      "description": "Safe dependency updates with compatibility checks",
+      "description": "Safe dependency updates with compatibility checks and test verification",
       "triggers": {
-        "keywords": ["update dependencies", "upgrade packages", "bump versions", "update packages"],
-        "intents": ["update npm dependencies", "upgrade packages safely"]
+        "keywords": [
+          "update dependencies",
+          "upgrade packages",
+          "bump versions",
+          "update packages"
+        ],
+        "intents": [
+          "update npm dependencies",
+          "upgrade packages safely"
+        ]
       }
     },
     {
       "id": "security-audit",
       "type": "skill",
       "path": "skills/security-audit/SKILL.md",
-      "description": "Security audit — dependency vulnerabilities, secrets scan",
+      "description": "Security audit — dependency vulnerabilities, secrets scan, Docker image scan",
       "triggers": {
-        "keywords": ["security audit", "check vulnerabilities", "audit dependencies", "vulnerability scan", "secrets scan"],
-        "intents": ["security audit", "check for vulnerabilities"]
+        "keywords": [
+          "security audit",
+          "check vulnerabilities",
+          "audit dependencies",
+          "vulnerability scan",
+          "secrets scan"
+        ],
+        "intents": [
+          "security audit",
+          "check for vulnerabilities"
+        ]
       }
     },
     {
       "id": "perf-check",
       "type": "skill",
       "path": "skills/perf-check/SKILL.md",
-      "description": "Performance analysis — bundle size, slow queries, async patterns",
+      "description": "Performance analysis — bundle size, slow queries, async patterns, memory",
       "triggers": {
-        "keywords": ["performance check", "bundle size", "slow queries", "perf audit", "performance analysis"],
-        "intents": ["performance analysis", "bundle size check"]
+        "keywords": [
+          "performance check",
+          "bundle size",
+          "slow queries",
+          "perf audit",
+          "performance analysis"
+        ],
+        "intents": [
+          "performance analysis",
+          "bundle size check"
+        ]
       }
     },
     {
       "id": "test-gen",
       "type": "skill",
       "path": "skills/test-gen/SKILL.md",
-      "description": "Auto-generate tests for a file or module",
+      "description": "Auto-generate tests for a file or module matching existing project patterns",
       "triggers": {
-        "keywords": ["generate tests", "write tests", "add test coverage", "create tests", "написать тесты"],
-        "intents": ["generate unit tests", "add test coverage"]
+        "keywords": [
+          "generate tests",
+          "write tests",
+          "add test coverage",
+          "create tests",
+          "написать тесты"
+        ],
+        "intents": [
+          "generate unit tests",
+          "add test coverage"
+        ]
       }
     },
     {
       "id": "brainstorm",
       "type": "skill",
       "path": "skills/brainstorm/SKILL.md",
-      "description": "Structured brainstorming — architecture decisions, problem solving",
+      "description": "Structured brainstorming — architecture decisions, problem solving, open exploration",
       "triggers": {
-        "keywords": ["brainstorm", "explore options", "architecture decision", "design options"],
-        "intents": ["brainstorm solutions", "explore architecture options"]
+        "keywords": [
+          "brainstorm",
+          "explore options",
+          "architecture decision",
+          "design options"
+        ],
+        "intents": [
+          "brainstorm solutions",
+          "explore architecture options"
+        ]
       }
     },
     {
       "id": "interview",
       "type": "skill",
       "path": "skills/interview/SKILL.md",
-      "description": "Critical requirements interviewer — asks targeted questions before expensive operations",
+      "description": "Critical requirements interviewer — asks targeted questions one-by-one with answer options before expensive operations",
       "triggers": {
-        "keywords": ["clarify requirements", "ask questions first", "interview", "gather requirements"],
-        "intents": ["clarify requirements", "gather requirements interactively"]
+        "keywords": [
+          "clarify requirements",
+          "ask questions first",
+          "interview",
+          "gather requirements"
+        ],
+        "intents": [
+          "clarify requirements",
+          "gather requirements interactively"
+        ]
       }
     },
     {
       "id": "hookify",
       "type": "skill",
       "path": "skills/hookify/SKILL.md",
-      "description": "Create Claude Code hooks from natural language descriptions",
+      "description": "Create agent hooks from natural language descriptions",
       "triggers": {
-        "keywords": ["create hook", "add hook", "hookify", "configure hook"],
-        "intents": ["create claude code hook", "add automation hook"]
+        "keywords": [
+          "create hook",
+          "add hook",
+          "hookify",
+          "configure hook"
+        ],
+        "intents": [
+          "create claude code hook",
+          "add automation hook"
+        ]
       }
     },
     {
@@ -423,28 +832,53 @@
       "path": "skills/claude-md-management/SKILL.md",
       "description": "Capture session learnings and persist into CLAUDE.md files",
       "triggers": {
-        "keywords": ["update claude.md", "save learnings", "revise claude.md", "persist learnings"],
-        "intents": ["update claude.md", "save session learnings"]
+        "keywords": [
+          "update claude.md",
+          "save learnings",
+          "revise claude.md",
+          "persist learnings"
+        ],
+        "intents": [
+          "update claude.md",
+          "save session learnings"
+        ]
       }
     },
     {
       "id": "pr-review-comments",
       "type": "skill",
       "path": "skills/pr-review-comments/SKILL.md",
-      "description": "Analyze PR review comments — group by author, suggest fixes",
+      "description": "Analyze PR review comments",
       "triggers": {
-        "keywords": ["analyze pr comments", "pr review comments", "what did reviewers say", "reviewer comments"],
-        "intents": ["analyze pr review comments", "understand reviewer feedback"]
+        "keywords": [
+          "analyze pr comments",
+          "pr review comments",
+          "what did reviewers say",
+          "reviewer comments"
+        ],
+        "intents": [
+          "analyze pr review comments",
+          "understand reviewer feedback"
+        ]
       }
     },
     {
       "id": "pr-issue-documenter",
       "type": "skill",
       "path": "skills/pr-issue-documenter/SKILL.md",
-      "description": "Generate structured PR descriptions and issue documentation",
+      "description": "Generate structured PR descriptions and issue documentation from branch changes",
       "triggers": {
-        "keywords": ["add pr description", "document pr", "create issue for pr", "pr description", "pr summary"],
-        "intents": ["document pull request", "generate pr description"]
+        "keywords": [
+          "add pr description",
+          "document pr",
+          "create issue for pr",
+          "pr description",
+          "pr summary"
+        ],
+        "intents": [
+          "document pull request",
+          "generate pr description"
+        ]
       }
     },
     {
@@ -453,8 +887,17 @@
       "path": "skills/prd-creator/SKILL.md",
       "description": "Transforms unstructured user requests into structured Product Requirements Documents",
       "triggers": {
-        "keywords": ["create prd", "write prd", "product requirements", "prd", "requirements document"],
-        "intents": ["create product requirements document", "write prd"]
+        "keywords": [
+          "create prd",
+          "write prd",
+          "product requirements",
+          "prd",
+          "requirements document"
+        ],
+        "intents": [
+          "create product requirements document",
+          "write prd"
+        ]
       }
     }
   ]
