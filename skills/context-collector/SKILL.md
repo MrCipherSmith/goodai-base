@@ -1,6 +1,6 @@
 ---
 name: context-collector
-description: "Collects, summarizes, and maintains a unified context document for a job. Gathers relevant local documentation (docs/, jobs/, rules), identifies libraries/patterns/references, fetches external documentation via web, extracts best practices, and produces a single context document that all sub-agents can reference during the job lifecycle. Can be invoked by job-orchestrator or directly by user."
+description: "Use when a job needs a unified context document — gathering docs, libraries, and references for sub-agents before execution."
 triggers:
   - "Collect context"
   - "Build context"
@@ -17,6 +17,12 @@ metadata:
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode"
 ---
+
+<SUBAGENT-STOP>
+If you were dispatched as a subagent to execute a specific task, skip this skill entirely.
+This skill is for orchestrators and interactive session-level routing only.
+Proceed directly with your assigned task.
+</SUBAGENT-STOP>
 
 # Context Collector
 
@@ -445,6 +451,24 @@ For ACTION=update, use the same flow — `job-documenter` will overwrite the exi
 If no JOB_NAME is provided:
 - Write context to `~/goodai-base/docs/context/<descriptive-slug>.md`
 - Include full metadata block
+
+## Reporting Results
+
+Every final response to the orchestrator MUST begin with the status line:
+
+```
+STATUS: DONE
+
+## Context collected
+[summary of what was gathered]
+
+## CONTEXT_RESULT
+[the full result block]
+```
+
+Use `STATUS: DONE_WITH_CONCERNS` if context is partial. Use `STATUS: BLOCKED` if access fails.
+
+**IRON LAW: THE FIRST LINE OF YOUR FINAL RESPONSE IS ALWAYS "STATUS: <STATUS>". THE CONTEXT_RESULT BLOCK FOLLOWS AFTER.**
 
 ### 5.3 Return Result
 

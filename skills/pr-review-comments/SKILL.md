@@ -1,6 +1,6 @@
 ---
 name: pr-review-comments
-description: "Fetches and analyzes PR review comments via GitHub MCP or gh CLI. Groups comments by author, provides explanation and fix suggestions for each. For boss comments, proposes rule updates with user consent. Use when: user provides PR link, analyzing review feedback, extracting actionable items from code reviews."
+description: "Use when a PR link is provided to analyze review feedback, extract actionable items, or process boss comments into potential rule updates."
 triggers:
   - "Analyze PR comments"
   - "Review comments for PR"

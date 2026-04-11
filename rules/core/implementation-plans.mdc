@@ -29,6 +29,17 @@ Apply when creating or updating an implementation plan document.
 - Plan files MUST be Markdown (`.md`).
 - Code or command examples MUST be fenced code blocks.
 
+## Red Flags — Stop and re-read this rule if you are thinking:
+
+| Rationalization | Why it's wrong |
+|---|---|
+| "The plan is in my head, I don't need to write it down" | An unwritten plan cannot be reviewed, versioned, or handed to another agent |
+| "I'll use the existing folder instead of creating a new date folder" | Date folders are the audit trail — overwriting one erases the iteration history |
+| "The user knows what we discussed, I'll skip asking for the folder name" | The location question is a confirmation gate, not a convenience; skipping it causes misplaced files |
+| "I'll write the plan in English only since that's what the user spoke" | All three variants (ru/en/ai) are required — omitting one breaks downstream tooling |
+
+**IRON LAW: ALWAYS ASK FOR TARGET LOCATION AND FOLDER NAME BEFORE CREATING ANY PLAN FILE, AND GENERATE ALL THREE LANGUAGE VARIANTS.**
+
 ## Template
 ```markdown
 # <Plan Name>

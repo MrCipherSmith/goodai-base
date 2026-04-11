@@ -1,6 +1,6 @@
 ---
 name: task-implementer
-description: "Autonomous implementation agent that receives a single atomic task (JSON task object from issue-analyzer) and implements it end-to-end: researches codebase, plans changes, writes code, creates tests/stories as needed, verifies via lint/type-check/test, and reports results. Use when: implementing a single decomposed task from issue-analyzer, executing code changes autonomously."
+description: "Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing autonomous code changes from a JSON task object."
 triggers:
   - "Implement task"
   - "Execute task scenario"
@@ -372,6 +372,100 @@ This skill is designed to run fully autonomously. The following settings control
 8. **DO** commit with conventional commit format referencing the issue number.
 9. **DO** verify your work before reporting.
 10. Return the JSON result object as your **final message** to the orchestrator.
+
+---
+
+## Red Flags — Stop and re-read this skill if you are thinking:
+
+| Rationalization | Why it's wrong |
+|---|---|
+| "I'll implement first and verify acceptance criteria later" | Implementing without criteria means you might build the wrong thing correctly |
+| "This is a small change, I don't need to read the context document" | Context documents exist because the task description alone is incomplete by design |
+| "The task description is clear, I don't need to read related files first" | Module patterns and conventions only emerge from reading the actual files, not the description |
+| "I'll report DONE and note the skipped tests as a concern" | Skipped verification is a failed verification — partial is not done |
+| "I understand how this module works from previous tasks" | Each task targets a specific slice; read the files fresh to catch state that has changed |
+
+**IRON LAW: READ ALL SPECIFIED FILES AND THE CONTEXT DOCUMENT BEFORE WRITING A SINGLE LINE OF CODE.**
+
+---
+
+## Reporting Results
+
+**Rule:** `rules/core/subagent-status-protocol.md`
+
+Every final response to the orchestrator MUST begin with `STATUS: <STATUS>`. The JSON result object from Phase 6 is the structured payload — but the status line comes first, before the JSON block.
+
+### Iron Law
+
+**STATUS LINE IS MANDATORY — ORCHESTRATOR CANNOT INTERPRET FREE TEXT**
+
+### When to use each status
+
+| Status | Use when |
+|--------|----------|
+| `DONE` | All acceptance criteria met, all verifications pass (or pass after self-fix) |
+| `DONE_WITH_CONCERNS` | Task complete but: criteria required interpretation, workaround was used, unexpected discovery, verification passed with warnings |
+| `BLOCKED` | Unresolvable blocker: required file missing after checking, unresolvable type errors after 3 attempts, branch conflict needing orchestrator action |
+| `NEEDS_CONTEXT` | Task input is incomplete: `target_files` empty, `acceptance_criteria` uses undefined terms, `context` field missing required types |
+
+### Correct final response format
+
+```
+STATUS: DONE
+
+## Completed
+- Added validation logic to PipelineStep component
+- Created unit tests covering all 4 acceptance criteria
+- Committed 2 conventional commits
+
+## Files changed
+- src/components/PipelineStep.tsx — added validateStep() method
+- src/components/PipelineStep.test.tsx — new test file, 14 tests
+
+{
+  "task_id": "task-1",
+  "status": "success",
+  ...
+}
+```
+
+For `DONE_WITH_CONCERNS`:
+
+```
+STATUS: DONE_WITH_CONCERNS
+
+## Completed
+- Implemented feature as described
+
+## Files changed
+- src/services/auth.ts — updated token refresh logic
+
+## Concerns for orchestrator
+- The acceptance criterion "support legacy tokens" was ambiguous — implemented support for both v1 and v2 token formats. If only v2 is needed, the v1 branch can be removed.
+
+{
+  "task_id": "task-2",
+  "status": "success",
+  ...
+}
+```
+
+For `BLOCKED`:
+
+```
+STATUS: BLOCKED
+
+## Reason
+src/types/pipeline.ts does not exist and is listed as a dependency. Cannot implement the store layer without the type definitions.
+
+## What I need from orchestrator
+Run task-1 (which creates pipeline.ts) before re-dispatching this task, or provide the type definitions directly.
+
+## Work completed so far
+- (nothing — blocked before implementation could start)
+```
+
+See `rules/core/subagent-status-protocol.md` for full format specification and all four status types.
 
 ---
 
