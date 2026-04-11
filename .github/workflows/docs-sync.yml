@@ -20,16 +20,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          python-version: '3.x'
+          bun-version: latest
+
+      - name: Install script dependencies
+        run: cd scripts && bun install
 
       - name: Generate skill catalog
-        run: bash scripts/generate-skill-catalog.sh
+        run: cd scripts && bun run generate-skill-catalog
 
       - name: Generate rules catalog
-        run: bash scripts/generate-rules-catalog.sh
+        run: cd scripts && bun run generate-rules-catalog
 
       - name: Commit updated docs
         run: |
