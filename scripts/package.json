@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "test": "bun test",
     "detect-context": "bun src/detect-context.ts",
     "detect-models": "bun src/detect-models.ts",
     "sync-skills": "bun src/sync-skills.ts",
