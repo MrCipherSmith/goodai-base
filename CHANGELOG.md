@@ -4,6 +4,40 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.3.0] — TDD pipeline, quality gate, engineering rules
+
+> Merged: 2026-04-11 · Commits: `514f2a4`, `e1455a2`, `ada1f63`, `aa3ddaa`
+
+### Added
+
+- **`tests-creator` skill** (`skills/tests-creator/SKILL.md` v1.0.0) — sub-agent that converts acceptance_criteria into failing test stubs (RED phase) before any implementation; detects test framework, writes forward-declared assertions, commits, and verifies RED state
+- **`code-verifier` skill** (`skills/code-verifier/SKILL.md` v1.0.0) — quality gate sub-agent: lint + type-check + tests + circular import detection; never aborts early; structured VERIFICATION_RESULT with severity (CRITICAL/HIGH/LOW) and gate (PASS/PASS_WITH_WARNINGS/FAIL)
+- **8 engineering rules** (`rules/core/`):
+  - `tdd-workflow.mdc` — RED-GREEN-REFACTOR cycle, Iron Laws (no STATUS: DONE with failing tests, no impl before failing tests)
+  - `solid-principles.mdc` — SRP, OCP, DIP with code examples and Red Flags
+  - `error-handling.mdc` — Result<T,E> pattern, typed domain errors, no swallowed exceptions
+  - `api-contracts.mdc` — OpenAPI-first, semantic versioning, contract testing
+  - `clean-architecture.mdc` — 4-layer model, dependency rule (inward only), repository pattern
+  - `database-patterns.mdc` — no N+1, CONCURRENTLY indexes, 3-step migration for breaking changes
+  - `security-baseline.mdc` — no secrets in source, parameterized queries, validate external input
+  - `async-patterns.mdc` — Promise.all for independent ops, mandatory timeouts, Promise.allSettled for partial failure
+- **`implementation-doc-mandate.mdc`** — mandates two documents for all implementing agents: Implementation Spec (before code) + Change Report (after); includes Iron Laws and Red Flags
+- **Agent documentation** (`docs/agents/`):
+  - `job-orchestrator.md` — when to use, how to launch, full 15-step pipeline, sub-agents table, mandatory invariants, output artifacts, resume mechanism, example flow
+  - `tests-creator.md` — when to use, 4-phase workflow, TEST_CASE_SPECS output format, supported frameworks, forward-declared test convention
+  - `code-verifier.md` — what it checks, severity classification, gate logic, VERIFICATION_RESULT format, orchestrator integration
+
+### Changed
+
+- **`job-orchestrator` v3.2.0** — hardwired TDD pipeline: tests-creator (step 4, mandatory) before every task-implementer wave; code-verifier (steps 7 + 11) replaces internal bash checks; Iron Law: no exceptions even if user says "skip tests"
+- **`feature-dev` v2.0.0** — 8 phases (was 7): Phase 4 (tests-creator, mandatory) now runs before Phase 5 (implement); Phase 1 creates Implementation Spec; Phase 8 produces Change Report; rules always loaded: `tdd-workflow.mdc`, `implementation-doc-mandate.mdc`, `error-handling.mdc`
+- **`task-implementer` v1.2.0** — Phase 1.5 (TDD Check) reads test stubs and verifies RED before implementing; Phase 2.4 loads `tdd-workflow.mdc`, `error-handling.mdc`, `solid-principles.mdc` for ALL task types
+- **`issue-analyzer` v1.1.0** — each decomposed task now includes `"requires_tests_creator": true` in JSON output
+- **`context-collector` v1.1.0** — Phase 2.5 (Test Framework Detection) reads package.json and existing test files, produces `test_framework` context block for sub-agents
+- **`AGENTS.md`** — added "Engineering Standards" section (7 rules), "Implementation Process" section, ⭐ markers for new mandatory sub-agents (tests-creator, code-verifier)
+
+---
+
 ## [Unreleased] — Scripts TypeScript migration
 
 > Branch: `feat/scripts-ts` · PR: [#2](https://github.com/MrCipherSmith/goodai-base/pull/2)
