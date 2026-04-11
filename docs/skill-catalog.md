@@ -2,7 +2,7 @@
 
 _Auto-generated from `skills/*/SKILL.md`. Do not edit manually._
 
-Total: 31 skills
+Total: 32 skills
 
 | Name | Description | Version | Category |
 | ---- | ----------- | ------- | -------- |
@@ -14,6 +14,7 @@ Total: 31 skills
 | `code-mobx-store-review` | Use when reviewing MobX store changes, validating state management, actions, computed values, rea... | 1.1.0 | review |
 | `code-review` | Use when a thorough PR review or pre-merge check is needed, covering correctness, security, perfo... | 1.0.0 | review |
 | `code-style-review` | Use when style validation or architecture review is needed, checking naming, organization, patter... | 1.0.0 | review |
+| `code-verifier` | Use when running a full quality gate after implementation — lint, type-check, tests, and import v... | 1.0.0 | verification |
 | `commit` | Use when committing code changes and a well-structured conventional commit message is needed, wit... | 1.0.0 | workflow |
 | `context-collector` | Use when a job needs a unified context document — gathering docs, libraries, and references for s... | 1.1.0 | context |
 | `db-migrate` | Use when creating, applying, rolling back, or checking the status of database migrations. | 1.0.0 | database |
@@ -26,7 +27,7 @@ Total: 31 skills
 | `interviewer` | Use when requirements are ambiguous and precise clarification is needed before proceeding with a ... | 1.0.0 | meta |
 | `issue-analyzer` | Use when decomposing a GitHub issue into atomic tasks for AI implementation, planning task breakd... | 1.1.0 | analysis |
 | `job-documenter` | Use when a job folder needs to be initialized, or analysis/report/review documents need to be cre... | 1.0.0 | documentation |
-| `job-orchestrator` | Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-e... | 3.1.0 | orchestration |
+| `job-orchestrator` | Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-e... | 3.2.0 | orchestration |
 | `perf-check` | Use when measuring bundle size, detecting performance regressions, auditing slow queries, or inve... | 1.0.0 | performance |
 | `pr` | Use when opening a pull request for the current branch. | 1.0.0 | workflow |
 | `pr-issue-documenter` | Use when documenting PR changes, adding a PR description, creating a linked issue for a PR, or up... | 1.0.0 | documentation |

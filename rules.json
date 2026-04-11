@@ -696,6 +696,23 @@
       }
     },
     {
+      "id": "code-verifier",
+      "type": "skill",
+      "path": "skills/code-verifier/SKILL.md",
+      "description": "lint, type-check, tests, circular import detection",
+      "triggers": {
+        "keywords": [
+          "lint",
+          "type-check",
+          "tests",
+          "circular",
+          "import",
+          "detection"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "tests-creator",
       "type": "skill",
       "path": "skills/tests-creator/SKILL.md",

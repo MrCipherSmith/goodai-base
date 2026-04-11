@@ -21,7 +21,7 @@ triggers:
   - "Full issue implementation"
 metadata:
   author: "MrCipherSmith"
-  version: "3.1.0"
+  version: "3.2.0"
   category: "orchestration"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -259,20 +259,26 @@ PLAN:
   3.  { id: "prepare",        type: "prepare",   agent: "orchestrator",      depends: ["context"] }
   4.  { id: "tests-creator",  type: "tests",     agent: "tests-creator",     depends: ["prepare"] }
   5.  { id: "implement",      type: "implement", agent: "task-implementer",  depends: ["tests-creator"] }
-  6.  { id: "sanity-check",   type: "check",     agent: "orchestrator",      depends: ["implement"] }
-  7.  { id: "review",         type: "review",    agent: "code-review",       depends: ["sanity-check"] }
-  8.  { id: "security",       type: "security",  agent: "security-audit",    depends: ["implement"], conditional: true }
-  9.  { id: "fix",            type: "fix",       agent: "task-implementer",  depends: ["review"], conditional: true }
-  10. { id: "checks",         type: "check",     agent: "orchestrator",      depends: ["fix"] }
-  11. { id: "perf-check",     type: "perf",      agent: "perf-check",        depends: ["checks"], conditional: true }
-  12. { id: "report",         type: "report",    agent: "orchestrator",      depends: ["checks"] }
-  13. { id: "pr",             type: "pr",        agent: "orchestrator",      depends: ["report"], conditional: true }
-  14. { id: "deploy",         type: "deploy",    agent: "deploy",            depends: ["pr"], conditional: true }
+  6.  { id: "sanity-check",    type: "check",    agent: "orchestrator",    depends: ["implement"] }
+  7.  { id: "verify",          type: "verify",   agent: "code-verifier",   depends: ["sanity-check"] }
+  8.  { id: "review",          type: "review",   agent: "code-review",     depends: ["verify"] }
+  9.  { id: "security",        type: "security", agent: "security-audit",  depends: ["implement"], conditional: true }
+  10. { id: "fix",             type: "fix",      agent: "task-implementer", depends: ["review"], conditional: true }
+  11. { id: "verify-post-fix", type: "verify",   agent: "code-verifier",   depends: ["fix"], conditional: true }
+  12. { id: "perf-check",      type: "perf",     agent: "perf-check",      depends: ["verify"], conditional: true }
+  13. { id: "report",          type: "report",   agent: "orchestrator",    depends: ["verify"] }
+  14. { id: "pr",              type: "pr",       agent: "orchestrator",    depends: ["report"], conditional: true }
+  15. { id: "deploy",          type: "deploy",   agent: "deploy",          depends: ["pr"], conditional: true }
 ```
 
 **Conditional step triggers:**
 - `sanity-check`: always runs — verifies ≥1 commit was made
 - `tests-creator`: always runs — mandatory TDD step before every task-implementer wave
+- `verify`: always runs — code-verifier is the mandatory quality gate after implementation
+- `security`: diff touches auth/, api/, migrations, schema files, or `.env`
+- `fix`: review or verify found CRITICAL/HIGH findings
+- `verify-post-fix`: always runs after fix (confirms fix resolved the findings)
+- `perf-check`: diff contains *.tsx, *.jsx, *.css, dist/, build/ files
 - `security`: diff touches auth/, api/, migrations, schema files, or `.env`
 - `fix`: review found CRITICAL/WARNING findings
 - `perf-check`: diff contains *.tsx, *.jsx, *.css, dist/, build/ files
@@ -342,17 +348,18 @@ Show each step with its agent and status, then ask the user to approve or adjust
 ```
 Execution plan — <N> steps:
 
-  Step 1   analyze        issue-analyzer              → issue #<N>
-  Step 2   context        context-collector           → project context + test framework
-  Step 3   prepare        orchestrator                → feature branch
-  Step 4   tests-creator  tests-creator × <tasks>     → RED test stubs per task (MANDATORY)
-  Step 5   implement      task-implementer × <tasks>  → <N> tasks make tests GREEN (wave-parallel)
-  Step 6   sanity-check   orchestrator                → verify commits
-  Step 7   review         code-review × 4             → parallel agents
-  Step 8   fix            task-implementer            → [conditional: if issues found]
-  Step 9   checks         orchestrator                → lint + type-check + tests
-  Step 10  report         orchestrator                → final summary
-  Step 11  pr             orchestrator + gh CLI       → [conditional: create_pr=true]
+  Step 1   analyze          issue-analyzer              → issue #<N>
+  Step 2   context          context-collector           → project context + test framework
+  Step 3   prepare          orchestrator                → feature branch
+  Step 4   tests-creator    tests-creator × <tasks>     → RED test stubs per task (MANDATORY)
+  Step 5   implement        task-implementer × <tasks>  → <N> tasks make tests GREEN (wave-parallel)
+  Step 6   sanity-check     orchestrator                → verify commits exist
+  Step 7   verify           code-verifier               → lint + type-check + tests + imports (MANDATORY)
+  Step 8   review           code-review × 4             → parallel agents
+  Step 9   fix              task-implementer            → [conditional: CRITICAL/HIGH findings]
+  Step 10  verify-post-fix  code-verifier               → [conditional: after fix]
+  Step 11  report           orchestrator                → final summary
+  Step 12  pr               orchestrator + gh CLI       → [conditional: create_pr=true]
 
 Optional (not in plan — add if needed):
   + security-audit   auto-detect: auth/API/DB changes
@@ -907,43 +914,61 @@ IF still NEEDS_FIX after max iterations:
 - Iteration 2: "These findings were NOT fixed in iteration 1: [subset]. Fix them now."
 - Iteration 3: "FINAL attempt. These findings remain after 2 fix passes: [subset]. This is the last fix iteration." 
 
-### 2.8 Step: CHECKS
+### 2.8 Step: VERIFY (code-verifier)
 
-Run full project verification in the worktree.
-
-**First, detect the project stack and package manager:**
-
-```bash
-# Auto-detect package manager (run once during PREPARE, cache result)
-if [ -f bun.lockb ]; then PM="bun"; RUNNER="bun run"
-elif [ -f pnpm-lock.yaml ]; then PM="pnpm"; RUNNER="pnpm run"
-elif [ -f yarn.lock ]; then PM="yarn"; RUNNER="yarn"
-elif [ -f package-lock.json ]; then PM="npm"; RUNNER="npm run"
-elif [ -f requirements.txt ] || [ -f pyproject.toml ]; then PM="python"; RUNNER=""
-elif [ -f go.mod ]; then PM="go"; RUNNER=""
-else PM="unknown"; RUNNER=""
-fi
-```
-
-**Run checks based on detected stack:**
-
-| Stack | Lint | Type-check | Test |
-|-------|------|------------|------|
-| Node (npm/bun/yarn/pnpm) | `$RUNNER lint` | `$RUNNER type-check` or `npx tsc --noEmit` | `$RUNNER test` |
-| Python | `ruff check .` or `flake8` | `mypy .` or `pyright` | `pytest` |
-| Go | `golangci-lint run` | (built into compiler) | `go test ./...` |
-
-If a check command is not available (no lint script, etc.), skip it with a note.
+Dispatch `code-verifier` as a sub-agent. This replaces the orchestrator-internal "checks" step.
 
 ```
-FINAL_CHECKS:
-  package_manager: <detected PM>
-  lint: pass | <N errors, details> | skipped (no lint script)
-  type_check: pass | <N errors, details> | skipped
-  tests: pass | <N passed, M failed, details> | skipped (no test script)
+Task({
+  description: "Quality gate: <job-name>",
+  subagent_type: "general",
+  prompt: |
+    You are code-verifier. Load skill: skills/code-verifier/SKILL.md
+
+    codebase_path: <worktree_path>
+    base_branch:   <base_branch>
+    scope:         changed
+    
+    Run all 4 phases and return VERIFICATION_RESULT.
+})
 ```
 
-> **Store `PM` and `RUNNER` in JOB_STATE** during the PREPARE step so all subsequent steps use the correct commands.
+**Handle result:**
+```
+IF VERIFICATION_RESULT.gate == "PASS" or "PASS_WITH_WARNINGS":
+  → Proceed to review
+  → Log findings as informational in job docs
+
+IF VERIFICATION_RESULT.gate == "FAIL":
+  → Extract CRITICAL/HIGH findings
+  → Check if fix step is already scheduled
+    - If not → add fix step to plan (dispatch task-implementer in fix mode)
+    - If fix already ran 2× → escalate to user, skip to report
+```
+
+**Document result:**
+```
+ACTION: add-document
+DATA:
+  DOC_TYPE: verification-report
+  TARGET: both
+  TITLE: Verification Report — <gate status>
+  CONTENT: <VERIFICATION_RESULT formatted>
+  AGENT: code-verifier
+```
+
+### 2.8.1 Step: VERIFY-POST-FIX (code-verifier, conditional)
+
+After fix iterations, dispatch `code-verifier` again with identical parameters.
+
+```
+IF fix ran:
+  Dispatch code-verifier (same params as step 2.8)
+  IF gate still FAIL:
+    Log "Verification failed after fix" → skip to report with warning
+  IF gate PASS:
+    Proceed to report
+```
 
 ### 2.8.1 Step: PERF-CHECK (optional)
 
