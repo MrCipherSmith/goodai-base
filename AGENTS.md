@@ -262,7 +262,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Key Features**:
   - 4-phase dynamic pipeline: Context Collection → Plan Building → Execution → Completion
   - Intent-driven: adapts plan to implement, analyze, review, or custom workflows
-  - Dispatches issue-analyzer, context-collector, tests-creator, task-implementer, and review skills as sub-agents
+  - Dispatches issue-analyzer, context-collector, tests-creator, task-implementer, code-verifier, and review skills as sub-agents
   - Persistent job documentation via job-documenter in `jobs/<job-name>/`
   - Dynamic plan extension (e.g., analyze → user confirms → implement)
   - Review-fix loop (max 2 iterations)
@@ -297,6 +297,23 @@ Intelligent agents for complex analysis and review tasks:
 - **Output**: JSON object with `issue` metadata, `tasks` array (each with task_id, target_files, acceptance_criteria, context, module_patterns, `requires_tests_creator: true`), and `dependency_order`
 - **Scope**: Read-only analysis, no code modifications
 - **Version**: v1.1.0 — tasks now include `requires_tests_creator` flag; orchestrator must dispatch `tests-creator` before `task-implementer`
+
+**`skills/code-verifier`** ⭐ QUALITY GATE — RUNS AFTER TASK-IMPLEMENTER
+- **Purpose**: Full quality gate: lint, type-check, tests, circular import detection
+- **Use When**:
+  - Dispatched by `job-orchestrator` after task-implementer wave (mandatory)
+  - Dispatched again after fix iterations (mandatory)
+  - "Run verification", "Quality gate", "Run lint and tests", "Verify implementation"
+  - Standalone: `/code-verifier` or "check code quality"
+- **Key Features**:
+  - Auto-detects PM (bun/pnpm/npm/yarn/python/go) and available tools
+  - Runs ALL checks — never aborts early even if one fails
+  - Classifies findings: CRITICAL (type errors, test failures) / HIGH (lint errors, cycles) / LOW (warnings)
+  - Gate: FAIL if any CRITICAL or HIGH; PASS_WITH_WARNINGS for LOW only
+  - Scope: changed files by default (faster), full project with `--scope full`
+- **Pipeline position**: task-implementer → **code-verifier** → review
+- **Output**: `VERIFICATION_RESULT` with gate status, per-check results, structured findings
+- **Version**: v1.0.0
 
 **`skills/tests-creator`** ⭐ TDD — RUNS BEFORE TASK-IMPLEMENTER
 - **Purpose**: Converts acceptance criteria into failing test stubs (RED phase of TDD) before any implementation code is written

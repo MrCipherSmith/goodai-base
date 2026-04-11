@@ -41,6 +41,11 @@ skills:
     version: 1.0.0
     category: review
     path: skills/code-style-review
+  - name: code-verifier
+    description: 'Use when running a full quality gate after implementation — lint, type-check, tests, and import validation. Mandatory step in job-orchestrator after task-implementer and after fix iterations. Use standalone when you need a structured verification report.'
+    version: 1.0.0
+    category: verification
+    path: skills/code-verifier
   - name: commit
     description: 'Use when committing code changes and a well-structured conventional commit message is needed, with optional amend or selective staging.'
     version: 1.0.0
@@ -103,7 +108,7 @@ skills:
     path: skills/job-documenter
   - name: job-orchestrator
     description: 'Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-end with sub-agents.'
-    version: 3.1.0
+    version: 3.2.0
     category: orchestration
     path: skills/job-orchestrator
   - name: perf-check
