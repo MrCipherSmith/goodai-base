@@ -154,11 +154,13 @@ These rules prevent silent failures and context drift in multi-step pipelines.
 
 | Resource | Location |
 | -------- | -------- |
+| Skills map & interaction diagram | [skills-overview.md](./skills-overview.md) |
 | All skills | [skill-catalog.md](./skill-catalog.md) |
 | All rules | [rules-catalog.md](./rules-catalog.md) |
 | Machine-readable skill catalog | [ai/skill-catalog.yaml](./ai/skill-catalog.yaml) |
 | Routing table | [AGENTS.md](../AGENTS.md) |
 | Unified trigger registry | [rules.json](../rules.json) |
+| Agent deep-dives | [agents/job-orchestrator.md](./agents/job-orchestrator.md), [agents/tests-creator.md](./agents/tests-creator.md), [agents/code-verifier.md](./agents/code-verifier.md) |
 | Hook for projects | `cd scripts && bun run deploy-skill-hook <path>` |
 | Sync sub-agents | `cd scripts && bun run sync-agents` |
 | Validate before sync | `cd scripts && bun run validate-skills-before-sync` |
