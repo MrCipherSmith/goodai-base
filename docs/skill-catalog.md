@@ -26,7 +26,7 @@ Total: 31 skills
 | `interviewer` | Use when requirements are ambiguous and precise clarification is needed before proceeding with a ... | 1.0.0 | meta |
 | `issue-analyzer` | Use when decomposing a GitHub issue into atomic tasks for AI implementation, planning task breakd... | 1.1.0 | analysis |
 | `job-documenter` | Use when a job folder needs to be initialized, or analysis/report/review documents need to be cre... | 1.0.0 | documentation |
-| `job-orchestrator` | Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-e... | 3.0.0 | orchestration |
+| `job-orchestrator` | Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-e... | 3.1.0 | orchestration |
 | `perf-check` | Use when measuring bundle size, detecting performance regressions, auditing slow queries, or inve... | 1.0.0 | performance |
 | `pr` | Use when opening a pull request for the current branch. | 1.0.0 | workflow |
 | `pr-issue-documenter` | Use when documenting PR changes, adding a PR description, creating a linked issue for a PR, or up... | 1.0.0 | documentation |
@@ -34,6 +34,6 @@ Total: 31 skills
 | `prd-creator` | Use when a vague or unstructured request needs to be converted into a formal, testable Product Re... | 1.0.0 | planning |
 | `push` | Use when pushing the current branch to the remote, especially when upstream tracking or safety ch... | 1.0.0 | workflow |
 | `security-audit` | Use when checking for dependency vulnerabilities, accidentally committed secrets, or security iss... | 1.0.0 | quality |
-| `task-implementer` | Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing auton... | 1.1.0 | implementation |
+| `task-implementer` | Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing auton... | 1.2.0 | implementation |
 | `test-gen` | Use when unit or integration tests need to be written for a specific file or module. | 1.0.0 | testing |
 | `tests-creator` | Use when writing test cases BEFORE implementation — converts acceptance criteria into failing tes... | 1.0.0 | testing |
