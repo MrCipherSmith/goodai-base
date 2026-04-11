@@ -57,9 +57,8 @@ Reference standards loaded on demand, not always-on:
 
 ```bash
 git clone https://github.com/MrCipherSmith/goodai-base.git ~/goodai-base
-cd ~/goodai-base
-chmod +x scripts/*.sh
-./scripts/sync-skills.sh
+cd ~/goodai-base/scripts && bun install
+bun run sync-skills
 ```
 
 The sync script copies skills and the `AGENTS.md` routing table to all configured AI tools:
