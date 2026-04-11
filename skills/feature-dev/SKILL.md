@@ -1,6 +1,6 @@
 ---
 name: feature-dev
-description: "7-phase feature development workflow: requirements → design → implement → test → review → fix → PR. Full cycle from idea or GitHub issue to merge-ready PR. Confirms requirements and design with user before autonomous execution."
+description: "Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided workflow."
 triggers:
   - "/feature-dev"
   - "Develop feature"
@@ -14,6 +14,12 @@ metadata:
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
 ---
+
+<SUBAGENT-STOP>
+If you were dispatched as a subagent to execute a specific task, skip this skill entirely.
+This skill is for interactive feature development sessions only.
+Proceed directly with your assigned task.
+</SUBAGENT-STOP>
 
 # Feature Development (7-Phase)
 
@@ -50,9 +56,8 @@ End-to-end feature development workflow from idea to merge-ready PR.
 3. **Get user confirmation on the plan**
 
 ### Phase 3: PREPARE
-1. Create a feature branch: `git checkout -b feat/<name>`
-2. If large feature, consider `git worktree add` for isolation
-3. Install any new dependencies
+1. Create a feature branch: `wt switch -c feat/<name>`
+2. Install any new dependencies
 
 ### Phase 4: IMPLEMENT
 1. Implement changes file by file, following the plan
@@ -103,3 +108,15 @@ At each phase transition, report progress:
 - NEVER skip Phase 5 (testing) even if user says "skip tests"
 - NEVER commit broken code (lint/type-check must pass)
 - Keep commits atomic: one commit per logical change, not one giant commit
+
+## Red Flags — Stop and re-read this skill if you are thinking:
+
+| Rationalization | Why it's wrong |
+|---|---|
+| "Requirements are clear enough, I'll skip the design phase" | Skipping design means discovering mismatches after code is written, not before |
+| "The user already approved this approach verbally, no need to document" | Undocumented approval is invisible to reviewers and future agents; it doesn't exist |
+| "Tests can be written after — implementation first to check if the approach works" | Writing tests after implementation makes you test what you built, not what was required |
+| "This phase isn't needed for such a straightforward feature" | Every skipped phase is a deferred bug report |
+| "I understand the requirements, confirmation is just a formality" | The confirmation step exists to catch the gap between what you understood and what was meant |
+
+**IRON LAW: NEVER START IMPLEMENTING BEFORE REQUIREMENTS ARE EXPLICITLY CONFIRMED AND DOCUMENTED.**

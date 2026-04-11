@@ -1,6 +1,6 @@
 ---
 name: prd-creator
-description: "Transforms unstructured user requests into structured, complete, and testable Product Requirements Documents (PRD). Operates in Direct Mode for user interaction and Orchestrated Mode for pipelined multi-agent workflows."
+description: "Use when a vague or unstructured request needs to be converted into a formal, testable Product Requirements Document."
 triggers:
   - "Create a PRD"
   - "Formulate requirements"

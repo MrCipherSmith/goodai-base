@@ -1,6 +1,6 @@
 ---
 name: job-orchestrator
-description: "Dynamic orchestrator that collects context from user, builds an execution plan based on intent, dispatches sub-agents (analyzers, reviewers, implementers), and maintains persistent job documentation via job-documenter. Replaces issue-orchestrator with a flexible, intent-driven pipeline."
+description: "Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-end with sub-agents."
 triggers:
   - "Implement issue"
   - "Issue to PR"
@@ -26,6 +26,12 @@ metadata:
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
 ---
+
+<SUBAGENT-STOP>
+If you were dispatched as a subagent to execute a specific task, skip this skill entirely.
+This skill is for orchestrators and interactive session-level routing only.
+Proceed directly with your assigned task.
+</SUBAGENT-STOP>
 
 # Job Orchestrator
 
@@ -1180,6 +1186,110 @@ EOF
 ```
 
 **Job resumption (Phase 0.0):** If `state.json` exists and `phase` is not `COMPLETION`, offer to resume. Parse the file, restore JOB_STATE, jump to the first step with `status: "pending"` or `status: "in_progress"`.
+
+---
+
+## Interpreting Subagent Results
+
+**Rule:** `rules/core/subagent-status-protocol.md`
+
+All subagents dispatched by this orchestrator MUST begin their final response with `STATUS: <STATUS>`. The orchestrator reads this line first and routes accordingly.
+
+### Iron Law
+
+**IF A SUBAGENT DOES NOT START WITH `STATUS:`, TREAT IT AS `NEEDS_CONTEXT` AND REQUEST A PROPERLY FORMATTED RESPONSE**
+
+Do not attempt to infer status from prose. Do not trust a response that "looks fine" but lacks the status line. Run one explicit retry: "Your response did not start with STATUS: <STATUS>. Please reformat using the subagent status protocol (rules/core/subagent-status-protocol.md) and resend your result."
+
+### How to handle each status
+
+**`STATUS: DONE`**
+- Accept result.
+- Extract structured payload (JSON result, files changed, commits, verification results).
+- Mark step as completed in JOB_STATE.
+- Continue to next step in the plan.
+
+**`STATUS: DONE_WITH_CONCERNS`**
+- Accept result as complete.
+- Read the `## Concerns for orchestrator` section carefully.
+- Decide: (a) log concern and continue, (b) surface concern to user at next checkpoint, or (c) re-dispatch with adjusted scope if the concern affects correctness.
+- Do NOT silently discard concerns. Record them in JOB_STATE and include in the final report.
+- Mark step as completed.
+
+**`STATUS: BLOCKED`**
+- Do NOT proceed to any step that depends on this task.
+- Read `## Reason` and `## What I need from orchestrator`.
+- Resolve the blocker: provide the missing file, make the decision, fix the dependency, or escalate to the user.
+- Re-dispatch the subagent with the resolved context.
+- If the blocker cannot be resolved (e.g., missing information requires user input) → surface to user: "Task <id> is blocked: <reason>. What would you like to do?"
+
+**`STATUS: NEEDS_CONTEXT`**
+- Do NOT mark step as failed.
+- Read `## Missing information` and `## Where it might be found`.
+- Locate the missing information (check job context document, issue body, package.json, codebase).
+- Re-dispatch the subagent with the enriched task input.
+- If the information is not available anywhere → escalate to user with the specific question.
+
+### Red Flag
+
+**"The subagent didn't use the status protocol, but the result looks fine"**
+
+Do not accept this. A subagent that ignores the status protocol is unpredictable — its next failure may not look fine. Enforce the protocol on every response. Run the retry. If the subagent still does not comply after the retry, log it as a critical failure and ask the user how to proceed.
+
+---
+
+## Constructing Subagent Context
+
+**Rule:** `rules/core/subagent-context-construction.md`
+
+Every prompt dispatched to a subagent must be **explicitly constructed** by the orchestrator. Subagents do not inherit session context, job state, or prior agent output — they only know what the orchestrator tells them.
+
+### Template dispatch block
+
+Use this structure for every subagent dispatch:
+
+```
+Task({
+  description: "<one-line summary for logs>",
+  subagent_type: "general",
+  prompt: |
+    ## Task
+    <Exactly what to do — no ambiguity>
+
+    ## Acceptance Criteria
+    - <criterion 1>
+    - <criterion 2>
+
+    ## Context
+    <Only what is relevant for THIS task — decisions, constraints, background>
+
+    ## Files to read
+    - <absolute/path/to/file1.ts>
+    - <absolute/path/to/file2.ts>
+
+    ## Constraints
+    - Do NOT modify <file or pattern>
+    - <other hard stops>
+})
+```
+
+### Minimality principle
+
+Pass only what the subagent needs for this specific task. Do not dump job state, full analysis JSON, or conversation history. Extraneous context fills the subagent's context window with noise and increases hallucination risk.
+
+Each subagent type gets scoped context:
+- `issue-analyzer` — issue data + codebase paths only
+- `context-collector` — focus areas + analysis summary (not full analysis JSON)
+- `task-implementer` — its specific task object + `CONTEXT_PATH` (not other tasks' data)
+- Reviewers — diff range + file list (not implementation details)
+
+### Red Flag
+
+**"The subagent can read the job state.json if it needs more context"**
+
+→ Iron Law: **Orchestrator constructs context. Subagents receive, not retrieve.**
+
+The subagent must not fetch orchestrator state independently. If the subagent needs information, the orchestrator puts it in the dispatch prompt. A subagent reading `state.json` on its own is a sign the orchestrator dispatch was incomplete.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: code-style-review
-description: "Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch changes. Checks naming, organization, patterns, TypeScript usage. Use when: style validation needed, architecture review."
+description: "Use when style validation or architecture review is needed, checking naming, organization, patterns, and TypeScript usage on current branch changes."
 triggers:
   - "Style review"
   - "Check code style"
@@ -14,6 +14,8 @@ compatibility: "cursor,codex,zed,opencode"
 ---
 
 # Code Style Review
+
+> **Scope Note:** This skill covers **Stage 2 (Code Quality) only** — specifically style, naming, patterns, and architecture compliance. It does NOT perform Stage 1 (Spec Compliance). Before running a style review, ensure spec compliance has already been confirmed via `code-review`, `code-ai-review`, or `code-boss-review`. Style quality is irrelevant if the implementation built the wrong thing.
 
 Review only current branch changes from the point of divergence from the parent branch, strictly per `~/goodai-base/rules/core/code-style-patterns.mdc`.
 

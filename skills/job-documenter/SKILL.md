@@ -1,6 +1,6 @@
 ---
 name: job-documenter
-description: "Creates and maintains structured job documentation in jobs/. Called by job-orchestrator to initialize job folders, create analysis/report/review documents, and maintain the job README. Follows jobs-documentation.mdc conventions."
+description: "Use when a job folder needs to be initialized, or analysis/report/review documents need to be created or updated in jobs/."
 triggers:
   - "Document job"
   - "Initialize job folder"
@@ -13,6 +13,12 @@ metadata:
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode"
 ---
+
+<SUBAGENT-STOP>
+If you were dispatched as a subagent to execute a specific task, skip this skill entirely.
+This skill is for orchestrators and interactive session-level routing only.
+Proceed directly with your assigned task.
+</SUBAGENT-STOP>
 
 # Job Documenter
 

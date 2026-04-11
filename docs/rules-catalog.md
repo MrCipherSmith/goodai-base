@@ -2,7 +2,7 @@
 
 _Auto-generated from `rules/core/*.mdc`. Do not edit manually._
 
-Total: 17 rules
+Total: 19 rules
 
 | Rule | Description | Area | Always Applied |
 | ---- | ----------- | ---- | -------------- |
@@ -23,3 +23,5 @@ Total: 17 rules
 | `rule-management-workflow` | Workflow for adding or editing rules in the AGENTS.mdc + rules/core structure. | Meta | No |
 | `skills-storage-workflow` | Skill authoring, storage, and sync workflow for Cursor, Codex, Zed, and OpenCode. | Skills | No |
 | `storybook-guidelines` | Storybook setup, story authoring, and review checklist. | Storybook | No |
+| `subagent-context-construction` | Explicit context construction for orchestrator→subagent dispatches: required fields, minimality principle, and dispatch template. | Multi-Agent | No |
+| `subagent-status-protocol` | Subagent response format: required STATUS: prefix, four status types (DONE/DONE_WITH_CONCERNS/BLOCKED/NEEDS_CONTEXT), and orchestrator handling logic. | Multi-Agent | No |

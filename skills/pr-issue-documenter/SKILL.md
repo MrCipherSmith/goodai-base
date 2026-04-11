@@ -1,6 +1,6 @@
 ---
 name: pr-issue-documenter
-description: "Analyzes PR commits/diff and generates structured descriptions for PRs and linked GitHub issues. Creates sub-issues, checks for contradictions with existing descriptions, updates parent issues. Use when: documenting PR changes, adding PR description, creating issue for PR, updating issue body."
+description: "Use when documenting PR changes, adding a PR description, creating a linked issue for a PR, or updating an existing issue body."
 triggers:
   - "Add PR description"
   - "Document PR changes"

@@ -1,6 +1,6 @@
 ---
 name: issue-analyzer
-description: "Autonomous GitHub issue analysis and decomposition into atomic implementation tasks. Fetches issue data via gh CLI, analyzes codebase for affected areas, decomposes into a structured JSON object with full context for implementer sub-agents. Use when: decomposing issues for AI implementation, planning task breakdown, preparing work for task-implementer agents."
+description: "Use when decomposing a GitHub issue into atomic tasks for AI implementation, planning task breakdown, or preparing work for task-implementer agents."
 triggers:
   - "Analyze issue"
   - "Decompose issue"
@@ -252,6 +252,32 @@ Convert the task list into a structured JSON object for reliable machine parsing
 }
 ```
 
+**Each task object is the explicit context for task-implementer.**
+
+When `job-orchestrator` dispatches `task-implementer`, it passes the task object directly as the subagent's context. This means:
+- `task.context`, `task.target_files`, and `task.acceptance_criteria` are **required fields** — never omit or leave them empty when the information exists.
+- `task.context` must contain enough information for the implementer to start without reading the full codebase: key types, function signatures, relevant patterns, and any design decisions.
+- `task.module_patterns` must describe how similar code is written nearby — the implementer uses this for style consistency.
+
+**Red Flag: "The implementer can figure out the context from the codebase"**
+
+→ It cannot — not reliably. An implementer with no context will make assumptions, produce inconsistent code, or ask questions. Every omitted field is a gap the implementer will fill with a guess.
+
+## Reporting Results
+
+Every final response to the orchestrator MUST begin with `STATUS: DONE` or `STATUS: BLOCKED`.
+
+```
+STATUS: DONE
+
+## Analysis
+[structured JSON analysis object]
+```
+
+Use `STATUS: BLOCKED` only if the issue cannot be fetched (404) or the codebase cannot be accessed.
+
+**IRON LAW: THE FIRST LINE OF YOUR FINAL RESPONSE IS ALWAYS "STATUS: DONE" OR "STATUS: BLOCKED". THE JSON ANALYSIS FOLLOWS AFTER.**
+
 **Rules for JSON output:**
 - `dependency_order` must be topologically sorted — tasks with no dependencies come first
 - `task_id` format: `task-1`, `task-2`, ... (sequential)
@@ -312,6 +338,18 @@ This skill is designed to run fully autonomously. The following settings control
 8. Return the JSON analysis result as your **final message** to the orchestrator.
 
 ---
+
+## Red Flags — Stop and re-read this skill if you are thinking:
+
+| Rationalization | Why it's wrong |
+|---|---|
+| "The issue title is clear enough, I'll skip reading the full body" | Acceptance criteria, repro steps, and constraints live in the body — the title is just a label |
+| "I know this codebase, I don't need to search for affected files" | Prior knowledge drifts; the search step catches files that have changed since you last looked |
+| "I'll create one big task instead of decomposing — simpler to track" | A monolithic task cannot be parallelized or independently verified; it defeats the whole system |
+| "The dependencies between tasks seem obvious, no need to map them" | Untracked dependencies cause agents to overwrite each other's work or build on stale code |
+| "The issue body is mostly boilerplate, I've got the gist" | Edge cases and acceptance criteria are often buried in what looks like boilerplate |
+
+**IRON LAW: ALWAYS READ THE FULL ISSUE BODY AND SEARCH THE CODEBASE BEFORE DECOMPOSING INTO TASKS.**
 
 ## Job Context Awareness
 
