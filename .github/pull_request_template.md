@@ -21,7 +21,7 @@
 ## Mechanics checklist
 
 - [ ] `AGENTS.md` updated if adding a skill or rule
-- [ ] Catalogs regenerated (`./scripts/generate-skill-catalog.sh` / `generate-rules-catalog.sh`)
+- [ ] Catalogs regenerated (`cd scripts && bun run generate-skill-catalog` / `bun run generate-rules-catalog`)
 - [ ] Skill version bumped if modifying an existing skill
-- [ ] `./scripts/sync-skills.sh` runs without errors
+- [ ] `cd scripts && bun run sync-skills` runs without errors
 - [ ] Platform variants added for new skills (`.cursor.md`, `.codex.md`, `.zed.md`, `.opencode.md`)
