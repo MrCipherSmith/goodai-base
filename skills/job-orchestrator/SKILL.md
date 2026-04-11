@@ -21,7 +21,7 @@ triggers:
   - "Full issue implementation"
 metadata:
   author: "MrCipherSmith"
-  version: "3.0.0"
+  version: "3.1.0"
   category: "orchestration"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -254,25 +254,25 @@ Based on intent, construct an ordered list of steps:
 **For `implement` intent:**
 ```
 PLAN:
-  1.  { id: "analyze",       type: "analyze",   agent: "issue-analyzer",    depends: [] }
-  2.  { id: "context",       type: "context",   agent: "context-collector", depends: ["analyze"] }
-  3.  { id: "prepare",       type: "prepare",   agent: "orchestrator",      depends: ["context"] }
-  4.  { id: "implement",     type: "implement", agent: "task-implementer",  depends: ["prepare"] }
-  5.  { id: "sanity-check",  type: "check",     agent: "orchestrator",      depends: ["implement"] }
-  6.  { id: "test-gen",      type: "test",      agent: "test-gen",          depends: ["sanity-check"], conditional: true }
-  7.  { id: "review",        type: "review",    agent: "code-review",       depends: ["test-gen"] }
-  8.  { id: "security",      type: "security",  agent: "security-audit",    depends: ["implement"], conditional: true }
-  9.  { id: "fix",           type: "fix",       agent: "task-implementer",  depends: ["review"], conditional: true }
-  10. { id: "checks",        type: "check",     agent: "orchestrator",      depends: ["fix"] }
-  11. { id: "perf-check",    type: "perf",      agent: "perf-check",        depends: ["checks"], conditional: true }
-  12. { id: "report",        type: "report",    agent: "orchestrator",      depends: ["checks"] }
-  13. { id: "pr",            type: "pr",        agent: "orchestrator",      depends: ["report"], conditional: true }
-  14. { id: "deploy",        type: "deploy",    agent: "deploy",            depends: ["pr"], conditional: true }
+  1.  { id: "analyze",        type: "analyze",   agent: "issue-analyzer",    depends: [] }
+  2.  { id: "context",        type: "context",   agent: "context-collector", depends: ["analyze"] }
+  3.  { id: "prepare",        type: "prepare",   agent: "orchestrator",      depends: ["context"] }
+  4.  { id: "tests-creator",  type: "tests",     agent: "tests-creator",     depends: ["prepare"] }
+  5.  { id: "implement",      type: "implement", agent: "task-implementer",  depends: ["tests-creator"] }
+  6.  { id: "sanity-check",   type: "check",     agent: "orchestrator",      depends: ["implement"] }
+  7.  { id: "review",         type: "review",    agent: "code-review",       depends: ["sanity-check"] }
+  8.  { id: "security",       type: "security",  agent: "security-audit",    depends: ["implement"], conditional: true }
+  9.  { id: "fix",            type: "fix",       agent: "task-implementer",  depends: ["review"], conditional: true }
+  10. { id: "checks",         type: "check",     agent: "orchestrator",      depends: ["fix"] }
+  11. { id: "perf-check",     type: "perf",      agent: "perf-check",        depends: ["checks"], conditional: true }
+  12. { id: "report",         type: "report",    agent: "orchestrator",      depends: ["checks"] }
+  13. { id: "pr",             type: "pr",        agent: "orchestrator",      depends: ["report"], conditional: true }
+  14. { id: "deploy",         type: "deploy",    agent: "deploy",            depends: ["pr"], conditional: true }
 ```
 
 **Conditional step triggers:**
 - `sanity-check`: always runs — verifies ≥1 commit was made
-- `test-gen`: no test files in diff after implement
+- `tests-creator`: always runs — mandatory TDD step before every task-implementer wave
 - `security`: diff touches auth/, api/, migrations, schema files, or `.env`
 - `fix`: review found CRITICAL/WARNING findings
 - `perf-check`: diff contains *.tsx, *.jsx, *.css, dist/, build/ files
@@ -343,19 +343,19 @@ Show each step with its agent and status, then ask the user to approve or adjust
 Execution plan — <N> steps:
 
   Step 1   analyze        issue-analyzer              → issue #<N>
-  Step 2   context        context-collector           → project context
+  Step 2   context        context-collector           → project context + test framework
   Step 3   prepare        orchestrator                → feature branch
-  Step 4   implement      task-implementer × <tasks>  → <N> tasks (wave-parallel)
-  Step 5   sanity-check   orchestrator                → verify commits
-  Step 6   review         code-review × 4             → parallel agents
-  Step 7   fix            task-implementer            → [conditional: if issues found]
-  Step 8   checks         orchestrator                → lint + type-check + tests
-  Step 9   report         orchestrator                → final summary
-  Step 10  pr             orchestrator + gh CLI       → [conditional: create_pr=true]
+  Step 4   tests-creator  tests-creator × <tasks>     → RED test stubs per task (MANDATORY)
+  Step 5   implement      task-implementer × <tasks>  → <N> tasks make tests GREEN (wave-parallel)
+  Step 6   sanity-check   orchestrator                → verify commits
+  Step 7   review         code-review × 4             → parallel agents
+  Step 8   fix            task-implementer            → [conditional: if issues found]
+  Step 9   checks         orchestrator                → lint + type-check + tests
+  Step 10  report         orchestrator                → final summary
+  Step 11  pr             orchestrator + gh CLI       → [conditional: create_pr=true]
 
 Optional (not in plan — add if needed):
   + security-audit   auto-detect: auth/API/DB changes
-  + test-gen         auto-detect: if implementer skips tests
   + perf-check       auto-detect: if frontend/bundle files changed
   + deploy           ask after PR: "Deploy to staging?"
 
@@ -595,9 +595,37 @@ BRANCH_STATE:
 
 **Document:** Update README via job-documenter (update-readme) with branch info.
 
+### 2.4.1 Step: TESTS-CREATOR (mandatory, before implement)
+
+**IRON LAW: tests-creator MUST run before task-implementer for every task. No exceptions.**
+
+For each task wave, dispatch `tests-creator` in parallel (one per task) to generate failing test stubs:
+
+```
+FOR wave in WAVES:
+  # Step A: Generate test stubs for all tasks in this wave FIRST
+  FOR task in wave (parallel):
+    Dispatch tests-creator:
+      INPUT:
+        task:         { task_id, task_name, task_type, acceptance_criteria,
+                        target_files, description, context, existing_tests }
+        workspace:    { codebase_path, branch, issue_number }
+        automation:   { skip_confirmation: true, commit_test_stubs: true, verify_red: true }
+        context_path: CONTEXT_PATH (from job state)
+    
+    Collect: TEST_SPECS[task_id] = test_case_specs from response
+  
+  # Step B: Only AFTER all test stubs committed — dispatch task-implementer
+  FOR task in wave (parallel if no file overlap):
+    Pass task object WITH test_case_specs: TEST_SPECS[task_id]
+    → task-implementer makes RED tests GREEN
+```
+
+**Why mandatory:** `requires_tests_creator: true` is set on every task by issue-analyzer v1.1.0+. Skipping tests-creator means implementing without a verifiable definition of done — the orchestrator MUST NOT skip this step even if the user says "just implement".
+
 ### 2.5 Step: IMPLEMENT
 
-Dispatch `task-implementer` for tasks. **Parallelize independent tasks** where possible.
+Dispatch `task-implementer` for tasks. **Parallelize independent tasks** where possible. Each task receives the `test_case_specs` produced by `tests-creator` in step 2.4.1.
 
 **Dependency-aware execution strategy:**
 
@@ -613,14 +641,15 @@ WAVES = topological_sort_into_waves(dependency_order, task_dependencies)
 # Wave 3: [task-4, task-5]    ← depend on task-3, run in PARALLEL
 
 FOR wave in WAVES:
+  # tests-creator already ran for this wave in step 2.4.1
   IF wave has 1 task:
     # Sequential — single task
-    Launch task-implementer for the task
+    Launch task-implementer for the task (with test_case_specs)
   ELSE:
     # PARALLEL — launch all tasks in this wave simultaneously
     # IMPORTANT: parallel tasks must modify DIFFERENT files to avoid git conflicts
     # If file overlap detected → fall back to sequential within this wave
-    Launch all task-implementers in a single turn
+    Launch all task-implementers in a single turn (each with their test_case_specs)
     Wait for all to complete
 
   FOR task in wave:

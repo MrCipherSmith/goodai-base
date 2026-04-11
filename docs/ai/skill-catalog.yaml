@@ -103,7 +103,7 @@ skills:
     path: skills/job-documenter
   - name: job-orchestrator
     description: 'Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-end with sub-agents.'
-    version: 3.0.0
+    version: 3.1.0
     category: orchestration
     path: skills/job-orchestrator
   - name: perf-check
@@ -143,7 +143,7 @@ skills:
     path: skills/security-audit
   - name: task-implementer
     description: 'Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing autonomous code changes from a JSON task object.'
-    version: 1.1.0
+    version: 1.2.0
     category: implementation
     path: skills/task-implementer
   - name: test-gen
