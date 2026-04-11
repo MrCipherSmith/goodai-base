@@ -47,7 +47,7 @@ Claude matches the slash command against the skill catalog and loads the full wo
 
 ### Auto-detection
 
-`scripts/detect-context.sh` scores incoming prompts against `rules.json` (which indexes all skills and rules). Matching skills are surfaced as suggestions; matching rules are injected as context.
+`detect-context` scores incoming prompts against `rules.json` (which indexes all skills and rules). Matching skills are surfaced as suggestions; matching rules are injected as context.
 
 ---
 
@@ -57,7 +57,7 @@ Rules live in `rules/core/<rule-name>.mdc`. They contain coding standards, patte
 
 ### Auto-injection
 
-When you submit a prompt, `detect-context.sh` runs keyword and intent matching. If a rule's triggers match, its content is injected as context before Claude answers — you don't need to invoke rules manually.
+When you submit a prompt, `detect-context` runs keyword and intent matching. If a rule's triggers match, its content is injected as context before Claude answers — you don't need to invoke rules manually.
 
 Rules with `alwaysApply: true` are always injected regardless of prompt content.
 
@@ -105,8 +105,9 @@ Apply code-style-patterns to the following code: ...
 2. **Regenerate the registries:**
 
    ```bash
-   scripts/generate-skill-registry.sh   # updates hooks/skill-registry.json
-   scripts/generate-rules-json.sh        # updates rules.json
+   cd scripts
+   bun run generate-skill-registry   # updates hooks/skill-registry.json
+   bun run generate-rules-json        # updates rules.json
    ```
 
 3. **Add to AGENTS.md** under the Skills Catalog section so it appears in the routing table.
@@ -114,7 +115,7 @@ Apply code-style-patterns to the following code: ...
 4. **Validate before sync:**
 
    ```bash
-   scripts/validate-skills-before-sync.sh
+   cd scripts && bun run validate-skills-before-sync
    ```
 
 5. **Optional — make it a native sub-agent:**
@@ -122,7 +123,7 @@ Apply code-style-patterns to the following code: ...
    Add `agent_worthy: true` under `metadata` in SKILL.md, then run:
 
    ```bash
-   scripts/sync-agents.sh
+   cd scripts && bun run sync-agents
    ```
 
    This generates a `.claude/agents/<skill-name>.md` file that Claude Code can spawn as a background agent.
@@ -130,7 +131,7 @@ Apply code-style-patterns to the following code: ...
 6. **Deploy to a project:**
 
    ```bash
-   scripts/deploy-skill-hook.sh /path/to/your-project
+   cd scripts && bun run deploy-skill-hook /path/to/your-project
    ```
 
    This installs the skill-evaluator hook into the target project's `.claude/` directory.
@@ -158,32 +159,37 @@ These rules prevent silent failures and context drift in multi-step pipelines.
 | Machine-readable skill catalog | [ai/skill-catalog.yaml](./ai/skill-catalog.yaml) |
 | Routing table | [AGENTS.md](../AGENTS.md) |
 | Unified trigger registry | [rules.json](../rules.json) |
-| Hook for projects | `scripts/deploy-skill-hook.sh` |
-| Sync sub-agents | `scripts/sync-agents.sh` |
-| Validate before sync | `scripts/validate-skills-before-sync.sh` |
+| Hook for projects | `cd scripts && bun run deploy-skill-hook <path>` |
+| Sync sub-agents | `cd scripts && bun run sync-agents` |
+| Validate before sync | `cd scripts && bun run validate-skills-before-sync` |
 
 ---
 
 ## Useful Scripts
 
+All scripts run via Bun from the `scripts/` directory (`cd scripts && bun install` once):
+
 ```bash
 # Generate docs catalogs
-scripts/generate-skill-catalog.sh
-scripts/generate-rules-catalog.sh
+bun run generate-skill-catalog
+bun run generate-rules-catalog
 
 # Regenerate trigger registries
-scripts/generate-skill-registry.sh
-scripts/generate-rules-json.sh
+bun run generate-skill-registry
+bun run generate-rules-json
 
 # Validate skill profiles and rules registry
-scripts/validate-skills-before-sync.sh
+bun run validate-skills-before-sync
 
 # Sync agent_worthy skills to native agents
-scripts/sync-agents.sh
+bun run sync-agents
 
 # Deploy hook to a project
-scripts/deploy-skill-hook.sh /path/to/project
+bun run deploy-skill-hook /path/to/project
 
 # Test context detection
-echo "how do I review this code?" | scripts/detect-context.sh
+echo "how do I review this code?" | bun run detect-context
+
+# Run tests
+bun test
 ```
