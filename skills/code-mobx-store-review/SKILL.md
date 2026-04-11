@@ -1,6 +1,6 @@
 ---
 name: code-mobx-store-review
-description: "Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInAction, state typing, View-Store boundaries. Use when: reviewing MobX changes, state management validation."
+description: "Use when reviewing MobX store changes, validating state management, actions, computed values, reactions, or View-Store boundaries."
 triggers:
   - "Review MobX store"
   - "Check store changes"
@@ -14,6 +14,21 @@ compatibility: "cursor,codex,zed,opencode"
 ---
 
 # Code MobX Store Review (current branch only)
+
+## Review Scope
+
+This skill covers **Stage 2 (Code Quality) only** — specifically for MobX store patterns. It does NOT perform Stage 1 (Spec Compliance). Before running a MobX store review, ensure spec compliance has already been confirmed via `code-review`, `code-ai-review`, or `code-boss-review`.
+
+## Red Flags — Stop and re-read if you are thinking:
+
+| Rationalization | Why it's wrong |
+|---|---|
+| "The store looks fine, no need to check action boundaries" | MobX action violations are silent in dev — always verify runInAction |
+| "I'll mark observable mutation outside action as INFO, not WARNING" | Direct mutation outside action is always at least WARNING |
+| "The spec compliance already passed, I can be lenient on patterns" | Stage 2 standards don't lower because Stage 1 passed |
+| "This is a small store, full pattern review isn't needed" | Store size doesn't exempt from pattern requirements |
+
+**IRON LAW: EVERY OBSERVABLE MUTATION MUST HAPPEN INSIDE AN ACTION OR runInAction — NO EXCEPTIONS BASED ON "SIMPLICITY".**
 
 Review only current branch changes from merge-base with the parent branch. Focus on state correctness, MobX patterns, and architecture boundaries.
 

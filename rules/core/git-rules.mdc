@@ -24,3 +24,14 @@ Apply before any git operation: commit, branch creation, or PR creation. Always 
 
 ## Commit Message Rules
 Follow `core/commit-message-formatting.mdc`.
+
+## Red Flags — Stop and re-read this rule if you are thinking:
+
+| Rationalization | Why it's wrong |
+|---|---|
+| "This is a quick fix, I'll commit directly to main" | Branch protection rules exist precisely for quick fixes that turn into incidents |
+| "The protected path isn't really sensitive here, I'll include it" | Protected paths are protected unconditionally — context does not create exceptions |
+| "The user said to commit everything, so I'll skip the .gitignore check" | User instructions override workflow steps, not safety invariants |
+| "I'll ask about the PR later — let me commit first to save the work" | Committing before confirming intent conflates saving work with publishing it |
+
+**IRON LAW: NEVER COMMIT TO A PROTECTED PATH OR BRANCH WITHOUT EXPLICIT USER APPROVAL, REGARDLESS OF HOW URGENT THE CHANGE APPEARS.**

@@ -37,11 +37,13 @@ Claude matches the slash command against the skill catalog and loads the full wo
 | Field | Purpose |
 | ----- | ------- |
 | `name` | Unique identifier (kebab-case) |
-| `description` | What the skill does — used for auto-detection |
+| `description` | Trigger condition — describes WHEN to use this skill, not what it does. Must start with `"Use when..."` |
 | `triggers` | Phrases that activate the skill |
 | `metadata.version` | Semantic version |
 | `metadata.category` | Grouping label (workflow, review, analysis, …) |
 | `metadata.agent_worthy` | If `true`, the skill can run as a native Claude Code sub-agent |
+
+> **Why trigger-condition descriptions matter:** When an agent scans the skill catalog to decide which skill to load, it reads only the `description` field. If the description summarizes the workflow ("This skill does X, Y, Z"), the agent has no basis for deciding whether the skill is relevant — it describes mechanics, not applicability. A trigger-condition description ("Use when the user asks to analyze branch changes") gives the agent the signal it needs to load the right skill and skip irrelevant ones.
 
 ### Auto-detection
 
@@ -82,7 +84,7 @@ Apply code-style-patterns to the following code: ...
    ```yaml
    ---
    name: my-skill
-   description: "Short description of what the skill does."
+   description: "Use when the user asks to do X, or when Y condition is met."
    triggers:
      - "/my-skill"
      - "Run my skill"
@@ -132,6 +134,18 @@ Apply code-style-patterns to the following code: ...
    ```
 
    This installs the skill-evaluator hook into the target project's `.claude/` directory.
+
+---
+
+## Multi-Agent Patterns
+
+When skills orchestrate sub-agents (e.g., `job-orchestrator` dispatching `task-implementer` or `code-ai-review`), two protocol rules apply:
+
+- **`rules/core/subagent-status-protocol.md`** — Every subagent response must begin with a `STATUS:` prefix using one of four types: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED`, or `NEEDS_CONTEXT`. Orchestrators must read this prefix before deciding to proceed, escalate, or re-dispatch.
+
+- **`rules/core/subagent-context-construction.md`** — Orchestrators must explicitly construct a context block for each subagent dispatch (repo path, branch, task description, relevant files, etc.). Subagents must not be expected to infer context from ambient conversation — every dispatch is self-contained.
+
+These rules prevent silent failures and context drift in multi-step pipelines.
 
 ---
 
