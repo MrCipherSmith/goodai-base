@@ -9,7 +9,7 @@ triggers:
   - "Feature from scratch"
 metadata:
   author: "MrCipherSmith"
-  version: "1.0.0"
+  version: "2.0.0"
   category: "workflow"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -31,65 +31,104 @@ End-to-end feature development workflow from idea to merge-ready PR.
 - `/feature-dev #<issue>` — start from a GitHub issue
 - `/feature-dev --resume` — resume interrupted feature-dev (checks for existing worktree/branch)
 
-## 7-Phase Architecture
+## 8-Phase Architecture
 
-### Phase 1: REQUIREMENTS
+> **Rules always loaded:** `tdd-workflow.mdc`, `implementation-doc-mandate.mdc`, `error-handling.mdc`
+> **Sub-agents used:** `tests-creator` (before implement), `code-verifier` (after implement)
+
+### Phase 1: REQUIREMENTS + SPEC
+
 1. Parse input (description or GitHub issue via `gh issue view`)
 2. Clarify ambiguities — ask the user up to 3 questions max
-3. Produce a brief spec:
+3. Produce the **Implementation Spec** (per `implementation-doc-mandate.mdc`):
    - **What**: feature description in 2-3 sentences
    - **Why**: user value / business reason
    - **Scope**: what's in, what's explicitly out
    - **Acceptance criteria**: testable bullet points
-4. **Get user confirmation before proceeding**
+   - **Approach**: which files will change, key design decisions
+   - **Test strategy**: framework, which scenarios will be covered
+4. **Save spec** to `.feature-spec.md` in project root (add to .gitignore if not already)
+5. **Get user confirmation before proceeding**
 
 ### Phase 2: DESIGN
+
 1. Research the codebase:
    - Find related modules via search tools
    - Read neighboring implementations for patterns
-   - Check existing tests for testing conventions
+   - **Detect test framework** (package.json, existing test files) — needed for tests-creator
 2. Produce implementation plan:
    - Files to create/modify (with brief description of changes)
    - Dependencies or packages needed
    - Data model changes if any
    - Estimated complexity: S / M / L
-3. **Get user confirmation on the plan**
+3. Load relevant rules from `~/goodai-base/rules/core/` based on what will be built:
+   - Always: `tdd-workflow.mdc`, `error-handling.mdc`, `solid-principles.mdc`
+   - API/service code: `api-contracts.mdc`, `clean-architecture.mdc`
+   - Database: `database-patterns.mdc`
+   - Async: `async-patterns.mdc`
+   - Security-sensitive: `security-baseline.mdc`
+4. **Get user confirmation on the plan**
 
 ### Phase 3: PREPARE
+
 1. Create a feature branch: `wt switch -c feat/<name>`
 2. Install any new dependencies
 
-### Phase 4: IMPLEMENT
-1. Implement changes file by file, following the plan
-2. Follow existing code patterns discovered in Phase 2
-3. After each logical chunk, run available checks:
-   - Lint: `npm run lint` or equivalent
-   - Type-check: `npx tsc --noEmit` or equivalent
-   - Fix issues immediately before moving on
+### Phase 4: TESTS-CREATOR (TDD — RED phase)
 
-### Phase 5: TEST
-1. Write tests matching the project's testing patterns
-2. Unit tests for new functions/modules
-3. Integration tests for API/data flow changes
-4. Run full test suite
-5. Fix failing tests (max 3 attempts per test)
+**Run before writing any implementation code.**
 
-### Phase 6: REVIEW (Self)
+1. For each group of acceptance criteria, invoke `tests-creator`:
+   - Input: acceptance criteria from Phase 1 spec + target files from Phase 2 plan
+   - tests-creator detects framework and generates failing test stubs
+   - tests-creator commits the stubs and verifies RED state
+2. Confirm test stubs are in place and failing before proceeding to Phase 5
+
+### Phase 5: IMPLEMENT (TDD — GREEN phase)
+
+1. Implement changes file by file, following the plan from Phase 2
+2. Goal: make the failing tests from Phase 4 GREEN
+3. Follow existing code patterns and loaded rules
+4. After each file group, run quick inline check: `npx tsc --noEmit` (type errors only)
+5. Commit with conventional message after each logical chunk
+
+### Phase 6: VERIFY (code-verifier gate)
+
+Run `code-verifier` on the full diff:
+
+```
+Invoke: skills/code-verifier/SKILL.md
+Input:  codebase_path=<project_root>, scope=changed, base_branch=<base>
+```
+
+- `gate: PASS` → proceed to Phase 7
+- `gate: FAIL` → fix findings, re-run code-verifier (max 2 cycles)
+- Still FAIL after 2 cycles → report blocker to user, stop
+
+### Phase 7: REVIEW (Self)
+
 1. Launch `code-review` skill on own changes (if available)
 2. Or run a focused self-review:
    - `git diff main...HEAD` — review the full diff
    - Check for: TODOs left behind, console.logs, hardcoded values
-   - Verify all acceptance criteria from Phase 1
+   - Verify all acceptance criteria from Phase 1 spec
 3. Fix any findings (max 2 review-fix cycles)
+4. Re-run `code-verifier` after any fixes
 
-### Phase 7: DELIVER
-1. Final checks: lint + type-check + tests all pass
-2. Commit with conventional message: `feat(<scope>): <description>`
-3. Push branch
-4. Create PR:
+### Phase 8: DELIVER + CHANGE REPORT
+
+1. Push branch
+2. Create PR:
    - Link to issue if applicable
-   - Include acceptance criteria as checklist
-   - Add test plan
+   - Include acceptance criteria checklist
+   - Add test plan and code-verifier results
+3. **Produce Change Report** (per `implementation-doc-mandate.mdc`):
+   - Files created/modified with descriptions
+   - Test count and results
+   - code-verifier gate result
+   - Acceptance criteria checklist (checked off)
+   - Commits list
+4. Print Change Report to user
 5. Report PR URL to user
 
 ## Status Updates
@@ -102,12 +141,14 @@ At each phase transition, report progress:
 
 ## Rules
 
-- ALWAYS get user confirmation after Phase 1 (requirements) and Phase 2 (design)
-- Phases 4-6 are autonomous — no user interaction needed
+- ALWAYS get user confirmation after Phase 1 (requirements + spec) and Phase 2 (design)
+- Phases 4-7 are autonomous — no user interaction needed
 - If stuck for >3 attempts on any step, report the blocker and ask user
-- NEVER skip Phase 5 (testing) even if user says "skip tests"
-- NEVER commit broken code (lint/type-check must pass)
-- Keep commits atomic: one commit per logical change, not one giant commit
+- NEVER skip Phase 4 (tests-creator) even if user says "skip tests" — this is TDD, not optional testing
+- NEVER skip Phase 6 (code-verifier) — it is the quality gate, not a suggestion
+- NEVER commit broken code (code-verifier gate must pass before PR)
+- Keep commits atomic: one commit per logical chunk, not one giant commit
+- ALWAYS produce the Change Report in Phase 8 — even if the PR was not created
 
 ## Red Flags — Stop and re-read this skill if you are thinking:
 
@@ -119,4 +160,6 @@ At each phase transition, report progress:
 | "This phase isn't needed for such a straightforward feature" | Every skipped phase is a deferred bug report |
 | "I understand the requirements, confirmation is just a formality" | The confirmation step exists to catch the gap between what you understood and what was meant |
 
-**IRON LAW: NEVER START IMPLEMENTING BEFORE REQUIREMENTS ARE EXPLICITLY CONFIRMED AND DOCUMENTED.**
+**IRON LAW 1: NEVER START IMPLEMENTING BEFORE THE SPEC IS WRITTEN AND CONFIRMED.**
+**IRON LAW 2: NEVER WRITE IMPLEMENTATION CODE BEFORE TESTS-CREATOR HAS GENERATED FAILING STUBS.**
+**IRON LAW 3: NEVER DELIVER WITHOUT A PASSING CODE-VERIFIER GATE AND A CHANGE REPORT.**

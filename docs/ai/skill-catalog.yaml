@@ -78,7 +78,7 @@ skills:
     path: skills/feature-analyzer
   - name: feature-dev
     description: 'Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided workflow.'
-    version: 1.0.0
+    version: 2.0.0
     category: workflow
     path: skills/feature-dev
   - name: hookify
