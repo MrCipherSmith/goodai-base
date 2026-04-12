@@ -3,8 +3,8 @@
  * goodai-base Setup Wizard
  *
  * Usage:
- *   bun setup.ts          Run the interactive setup wizard
- *   bun setup.ts --reconfigure   Re-run wizard over an existing install
+ *   bun setup.ts                  Run the interactive setup wizard
+ *   bun setup.ts --reconfigure    Re-run wizard over an existing install
  */
 
 import { existsSync, readFileSync, writeFileSync, appendFileSync, mkdirSync } from "fs";
@@ -30,7 +30,109 @@ const GOODAI_BASE = resolve(import.meta.dir);
 const CONFIG_PATH = join(GOODAI_BASE, "goodai.config.json");
 
 // ---------------------------------------------------------------------------
-// Prompt helpers (synchronous via `prompt()` — available in Bun)
+// Tool definitions
+// ---------------------------------------------------------------------------
+
+interface ToolDef {
+  id: string;
+  label: string;
+  skillsDir: string;
+  agentsFile?: string;
+  globalConfigLabel?: string;
+  globalConfigPath?: string;
+  globalConfigContent?: (goodaiPath: string) => string;
+}
+
+const TOOLS: ToolDef[] = [
+  {
+    id: "claude",
+    label: "Claude Code",
+    skillsDir: join(HOME, ".claude", "skills"),
+    agentsFile: undefined, // handled via CLAUDE.md, not AGENTS.md copy
+    globalConfigLabel: "~/.claude/CLAUDE.md",
+    globalConfigPath: join(HOME, ".claude", "CLAUDE.md"),
+    globalConfigContent: (goodaiPath) => CLAUDE_MD_BLOCK(goodaiPath),
+  },
+  {
+    id: "cursor",
+    label: "Cursor",
+    skillsDir: join(HOME, ".cursor", "skills"),
+    agentsFile: join(HOME, ".cursor", "rules", "AGENTS.md"),
+    globalConfigLabel: "~/.cursor/rules/goodai-base.mdc",
+    globalConfigPath: join(HOME, ".cursor", "rules", "goodai-base.mdc"),
+    globalConfigContent: (goodaiPath) => CURSOR_MDC_BLOCK(goodaiPath),
+  },
+  {
+    id: "codex",
+    label: "Codex",
+    skillsDir: join(HOME, ".codex", "skills"),
+    agentsFile: join(HOME, ".codex", "AGENTS.md"),
+    // AGENTS.md sync is sufficient for Codex
+  },
+  {
+    id: "opencode",
+    label: "OpenCode",
+    skillsDir: join(HOME, ".config", "opencode", "skills"),
+    agentsFile: join(HOME, ".config", "opencode", "AGENTS.md"),
+    // AGENTS.md sync is sufficient for OpenCode
+  },
+  {
+    id: "zed",
+    label: "Zed",
+    skillsDir: join(HOME, ".config", "zed", "skills"),
+    agentsFile: join(HOME, ".config", "zed", "AGENTS.md"),
+    // AGENTS.md sync is sufficient for Zed
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Global config templates
+// ---------------------------------------------------------------------------
+
+const CLAUDE_MD_BLOCK_MARKER = "# Knowledge Base (goodai-base)";
+
+function CLAUDE_MD_BLOCK(goodaiPath: string): string {
+  return `
+# Knowledge Base (goodai-base)
+
+At the start of each session, read \`${goodaiPath}/AGENTS.md\` — it contains the routing table for all coding rules and skills (analysis, implementation, review, orchestration). Do NOT read all files upfront. Use AGENTS.md to locate the right rule or skill when the user's request matches, then read only that specific file.
+
+- Rules are in \`${goodaiPath}/rules/core/\` — coding standards, git rules, review profiles
+- Skills are in \`${goodaiPath}/skills/\` — actionable workflows (feature-analyzer, issue-analyzer, task-implementer, reviewers, etc.)
+- When the user asks to analyze, implement, review, or orchestrate — consult AGENTS.md first
+
+### Skill/Rule workflow for non-trivial tasks
+
+For any task more complex than a simple answer or one-liner fix:
+1. Read \`${goodaiPath}/AGENTS.md\` and identify matching skills or rules
+2. Tell the user which skill or rule applies and briefly describe what it will do
+3. **Wait for the user to confirm** before proceeding
+4. Only when the user says "run it", "запускай", or similar — invoke the skill via \`Skill("skill-name")\` tool
+5. NEVER manually read a SKILL.md and apply its pattern yourself — always use the \`Skill\` tool
+`;
+}
+
+function CURSOR_MDC_BLOCK(goodaiPath: string): string {
+  return `---
+description: "goodai-base routing — always loaded. Maps user intent to skills and rules."
+alwaysApply: true
+---
+
+# goodai-base Knowledge Base
+
+At the start of each session, read \`${goodaiPath}/AGENTS.md\` — it contains the routing table for all coding rules and skills.
+
+- Rules: \`${goodaiPath}/rules/core/\` — coding standards, git conventions, review profiles
+- Skills: \`${goodaiPath}/skills/\` — feature-analyzer, issue-analyzer, task-implementer, reviewers, etc.
+
+When the user asks to analyze, implement, review, or orchestrate — consult AGENTS.md first to identify the right skill or rule, then read only that file.
+
+**Skill invocation:** For non-trivial tasks, identify the matching skill from AGENTS.md, describe it to the user, wait for confirmation, then execute it. Never manually follow a skill's steps — use the skill as a unit of work.
+`;
+}
+
+// ---------------------------------------------------------------------------
+// Prompt helpers
 // ---------------------------------------------------------------------------
 
 function ask(question: string, defaultValue = ""): string {
@@ -54,9 +156,31 @@ function askChoice(question: string, options: string[], defaultIdx = 0): number 
     const marker = i === defaultIdx ? c.cyan("►") : " ";
     console.log(`  ${marker} ${c.cyan(`${i + 1}.`)} ${opt}`);
   });
-  const answer = ask(`Choice`, String(defaultIdx + 1));
+  const answer = ask("Choice", String(defaultIdx + 1));
   const idx = parseInt(answer) - 1;
   return idx >= 0 && idx < options.length ? idx : defaultIdx;
+}
+
+/**
+ * Multi-select: show numbered list, user types comma-separated numbers or "all"/"none".
+ * Returns array of selected indices.
+ */
+function askMultiSelect(question: string, options: string[], defaultSelected: number[]): number[] {
+  const defaultStr = defaultSelected.map((i) => i + 1).join(",");
+  console.log(`\n  ${c.bold(question)}`);
+  console.log(c.dim("  Enter comma-separated numbers, 'all', or 'none'"));
+  options.forEach((opt, i) => {
+    const selected = defaultSelected.includes(i) ? c.green("✓") : " ";
+    console.log(`  ${selected} ${c.cyan(`${i + 1}.`)} ${opt}`);
+  });
+  const answer = ask("Selection", defaultStr);
+  const trimmed = answer.trim().toLowerCase();
+  if (trimmed === "all") return options.map((_, i) => i);
+  if (trimmed === "none") return [];
+  return trimmed
+    .split(",")
+    .map((s) => parseInt(s.trim()) - 1)
+    .filter((i) => i >= 0 && i < options.length);
 }
 
 function section(title: string) {
@@ -100,58 +224,61 @@ function appendEnvVar(rcPath: string, varName: string, value: string) {
 }
 
 // ---------------------------------------------------------------------------
-// CLAUDE.md helpers
+// Global config injection per tool
 // ---------------------------------------------------------------------------
 
-const CLAUDE_MD_DIR = join(HOME, ".claude");
-const CLAUDE_MD_PATH = join(CLAUDE_MD_DIR, "CLAUDE.md");
+function updateClaudeMd(goodaiPath: string): string {
+  const claudeDir = join(HOME, ".claude");
+  mkdirSync(claudeDir, { recursive: true });
+  const block = CLAUDE_MD_BLOCK(goodaiPath);
 
-const GOODAI_BLOCK_START = "# Knowledge Base (goodai-base)";
-const GOODAI_BLOCK = (goodaiPath: string) => `
-# Knowledge Base (goodai-base)
+  if (!existsSync(CONFIG_PATH.replace("goodai.config.json", ".claude/CLAUDE.md"))) {
+    // resolve actual path
+  }
+  const claudeMdPath = join(HOME, ".claude", "CLAUDE.md");
 
-At the start of each session, read \`${goodaiPath}/AGENTS.md\` — it contains the routing table for all coding rules and skills (analysis, implementation, review, orchestration). Do NOT read all files upfront. Use AGENTS.md to locate the right rule or skill when the user's request matches, then read only that specific file.
-
-- Rules are in \`${goodaiPath}/rules/core/\` — coding standards, git rules, review profiles
-- Skills are in \`${goodaiPath}/skills/\` — actionable workflows (feature-analyzer, issue-analyzer, task-implementer, reviewers, etc.)
-- When the user asks to analyze, implement, review, or orchestrate — consult AGENTS.md first
-
-### Skill/Rule workflow for non-trivial tasks
-
-For any task more complex than a simple answer or one-liner fix:
-1. Read \`${goodaiPath}/AGENTS.md\` and identify matching skills or rules
-2. Tell the user which skill or rule applies and briefly describe what it will do
-3. **Wait for the user to confirm** before proceeding
-4. Only when the user says "run it", "запускай", or similar — invoke the skill via \`Skill("skill-name")\` tool
-5. NEVER manually read a SKILL.md and apply its pattern yourself — always use the \`Skill\` tool
-`;
-
-function claudeMdHasBlock(): boolean {
-  if (!existsSync(CLAUDE_MD_PATH)) return false;
-  return readFileSync(CLAUDE_MD_PATH, "utf8").includes(GOODAI_BLOCK_START);
-}
-
-function updateClaudeMd(goodaiPath: string) {
-  mkdirSync(CLAUDE_MD_DIR, { recursive: true });
-  const block = GOODAI_BLOCK(goodaiPath);
-  if (!existsSync(CLAUDE_MD_PATH)) {
-    writeFileSync(CLAUDE_MD_PATH, `# Global CLAUDE.md\n${block}`);
+  if (!existsSync(claudeMdPath)) {
+    writeFileSync(claudeMdPath, `# Global CLAUDE.md\n${block}`);
     return "created";
   }
-  const content = readFileSync(CLAUDE_MD_PATH, "utf8");
-  if (content.includes(GOODAI_BLOCK_START)) {
-    // Replace existing block: find start marker and strip old block
-    const idx = content.indexOf(GOODAI_BLOCK_START);
-    // Find next top-level `#` heading after the block (or end of file)
-    const after = content.slice(idx + GOODAI_BLOCK_START.length);
+  const content = readFileSync(claudeMdPath, "utf8");
+  if (content.includes(CLAUDE_MD_BLOCK_MARKER)) {
+    const idx = content.indexOf(CLAUDE_MD_BLOCK_MARKER);
+    const after = content.slice(idx + CLAUDE_MD_BLOCK_MARKER.length);
     const nextHeading = after.search(/\n# [^#]/);
     const tail = nextHeading >= 0 ? after.slice(nextHeading) : "";
-    const updated = content.slice(0, idx) + block.trimStart() + tail;
-    writeFileSync(CLAUDE_MD_PATH, updated);
+    writeFileSync(claudeMdPath, content.slice(0, idx) + block.trimStart() + tail);
     return "updated";
   }
-  appendFileSync(CLAUDE_MD_PATH, block);
+  appendFileSync(claudeMdPath, block);
   return "appended";
+}
+
+function writeCursorMdc(goodaiPath: string): string {
+  const rulesDir = join(HOME, ".cursor", "rules");
+  mkdirSync(rulesDir, { recursive: true });
+  const mdcPath = join(rulesDir, "goodai-base.mdc");
+  const content = CURSOR_MDC_BLOCK(goodaiPath);
+  writeFileSync(mdcPath, content);
+  return existsSync(mdcPath) ? "updated" : "created";
+}
+
+function configureGlobalConfig(tool: ToolDef, goodaiPath: string): void {
+  if (!tool.globalConfigPath || !tool.globalConfigContent) return;
+
+  if (tool.id === "claude") {
+    step(`Updating ${tool.globalConfigLabel}`);
+    const result = updateClaudeMd(goodaiPath);
+    console.log(` ${c.green(result)}`);
+    return;
+  }
+
+  if (tool.id === "cursor") {
+    step(`Writing ${tool.globalConfigLabel}`);
+    writeCursorMdc(goodaiPath);
+    ok();
+    return;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -160,6 +287,7 @@ function updateClaudeMd(goodaiPath: string) {
 
 interface GoodAIConfig {
   goodai_base: string;
+  sync_tools: string[];
   jobs_root?: string;
   docs_root?: string;
   default_model: string;
@@ -193,13 +321,64 @@ async function setup() {
   console.log(`\n${c.bold("goodai-base Setup Wizard")}`);
   console.log(c.dim(`Repo: ${GOODAI_BASE}\n`));
 
-  // ── 1. Artifact paths ──────────────────────────────────────────────────
+  // ── 1. AI Tools to sync ────────────────────────────────────────────────
 
-  section("1 / 5  Artifact paths");
+  section("1 / 6  AI tools to sync");
+
+  console.log(c.dim(
+    "  Skills and AGENTS.md routing table will be synced to the selected tools.\n" +
+    "  You can reconfigure this at any time with: bun setup.ts --reconfigure\n"
+  ));
+
+  const toolLabels = TOOLS.map((t) => {
+    const installed = existsSync(t.skillsDir) || existsSync(join(t.skillsDir, ".."));
+    const hint = installed ? c.dim(" (detected)") : "";
+    return `${t.label}${hint}`;
+  });
+
+  const existingToolIds = existing.sync_tools ?? ["claude"];
+  const defaultToolIndices = TOOLS.map((t, i) => existingToolIds.includes(t.id) ? i : -1).filter(i => i >= 0);
+
+  const selectedToolIndices = askMultiSelect("Which AI tools to sync:", toolLabels, defaultToolIndices);
+  const selectedTools = selectedToolIndices.map((i) => TOOLS[i]!);
+  const syncToolIds = selectedTools.map((t) => t.id);
+
+  // ── 2. Global config per tool ──────────────────────────────────────────
+
+  section("2 / 6  Global config per tool");
+
+  console.log(c.dim(
+    "  For each tool, you can inject a global instructions block so the AI\n" +
+    "  automatically knows to use goodai-base skills and rules every session.\n"
+  ));
+
+  const toolsWithGlobalConfig = selectedTools.filter((t) => t.globalConfigPath && t.globalConfigContent);
+  const configureGlobalTools: ToolDef[] = [];
+
+  if (toolsWithGlobalConfig.length === 0) {
+    console.log(c.dim("  (no selected tools support global config injection)\n"));
+  } else {
+    for (const tool of toolsWithGlobalConfig) {
+      const alreadySet = tool.globalConfigPath
+        ? (existsSync(tool.globalConfigPath) &&
+           readFileSync(tool.globalConfigPath, "utf8").includes("goodai-base"))
+        : false;
+      const question = alreadySet
+        ? `Update ${tool.globalConfigLabel}? (goodai-base block detected)`
+        : `Add goodai-base block to ${tool.globalConfigLabel}?`;
+      if (askYN(question, !alreadySet)) {
+        configureGlobalTools.push(tool);
+      }
+    }
+  }
+
+  // ── 3. Artifact paths ──────────────────────────────────────────────────
+
+  section("3 / 6  Artifact paths");
 
   console.log(c.dim(
     "  By default, jobs and docs are written to <PROJECT_DIR>/jobs/ and <PROJECT_DIR>/docs/.\n" +
-    "  You can override these globally with env vars (useful for shared/centralised storage).\n"
+    "  Override globally with env vars (useful for shared/centralised storage).\n"
   ));
 
   const customizeArtifacts = askYN("Customize artifact paths?", false);
@@ -207,26 +386,20 @@ async function setup() {
   let docsRoot = "";
 
   if (customizeArtifacts) {
-    jobsRoot = ask(
-      "GOODAI_JOBS_ROOT (leave empty = PROJECT_DIR/jobs)",
-      existing.jobs_root ?? ""
-    );
-    docsRoot = ask(
-      "GOODAI_DOCS_ROOT (leave empty = PROJECT_DIR/docs)",
-      existing.docs_root ?? ""
-    );
+    jobsRoot = ask("GOODAI_JOBS_ROOT (leave empty = PROJECT_DIR/jobs)", existing.jobs_root ?? "");
+    docsRoot = ask("GOODAI_DOCS_ROOT (leave empty = PROJECT_DIR/docs)", existing.docs_root ?? "");
   } else {
     jobsRoot = existing.jobs_root ?? "";
     docsRoot = existing.docs_root ?? "";
   }
 
-  // ── 2. Default model ───────────────────────────────────────────────────
+  // ── 4. Default model ───────────────────────────────────────────────────
 
-  section("2 / 5  Default sub-agent model");
+  section("4 / 6  Default sub-agent model");
 
   console.log(c.dim(
-    "  This model is used by task-implementer, tests-creator, code-verifier, and other\n" +
-    "  sub-agents dispatched during pipeline execution.\n"
+    "  Used by task-implementer, tests-creator, code-verifier, and other sub-agents\n" +
+    "  dispatched during pipeline execution.\n"
   ));
 
   const modelOptions = [
@@ -235,20 +408,17 @@ async function setup() {
     "claude-haiku-4-5   (fastest and cheapest, good for simple tasks)",
   ];
   const modelValues = ["claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5-20251001"];
-
   const currentModelIdx = modelValues.indexOf(existing.default_model ?? "claude-sonnet-4-6");
   const modelIdx = askChoice("Model for sub-agents:", modelOptions, Math.max(0, currentModelIdx));
   const defaultModel = modelValues[modelIdx]!;
 
-  // ── 3. TDD enforcement ─────────────────────────────────────────────────
+  // ── 5. TDD enforcement ─────────────────────────────────────────────────
 
-  section("3 / 5  TDD enforcement");
+  section("5 / 6  TDD enforcement");
 
   console.log(c.dim(
-    "  Strict mode: tests-creator MUST run before every task-implementer wave.\n" +
-    "  No exceptions — even if user says 'skip tests'.\n\n" +
-    "  Relaxed mode: tests-creator can be skipped for fix tasks and minor changes.\n" +
-    "  Still mandatory for new features and service_api tasks.\n"
+    "  Strict: tests-creator MUST run before every task-implementer wave, no exceptions.\n" +
+    "  Relaxed: skippable for fix tasks and minor changes.\n"
   ));
 
   const tddOptions = [
@@ -260,13 +430,13 @@ async function setup() {
   const tddIdx = askChoice("TDD enforcement:", tddOptions, Math.max(0, currentTddIdx));
   const tddMode = tddValues[tddIdx]!;
 
-  // ── 4. Documentation languages ─────────────────────────────────────────
+  // ── 6. Post-install actions ────────────────────────────────────────────
 
-  section("4 / 5  Documentation languages");
+  section("6 / 6  Post-install actions");
 
   console.log(c.dim(
-    "  Controls which language variants are generated by feature-analyzer,\n" +
-    "  requirements-management, and implementation-plans skills.\n"
+    "  Documentation languages control which variants are generated by feature-analyzer,\n" +
+    "  requirements-management, and implementation-plans.\n"
   ));
 
   const langOptions = [
@@ -279,19 +449,11 @@ async function setup() {
   const langIdx = askChoice("Documentation languages:", langOptions, Math.max(0, currentLangIdx));
   const docsLanguages = langValues[langIdx]!;
 
-  // ── 5. Post-install actions ────────────────────────────────────────────
-
-  section("5 / 5  Post-install actions");
-
-  const syncAgents = askYN(
-    "Run sync-agents now? (generates .claude/agents/ files for native sub-agents)",
+  console.log();
+  const syncNow = askYN(
+    `Sync skills to selected tools now? (${selectedTools.map(t => t.label).join(", ")})`,
     true
   );
-
-  console.log();
-  const configureClaudeMd = claudeMdHasBlock()
-    ? askYN(`Update ~/.claude/CLAUDE.md with goodai-base reference?`, false)
-    : askYN(`Add goodai-base reference to ~/.claude/CLAUDE.md?`, true);
 
   console.log();
   const configureEnv = askYN("Write env vars to shell rc file?", true);
@@ -317,10 +479,11 @@ async function setup() {
   step("Saving goodai.config.json");
   const cfg: GoodAIConfig = {
     goodai_base: GOODAI_BASE,
+    sync_tools: syncToolIds,
     default_model: defaultModel,
     tdd_mode: tddMode,
     docs_languages: docsLanguages,
-    auto_sync_agents: syncAgents,
+    auto_sync_agents: syncNow,
     ...(jobsRoot ? { jobs_root: jobsRoot } : {}),
     ...(docsRoot ? { docs_root: docsRoot } : {}),
   };
@@ -331,7 +494,7 @@ async function setup() {
   if (configureEnv) {
     const rcPath = detectShellRc();
     if (rcPath) {
-      step(`Writing env vars to ${rcPath}`);
+      step(`Writing env vars to ${rcPath.replace(HOME, "~")}`);
       appendEnvVar(rcPath, "GOODAI_BASE", GOODAI_BASE);
       if (jobsRoot) appendEnvVar(rcPath, "GOODAI_JOBS_ROOT", jobsRoot);
       if (docsRoot) appendEnvVar(rcPath, "GOODAI_DOCS_ROOT", docsRoot);
@@ -342,32 +505,42 @@ async function setup() {
     }
   }
 
-  // CLAUDE.md
-  if (configureClaudeMd) {
-    step("Updating ~/.claude/CLAUDE.md");
-    const result = updateClaudeMd(GOODAI_BASE);
-    console.log(` ${c.green(result)}`);
+  // Global configs
+  for (const tool of configureGlobalTools) {
+    configureGlobalConfig(tool, GOODAI_BASE);
   }
 
-  // Sync agents
-  if (syncAgents) {
-    step("Running sync-agents");
-    const proc = spawnSync("bun", ["run", "sync-agents"], {
-      cwd: join(GOODAI_BASE, "scripts"),
-      stdio: ["inherit", "pipe", "pipe"],
-      encoding: "utf8",
-    });
-    proc.status === 0 ? ok() : warn(`sync-agents failed: ${proc.stderr?.trim()}`);
+  // Sync skills to selected tools
+  if (syncNow) {
+    step(`Syncing skills to: ${selectedTools.map((t) => t.label).join(", ")}`);
+    const toolsArg = syncToolIds.join(",");
+    const proc = spawnSync(
+      "bun",
+      ["src/sync-skills.ts", "--tools", toolsArg],
+      { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
+    );
+    proc.status === 0 ? ok() : warn(`sync-skills failed:\n${proc.stderr?.trim()}`);
+
+    // Sync native Claude agents if claude is selected
+    if (syncToolIds.includes("claude")) {
+      step("Syncing Claude native agents");
+      const agentProc = spawnSync(
+        "bun",
+        ["src/sync-agents.ts"],
+        { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
+      );
+      agentProc.status === 0 ? ok() : warn(`sync-agents failed: ${agentProc.stderr?.trim()}`);
+    }
   }
 
   // Deploy hook
   if (hookTarget) {
     step(`Deploying skill-evaluator hook to ${hookTarget}`);
-    const proc = spawnSync("bun", ["src/deploy-skill-hook.ts", hookTarget], {
-      cwd: join(GOODAI_BASE, "scripts"),
-      stdio: ["inherit", "pipe", "pipe"],
-      encoding: "utf8",
-    });
+    const proc = spawnSync(
+      "bun",
+      ["src/deploy-skill-hook.ts", hookTarget],
+      { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
+    );
     proc.status === 0 ? ok() : warn(`hook deploy failed: ${proc.stderr?.trim()}`);
   }
 
@@ -375,13 +548,15 @@ async function setup() {
 
   console.log(`\n${c.green(c.bold("Setup complete!"))}\n`);
   console.log(`  ${c.bold("Config:")}      ${CONFIG_PATH}`);
+  console.log(`  ${c.bold("Tools:")}       ${selectedTools.map((t) => t.label).join(", ")}`);
   console.log(`  ${c.bold("Model:")}       ${defaultModel}`);
   console.log(`  ${c.bold("TDD mode:")}    ${tddMode}`);
   console.log(`  ${c.bold("Languages:")}   ${docsLanguages}`);
   if (jobsRoot) console.log(`  ${c.bold("JOBS_ROOT:")}   ${jobsRoot}`);
   if (docsRoot) console.log(`  ${c.bold("DOCS_ROOT:")}   ${docsRoot}`);
 
-  console.log(`\n  ${c.dim("Re-run at any time:")} ${c.cyan("bun setup.ts --reconfigure")}\n`);
+  console.log(`\n  ${c.dim("Re-run at any time:")} ${c.cyan("bun setup.ts --reconfigure")}`);
+  console.log(`  ${c.dim("Sync only:")}           ${c.cyan(`cd ${GOODAI_BASE}/scripts && bun run sync-skills --tools ${syncToolIds.join(",")}`)}\n`);
 
   if (configureEnv) {
     console.log(c.dim("  Restart your shell (or run 'source ~/.zshrc') to apply env vars.\n"));
