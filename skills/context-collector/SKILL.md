@@ -193,7 +193,7 @@ Scan local sources for relevant context. Be selective — only include what is d
    - Read them to extract patterns:
      * Import conventions (aliases, ordering)
      * Component structure (observer wrapping, props naming)
-     * Store patterns (makeAutoObservable, runInAction)
+     * Store patterns (makeObservable(this), explicit decorators, thin @action.bound public actions, private API/IO methods, runInAction)
      * Test patterns (describe/it, mocks, fixtures)
      * File naming and organization
    

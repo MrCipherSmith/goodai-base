@@ -149,7 +149,7 @@ If the orchestrator provided `JOB_NAME` and `CONTEXT_PATH`:
   - Export patterns (named vs default)
   - TypeScript patterns (interfaces vs types, generics usage)
   - Component patterns (observer wrapping, props interface naming)
-  - Store patterns (makeAutoObservable, runInAction after await)
+  - Store patterns (makeObservable(this), explicit decorators, private fields before public fields, thin public @action.bound UI actions, non-mutating public helpers, private API methods, runInAction inside private mutation blocks after await)
 
 **2.4 Load relevant rules (from `module_patterns` or by detection):**
 
@@ -255,7 +255,7 @@ Execute the change plan. Write production-quality code.
 - TypeScript strict mode — no `any`, no `as` casts unless justified
 - Use project path aliases for imports (`@components/...`, `@utils/...`)
 - React components: `observer()` wrapping for MobX, named function components
-- MobX stores: `makeAutoObservable(this)` in constructor, `runInAction()` after every `await`
+- MobX stores: `makeObservable(this)` in constructor with explicit decorators, member order `private fields → public fields → constructor → public methods → private methods`, thin public `@action.bound` UI methods, non-mutating public helpers without actions, private API/IO methods, and `runInAction()` in private mutation blocks after every `await`
 - Naming: PascalCase for components/types, camelCase for functions/variables, kebab-case for files
 - Follow existing module patterns discovered in Phase 2
 
