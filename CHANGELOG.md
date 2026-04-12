@@ -4,7 +4,9 @@ All notable changes to goodai-base are documented here.
 
 ---
 
-## [Unreleased] — Setup wizard + multi-tool sync
+## [1.7.0] — Setup wizard, multi-tool sync, MobX refinement
+
+> Released: 2026-04-12
 
 ### Added
 
@@ -35,9 +37,15 @@ All notable changes to goodai-base are documented here.
 - **`CLAUDE.md`** — setup wizard section added
 - **`.gitignore`** — `goodai.config.json` added
 
+### Added (MobX refinement)
+
+- **`rules/core/mobx-store-template.mdc`** — comprehensive store template: member ordering discipline, `@observable.ref/shallow/struct` variants, `IReactionDisposer[]` pattern, `try/catch/finally` with `catch (err: unknown)`, `@action.bound` for public UI methods
+- **`rules/core/code-style-patterns.mdc`** — updated MobX principles: explicit store layout, action boundaries, `runInAction` scope rules
+- **Skills updated** — `code-mobx-store-review`, `code-style-review`, `context-collector`, `task-implementer` checklists aligned with new template across all 5 platform variants (claude, cursor, codex, opencode, zed); task-implementer migrated from Gherkin to JSON task object format
+
 ---
 
-## [Unreleased] — DOCS_ROOT resolution
+## [1.6.0] — DOCS_ROOT resolution
 
 > Mirrors the JOBS_ROOT refactor: docs/ artifacts now default to `<PROJECT_DIR>/docs/` instead of the hardcoded `~/goodai-base/docs/`. All skills and rules use `<DOCS_ROOT>` placeholder.
 
@@ -51,7 +59,7 @@ All notable changes to goodai-base are documented here.
 
 ---
 
-## [Unreleased] — JOBS_ROOT resolution + Wave isolation + compact task results
+## [1.5.0] — JOBS_ROOT resolution + Wave isolation + compact task results
 
 > Fixes orchestrator context bloat: after 4+ waves the orchestrator session was
 > reaching 100k+ tokens and freezing in "Unfurling" state due to accumulated
@@ -77,6 +85,44 @@ All notable changes to goodai-base are documented here.
 - `docs/skills-overview.md` — Ecosystem map updated, Implementation Pipeline table updated, data contracts updated, Iron Law 4 added
 - `skills/task-implementer/orchestrator-prompt.md` — Data flow updated, execution instructions updated (no inline JSON), Parsing the Result updated (file-based)
 - `skills/job-orchestrator/orchestrator-prompt.md` — IMPLEMENT step updated to wave isolation pattern
+
+---
+
+## [1.4.0] — Scripts TypeScript migration
+
+> Merged via [#2](https://github.com/MrCipherSmith/goodai-base/pull/2)
+
+### Added
+- **TypeScript scripts** — all 12 bash/python scripts rewritten in TypeScript (Bun runtime)
+- **Shared modules** (`scripts/src/shared/`) — 6 reusable modules eliminating duplicated parsing:
+  - `frontmatter.ts` — gray-matter wrapper for SKILL.md/rule frontmatter
+  - `checksum.ts` — SHA-256 for files and strings
+  - `args.ts` — CLI argument parser (flags, options, positional)
+  - `keywords.ts` — stop-word-filtered keyword derivation
+  - `agents-md.ts` — AGENTS.md catalog parser (rules + skills sections)
+  - `fs-utils.ts` — filesystem helpers with `~` expansion
+- **Test suite** — 244 tests across 18 files (`bun test`), covering all scripts and shared modules
+- **CI test step** — `bun test` runs in `docs-sync.yml` before catalog generation
+
+### Changed
+- `scripts/package.json` — `"test": "bun test"` added; all script entries use `bun src/*.ts`
+- `.github/workflows/docs-sync.yml` — replaced `actions/setup-python` + `bash scripts/*.sh` with `oven-sh/setup-bun` + `bun run`
+- `scripts/README.md` — rewritten to document all 12 TypeScript scripts and shared modules
+- `CONTRIBUTING.md` — updated all script references to `bun run` commands
+- `docs/onboarding.md` — updated script references and added `bun test` to Useful Scripts
+- `README.md` — updated Quick start from `chmod +x scripts/*.sh` to `bun install && bun run sync-skills`
+
+### Removed
+- Python dependency for scripts (embedded `python3` heredocs eliminated)
+- `bash` dependency for core script logic (kept only for legacy `.sh` files in repo root)
+- `jq` dependency for JSON processing
+
+### Fixed
+- `shared/agents-md.ts` — rule regex now correctly matches `: ` separator (was matching only `—`/`–`/`-`), fixing silent drop of 6/17 rules in `rules.json`
+- `detect-context.ts` — JSON output now matches Python `json.dumps` spacing (`": "`, `", "`)
+- `generate-agents.ts` — `--dry-run` no longer inflates generated/updated counters
+- `generate-agents.ts` — skill description now escaped before embedding in YAML frontmatter
+- `detect-context.ts` — replaced `require('fs')` CJS call with ESM `readFileSync` import
 
 ---
 
@@ -111,44 +157,6 @@ All notable changes to goodai-base are documented here.
 - **`issue-analyzer` v1.1.0** — each decomposed task now includes `"requires_tests_creator": true` in JSON output
 - **`context-collector` v1.1.0** — Phase 2.5 (Test Framework Detection) reads package.json and existing test files, produces `test_framework` context block for sub-agents
 - **`AGENTS.md`** — added "Engineering Standards" section (7 rules), "Implementation Process" section, ⭐ markers for new mandatory sub-agents (tests-creator, code-verifier)
-
----
-
-## [Unreleased] — Scripts TypeScript migration
-
-> Branch: `feat/scripts-ts` · PR: [#2](https://github.com/MrCipherSmith/goodai-base/pull/2)
-
-### Added
-- **TypeScript scripts** — all 12 bash/python scripts rewritten in TypeScript (Bun runtime)
-- **Shared modules** (`scripts/src/shared/`) — 6 reusable modules eliminating duplicated parsing:
-  - `frontmatter.ts` — gray-matter wrapper for SKILL.md/rule frontmatter
-  - `checksum.ts` — SHA-256 for files and strings
-  - `args.ts` — CLI argument parser (flags, options, positional)
-  - `keywords.ts` — stop-word-filtered keyword derivation
-  - `agents-md.ts` — AGENTS.md catalog parser (rules + skills sections)
-  - `fs-utils.ts` — filesystem helpers with `~` expansion
-- **Test suite** — 244 tests across 18 files (`bun test`), covering all scripts and shared modules
-- **CI test step** — `bun test` runs in `docs-sync.yml` before catalog generation
-
-### Changed
-- `scripts/package.json` — `"test": "bun test"` added; all script entries use `bun src/*.ts`
-- `.github/workflows/docs-sync.yml` — replaced `actions/setup-python` + `bash scripts/*.sh` with `oven-sh/setup-bun` + `bun run`
-- `scripts/README.md` — rewritten to document all 12 TypeScript scripts and shared modules
-- `CONTRIBUTING.md` — updated all script references to `bun run` commands
-- `docs/onboarding.md` — updated script references and added `bun test` to Useful Scripts
-- `README.md` — updated Quick start from `chmod +x scripts/*.sh` to `bun install && bun run sync-skills`
-
-### Removed
-- Python dependency for scripts (embedded `python3` heredocs eliminated)
-- `bash` dependency for core script logic (kept only for legacy `.sh` files in repo root)
-- `jq` dependency for JSON processing
-
-### Fixed
-- `shared/agents-md.ts` — rule regex now correctly matches `: ` separator (was matching only `—`/`–`/`-`), fixing silent drop of 6/17 rules in `rules.json`
-- `detect-context.ts` — JSON output now matches Python `json.dumps` spacing (`": "`, `", "`)
-- `generate-agents.ts` — `--dry-run` no longer inflates generated/updated counters
-- `generate-agents.ts` — skill description now escaped before embedding in YAML frontmatter
-- `detect-context.ts` — replaced `require('fs')` CJS call with ESM `readFileSync` import
 
 ---
 
