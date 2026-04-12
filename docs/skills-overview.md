@@ -132,11 +132,21 @@ All return findings with severity (CRITICAL / WARNING / SUGGESTION) and location
 
 | Skill | What it does |
 |---|---|
-| `context-collector` | Gathers local docs, detects libraries, fetches external docs, detects test framework → unified `context_vN.md` |
-| `job-documenter` | Creates and maintains `jobs/<job-name>/` folder: spec, change report, analysis JSON, context |
+| `context-collector` | Gathers local docs, detects libraries, fetches external docs, detects test framework → unified `context_vN.md` in `<DOCS_ROOT>/context/` |
+| `job-documenter` | Creates and maintains `<JOBS_ROOT>/<job-name>/` folder: spec, change report, analysis JSON, context |
+| `feature-analyzer` | Analyzes branch changes across repos → report in `<DOCS_ROOT>/analysis/<feature>-<date>/` |
 | `claude-md-management` | Saves session learnings (patterns, conventions, commands) to CLAUDE.md |
 
 `context-collector` feeds into all implementing sub-agents — they receive the versioned context path and read it before starting.
+
+**Artifact path conventions:**
+
+| Artifact | Default path | Override |
+|---|---|---|
+| Job folders | `<PROJECT_DIR>/jobs/<job-name>/` | `GOODAI_JOBS_ROOT` env var |
+| Docs / analysis | `<PROJECT_DIR>/docs/<category>/` | `GOODAI_DOCS_ROOT` env var |
+
+Both resolve in the same priority order: explicit in dispatch → env var → `<PROJECT_DIR>/…`. Sub-agents receive the resolved path from the orchestrator — they never resolve it themselves.
 
 ---
 

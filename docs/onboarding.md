@@ -138,6 +138,30 @@ Apply code-style-patterns to the following code: ...
 
 ---
 
+## Artifact Paths (JOBS_ROOT and DOCS_ROOT)
+
+All generated artifacts are written to project-local directories, not to `~/goodai-base/`. Both paths follow the same resolution order:
+
+| Variable | Default | Override |
+|---|---|---|
+| `JOBS_ROOT` | `<PROJECT_DIR>/jobs/` | `GOODAI_JOBS_ROOT` env var |
+| `DOCS_ROOT` | `<PROJECT_DIR>/docs/` | `GOODAI_DOCS_ROOT` env var |
+
+**Resolution order (both):**
+1. Value passed explicitly by the orchestrator in the sub-agent dispatch prompt
+2. `GOODAI_JOBS_ROOT` / `GOODAI_DOCS_ROOT` environment variable (if set)
+3. `<PROJECT_DIR>/jobs/` or `<PROJECT_DIR>/docs/` — default
+
+**Key rule:** Sub-agents never resolve these paths themselves. The orchestrator resolves them in Phase 0.2 (when `PROJECT_DIR` is confirmed) and passes them explicitly in every dispatch prompt.
+
+To override globally for all projects on a machine:
+```bash
+export GOODAI_JOBS_ROOT=~/shared/jobs
+export GOODAI_DOCS_ROOT=~/shared/docs
+```
+
+---
+
 ## Multi-Agent Patterns
 
 When skills orchestrate sub-agents (e.g., `job-orchestrator` dispatching `task-implementer` or `code-ai-review`), two protocol rules apply:
