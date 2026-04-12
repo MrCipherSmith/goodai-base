@@ -4,6 +4,31 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [Unreleased] — Wave isolation + compact task results
+
+> Fixes orchestrator context bloat: after 4+ waves the orchestrator session was
+> reaching 100k+ tokens and freezing in "Unfurling" state due to accumulated
+> sub-agent results. Root cause: orchestrator was dispatching task-implementers
+> directly and receiving full verbose output inline.
+
+### Changed
+
+- **`job-orchestrator` v3.3.0** — Steps 2.4.1 + 2.5 rewritten: each wave now dispatches as a single `wave-executor` sub-agent that runs tests-creator + task-implementers internally and returns only a compact `WAVE_DONE` summary (5 lines). Orchestrator context grows O(waves), not O(∑tokens of all sub-agent results). Added `CONTEXT BUDGET RULE` and `Why wave isolation` explanation.
+- **`task-implementer` v1.3.0** — Phase 6 now writes the full JSON result to `jobs/<job-name>/results/<task_id>.json` instead of returning it inline. The STATUS response contains only a compact summary (STATUS line + files changed + verification). Orchestrators read the result file only when needed (DONE_WITH_CONCERNS or BLOCKED).
+
+### Added
+
+- **`jobs/<job-name>/results/` folder** (`rules/core/jobs-documentation.mdc`) — standardized location for task-implementer JSON result files, created automatically during Phase 6.
+
+### Updated documentation
+
+- `docs/agents/job-orchestrator.md` — Sub-agents table updated (wave-executor added), pipeline steps renumbered, example flow updated to show wave-executor calls
+- `docs/skills-overview.md` — Ecosystem map updated, Implementation Pipeline table updated, data contracts updated, Iron Law 4 added
+- `skills/task-implementer/orchestrator-prompt.md` — Data flow updated, execution instructions updated (no inline JSON), Parsing the Result updated (file-based)
+- `skills/job-orchestrator/orchestrator-prompt.md` — IMPLEMENT step updated to wave isolation pattern
+
+---
+
 ## [1.3.0] — TDD pipeline, quality gate, engineering rules
 
 > Merged: 2026-04-11 · Commits: `514f2a4`, `e1455a2`, `ada1f63`, `aa3ddaa`

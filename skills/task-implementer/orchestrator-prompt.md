@@ -1,17 +1,23 @@
 # Task Implementer — Orchestrator Prompt
 
-> **Purpose:** Template used by `job-orchestrator` to dispatch `task-implementer` as a sub-agent.
-> The orchestrator fills in the placeholders below and sends the result as a Task prompt.
-> The task-implementer executes SKILL.md autonomously and returns a JSON result object.
+> **Purpose:** Template used by `wave-executor` (dispatched by `job-orchestrator`) to dispatch `task-implementer` as a sub-agent.
+> The wave-executor fills in the placeholders below and sends the result as a Task prompt.
+> The task-implementer executes SKILL.md autonomously, writes the full JSON result to a file, and returns a compact STATUS response.
 
 ## Data Flow
 
 ```
-[Orchestrator] → extracts task from issue-analyzer JSON → fills template → Task(sub-agent)
-                                                                                  ↓
-[Sub-agent]    → executes task-implementer SKILL.md autonomously
-                                                                                  ↓
-[Result]       → JSON task result object (in final message)
+[job-orchestrator] → dispatches wave-executor per wave (not task-implementer directly)
+                                    ↓
+[wave-executor]    → extracts tasks → fills template → Task(task-implementer) × N (parallel)
+                                                                  ↓
+[task-implementer] → executes SKILL.md → writes JSON to jobs/<job-name>/results/<task_id>.json
+                                                                  ↓
+[Result]           → compact STATUS: DONE response (no inline JSON)
+                                    ↓
+[wave-executor]    → collects STATUS responses → returns compact WAVE_DONE summary
+                                    ↓
+[job-orchestrator] → receives one-line wave summary per wave
 ```
 
 ## Step 1: Extract Task Parameters
@@ -110,13 +116,19 @@ CONTEXT_PATH: ~/goodai-base/jobs/<JOB_NAME>/ai/context.md
 
 1. Load task-implementer SKILL.md
 2. Execute all 6 phases: RECEIVE → RESEARCH → PLAN → IMPLEMENT → VERIFY → REPORT
-3. Return the JSON result object as your FINAL MESSAGE
-4. The JSON output must match the output contract:
-   - Required fields: task_id, task_name, task_type, status
-   - status: success|partial|failed
-   - All file arrays may be empty but must be present
+3. Phase 6: Write full JSON result to ~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json
+4. Return a compact STATUS response as your FINAL MESSAGE — NO inline JSON:
 
-DO NOT ask questions. DO NOT stop for user input. Run to completion.
+   STATUS: DONE
+   ## Completed
+   - <what was done>
+   ## Files changed
+   - <file> — <change>
+   ## Verification
+   - lint: pass / type-check: pass / tests: N passed
+   Result file: ~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json
+
+DO NOT ask questions. DO NOT stop for user input. DO NOT include the JSON block in your response. Run to completion.
 ```
 
 ## Step 4: Build Sub-Agent Prompt (fix task)
@@ -176,19 +188,19 @@ Task({
 
 ---
 
-## Parsing the Result (orchestrator)
+## Parsing the Result (wave-executor)
 
-After receiving the sub-agent response, the orchestrator must:
+After receiving the sub-agent STATUS response, the wave-executor must:
 
-1. Extract the JSON object from the response (between ```json and ```)
-2. Parse into TASK_RESULT:
-   - `status`: success|partial|failed
-   - `files_modified`, `files_created`, `files_deleted`: lists of file paths
-   - `commits`: list of commit hashes
-   - `lint_result`, `type_check_result`, `test_result`: verification results
-   - `acceptance_criteria_met`: all|partial|none
-3. Record: `TASK_RESULTS[task_id] = result`
-4. Decision based on status:
-   - success → continue
-   - partial → log warnings, continue
-   - failed → STOP implementation, ask user
+1. Read the STATUS line: `DONE` | `DONE_WITH_CONCERNS` | `BLOCKED`
+2. Extract compact summary from the response:
+   - Files changed section
+   - Verification results
+   - Commits (from "Completed" bullets or result file)
+3. **Read the result file** only when needed (DONE_WITH_CONCERNS or BLOCKED):
+   - Path: `~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json`
+   - Fields: task_id, status, files_modified, files_created, commits, lint_result, type_check_result, test_result, acceptance_criteria_met
+4. Decision based on STATUS:
+   - `DONE` → continue, collect commit hashes from response
+   - `DONE_WITH_CONCERNS` → read result file, log concerns, continue
+   - `BLOCKED` → STOP wave, report to orchestrator with reason

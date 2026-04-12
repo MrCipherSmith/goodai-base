@@ -20,7 +20,7 @@ Phase 2: Execute plan dynamically:
      ↓
      ├─ [issue-analyzer sub-agent] → JSON analysis result
      ├─ git worktree add → feature branch (NEVER git checkout -b)
-     ├─ FOR EACH task in dependency_order → [task-implementer sub-agent] → JSON result
+     ├─ FOR EACH wave → [wave-executor sub-agent] → compact WAVE_DONE summary
      ├─ Load review skills → findings
      ├─ IF findings → [task-implementer sub-agent (fix)] → re-review (max 2x)
      ├─ npm run lint && type-check && test
@@ -107,16 +107,27 @@ npm install --prefix <worktree_path>
 
 All subsequent operations ONLY in worktree directory.
 
-### Step: IMPLEMENT — Sequential Implementation
+### Step: IMPLEMENT — Wave Isolation
 
 ```
-FOR task_id in dependency_order:
-  1. Read skills/task-implementer/orchestrator-prompt.md
-  2. Fill in: task JSON object + workspace (worktree_path, branch, issue_number)
-  3. Launch Task(task-implementer)
-  4. Parse JSON result
-  5. Record in TASK_RESULTS[task_id]
-  6. If status=failed → STOP, ask user
+WAVES = topological_sort_into_waves(dependency_order, task_dependencies)
+
+FOR wave_index, wave_tasks in enumerate(WAVES):
+  1. Dispatch single Agent("wave-executor") with all tasks in this wave
+     (see skills/job-orchestrator/SKILL.md step 2.4.1 for full prompt template)
+  2. Receive compact WAVE_RESULT:
+       STATUS: WAVE_DONE | WAVE_PARTIAL | WAVE_FAILED
+       Commits: [hash msg, ...]
+       Tests: N passed, M failed
+       Tasks: task-1 ✅, task-2 ✅
+  3. Decision:
+       WAVE_DONE    → continue to next wave
+       WAVE_PARTIAL → log concerns (read result files if needed), continue
+       WAVE_FAILED  → STOP, read result files for failed tasks, ask user
+
+Do NOT dispatch task-implementers directly — always via wave-executor.
+Context budget rule: orchestrator only accumulates compact wave summaries,
+never raw task-implementer output.
 ```
 
 Document result in job-documenter.
