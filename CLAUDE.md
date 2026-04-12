@@ -33,6 +33,17 @@ Every project's Claude session starts by reading `~/goodai-base/AGENTS.md` (via 
 2. Run `cd scripts && bun run generate-rules-json` to regenerate `rules.json`
 3. Update `AGENTS.md` Core Rule Catalog section if needed
 
+### Setup wizard
+
+The setup wizard (`setup.ts`) configures artifact paths, sub-agent model, TDD mode, and doc languages. Run it from the repo root:
+
+```bash
+bun setup.ts                  # first-time setup
+bun setup.ts --reconfigure    # re-run over existing config
+```
+
+Preferences are saved to `goodai.config.json` and written as env vars to `~/.zshrc` / `~/.bashrc`.
+
 ### Running scripts
 
 All scripts are TypeScript, run with Bun from the `scripts/` directory:
@@ -63,14 +74,14 @@ Every `SKILL.md` has a `version:` field in frontmatter. Bump it when behavior ch
 - Minor (`1.x.0`) — new phases or changed workflow
 - Major (`x.0.0`) — breaking change to input/output contract
 
-### JOBS_ROOT
+### Artifact paths (JOBS_ROOT and DOCS_ROOT)
 
-Skills write job artifacts to `<JOBS_ROOT>/<job-name>/`. Resolution order:
-1. `JOBS_ROOT` passed explicitly by the orchestrator in the dispatch prompt
-2. `GOODAI_JOBS_ROOT` environment variable (if set)
-3. `<PROJECT_DIR>/jobs/` — default, relative to the project being worked on
+Both follow the same resolution order:
+1. Value passed explicitly by the orchestrator in the dispatch prompt
+2. `GOODAI_JOBS_ROOT` / `GOODAI_DOCS_ROOT` environment variable (if set)
+3. `<PROJECT_DIR>/jobs/` or `<PROJECT_DIR>/docs/` — default
 
-Sub-agents never resolve JOBS_ROOT themselves — they receive it from the orchestrator.
+Sub-agents never resolve these themselves — they receive the resolved path from the orchestrator.
 
 ### STATUS protocol
 
@@ -87,7 +98,8 @@ All `description:` fields must be trigger conditions ("Use when X"), not workflo
 
 ## What NOT to Do Here
 
-- Do not hardcode `~/goodai-base/jobs/` anywhere — use `<JOBS_ROOT>`
+- Do not hardcode `~/goodai-base/jobs/` or `~/goodai-base/docs/` — use `<JOBS_ROOT>` / `<DOCS_ROOT>`
 - Do not manually execute SKILL.md steps — use the `Skill` tool
 - Do not add project-specific code here (this repo is shared across all projects)
+- Do not commit `goodai.config.json` with personal paths — it is gitignored
 - Do not commit large binaries or generated `node_modules/` (already gitignored)

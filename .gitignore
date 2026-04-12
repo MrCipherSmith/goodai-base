@@ -4,6 +4,9 @@ jobs/
 # Machine-generated registry with absolute local paths
 skills/agents-registry.json
 
+# User-specific setup config (contains local paths and personal preferences)
+goodai.config.json
+
 # Claude Code local files
 .claude/settings.local.json
 .claude/projects/
