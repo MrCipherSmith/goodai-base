@@ -375,4 +375,4 @@ ELSE:
   Proceed with standard workflow (analyze PR/commits directly)
 ```
 
-The job context path is: `~/goodai-base/jobs/<JOB_NAME>/ai/context.md`
+The job context path is: `<JOBS_ROOT>/<JOB_NAME>/ai/context.md`

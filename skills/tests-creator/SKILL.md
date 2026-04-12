@@ -330,7 +330,7 @@ When dispatched by `job-orchestrator`:
 
 ```
 JOB_NAME:     <job-name>
-CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_PATH: <JOBS_ROOT>/<job-name>/ai/context.md
 ```
 
 If provided, read the context document to understand:

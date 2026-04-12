@@ -22,9 +22,11 @@ Proceed directly with your assigned task.
 
 # Job Documenter
 
+> **JOBS_ROOT Note:** `JOBS_ROOT` is always passed explicitly by the orchestrator in the dispatch prompt. Never resolve it yourself — do not fall back to any hardcoded path.
+
 ## Purpose
 
-Sub-agent responsible for creating and maintaining structured job documentation in `~/goodai-base/jobs/`. Called exclusively by `job-orchestrator` to persist the lifecycle of orchestrated tasks — from initial plan through analysis, implementation, review, and final report.
+Sub-agent responsible for creating and maintaining structured job documentation in `<JOBS_ROOT>/`. Called exclusively by `job-orchestrator` to persist the lifecycle of orchestrated tasks — from initial plan through analysis, implementation, review, and final report.
 
 **This skill is NOT invoked directly by users.** It is a service skill dispatched by the orchestrator.
 
@@ -49,7 +51,7 @@ The orchestrator provides a structured prompt with the following fields:
 ```
 ACTION:    init | add-document | update-readme | finalize
 JOB_NAME:  <kebab-case folder name>
-JOBS_ROOT: ~/goodai-base/jobs
+JOBS_ROOT: <JOBS_ROOT>
 DATA:      <action-specific payload — see below>
 ```
 
@@ -156,7 +158,7 @@ PLAN:        <ordered list of planned steps>
    DOCUMENTER_RESULT:
      action: init
      status: success | error
-     job_path: ~/goodai-base/jobs/<JOB_NAME>
+     job_path: <JOBS_ROOT>/<JOB_NAME>
      files_created: [README.md, man/plan.md, ai/plan.md]
      error_details: <if status is error>
    ```
@@ -305,7 +307,7 @@ SUMMARY:       <1-3 sentence summary of what was accomplished>
    DOCUMENTER_RESULT:
      action: finalize
      status: success | error
-     job_path: ~/goodai-base/jobs/<JOB_NAME>
+     job_path: <JOBS_ROOT>/<JOB_NAME>
      final_status: <FINAL_STATUS>
      total_documents: <count of all files in man/ + ai/>
      verification: passed | <list of discrepancies>
@@ -347,7 +349,7 @@ Follow the rules from: rules/core/jobs-documentation.mdc
 
 ACTION: <action>
 JOB_NAME: <job-name>
-JOBS_ROOT: ~/goodai-base/jobs
+JOBS_ROOT: <JOBS_ROOT>
 
 DATA:
 <action-specific data>

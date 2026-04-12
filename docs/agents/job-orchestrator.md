@@ -126,7 +126,7 @@ The orchestrator loads these rules for its own decision-making. Sub-agents load 
 At completion, the orchestrator produces:
 - **PR URL** (if create_pr=true)
 - **Final report**: tasks completed, files changed, test results, gate status, review findings
-- **Persistent job docs** in `~/goodai-base/jobs/<job-name>/`:
+- **Persistent job docs** in `<PROJECT_DIR>/jobs/<job-name>/` (or `$GOODAI_JOBS_ROOT/<job-name>` if set):
   - `man/README.md` — human-readable job summary
   - `man/spec.md` — initial plan and acceptance criteria
   - `man/change-report.md` — what was actually implemented
@@ -139,7 +139,7 @@ At completion, the orchestrator produces:
 
 If the orchestrator is interrupted mid-execution:
 1. Launch it again: `/job-orchestrator`
-2. Phase 0.0 checks `~/goodai-base/jobs/` for incomplete `state.json`
+2. Phase 0.0 checks `$JOBS_ROOT` for incomplete `state.json`
 3. If found: "Found paused job '<name>'. Resume or start new?"
 4. On resume: execution continues from the first uncompleted step
 

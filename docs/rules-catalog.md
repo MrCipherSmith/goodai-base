@@ -20,7 +20,7 @@ Total: 26 rules
 | `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
 | `implementation-doc-mandate` | Documentation mandate for all implementing agents: spec document at start, change report at end. ... | Planning | No |
 | `implementation-plans` | Rules for creating implementation plans in date-stamped requirement folders. | Planning | No |
-| `jobs-documentation` | Job documentation structure and conventions for ~/goodai-base/jobs. Used by job-documenter skill ... | Documentation | No |
+| `jobs-documentation` | Job documentation structure and conventions for <PROJECT_DIR>/jobs (default) or $GOODAI_JOBS_ROOT. Used by job-documenter skill ... | Documentation | No |
 | `mobx-store-template` | Reference template and checklist for MobX store structure and async state handling. | MobX / State | No |
 | `model-selection` | Model selection workflow for sub-agents. Detects available models and allows user to choose. | AI / Models | No |
 | `nestjs-dto` | NestJS DTO standards for Swagger decorators, validation, and typing. | Backend / NestJS | No |

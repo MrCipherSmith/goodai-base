@@ -71,7 +71,7 @@ Phase 3: COMPLETION          →  Final report, optional PR, tell user where doc
 ### 0.0 State Resumption Check
 
 Before asking any questions, check if an interrupted job exists:
-1. Look in `~/goodai-base/jobs/` for any directory containing an incomplete `state.json`.
+1. Look in `$JOBS_ROOT` for any directory containing an incomplete `state.json`.
 2. If found, ASK the user: "Found paused job '<job-name>'. Do you want to resume it or start a new orchestrated job?"
 3. If resume → Parse `state.json`, restore `JOB_STATE`, and jump directly to the first uncompleted step in Phase 2.
 4. If new → Proceed to 0.1.
@@ -323,7 +323,7 @@ Task({
 
     ACTION: init
     JOB_NAME: <job-name>
-    JOBS_ROOT: ~/goodai-base/jobs
+    JOBS_ROOT: <JOBS_ROOT>
 
     DATA:
       TITLE: <job title>
@@ -477,7 +477,7 @@ Task({
 
     ACTION: collect
     JOB_NAME: <job-name>
-    JOBS_ROOT: ~/goodai-base/jobs
+    JOBS_ROOT: <JOBS_ROOT>
     PROJECT_DIR: <project_dir>
 
     DATA:
@@ -502,7 +502,7 @@ CONTEXT_RESULT:
 
 **After context is collected:** All subsequent sub-agents receive the **versioned** context path from state.json:
 ```
-CONTEXT_LOCATION: ~/goodai-base/jobs/<job-name>/ai/context_v<N>.md
+CONTEXT_LOCATION: <JOBS_ROOT>/<job-name>/ai/context_v<N>.md
 ```
 
 **Context versioning:** Never overwrite `context.md` — save snapshots as `context_v1.md`, `context_v2.md`, etc.
@@ -526,7 +526,7 @@ Task({
 
     ACTION: update
     JOB_NAME: <job-name>
-    JOBS_ROOT: ~/goodai-base/jobs
+    JOBS_ROOT: <JOBS_ROOT>
     PROJECT_DIR: <project_dir>
     CONTEXT_VERSION: <current version + 1>  ← write to context_v<N+1>.md
 
@@ -630,7 +630,7 @@ FOR wave_index, wave_tasks in enumerate(WAVES):
     Commits: [hash msg, hash msg, ...]
     Tests: <N passed, M failed>
     Tasks: task-1 ✅, task-2 ✅
-    Result files: ~/goodai-base/jobs/<job-name>/results/task-*.json
+    Result files: <JOBS_ROOT>/<job-name>/results/task-*.json
   
   Decision:
     WAVE_DONE    → continue to next wave
@@ -687,7 +687,7 @@ Task({
     Commits: [abc1234 feat(x): ..., def5678 feat(y): ...]
     Tests: <N passed, M failed>
     Tasks: task-1 ✅, task-2 ✅
-    Result files: ~/goodai-base/jobs/<job-name>/results/task-1.json, task-2.json
+    Result files: <JOBS_ROOT>/<job-name>/results/task-1.json, task-2.json
     
     Use WAVE_PARTIAL if any task is DONE_WITH_CONCERNS.
     Use WAVE_FAILED if any task is BLOCKED or failed.
@@ -1061,7 +1061,7 @@ JOB_NAME: <job-name>
 BRANCH: <feature_branch>
 BASE: <base_branch>
 ISSUE_NUMBER: <issue_number if available>
-CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_PATH: <JOBS_ROOT>/<job-name>/ai/context.md
 ```
 
 `pr-issue-documenter` will analyze the branch diff and produce a structured PR description (Summary + Changes by area + Key Files table). Use its output as the `body` for the PR.
@@ -1129,7 +1129,7 @@ Tell user:
 ```
 ✅ Job completed successfully.
 
-  Documentation: ~/goodai-base/jobs/<job-name>/
+  Documentation: <JOBS_ROOT>/<job-name>/
   Branch:        feature/<slug> (worktree: <path>)
   PR:            <URL or "not created">
   Metrics:       <total time>, <total tokens>
@@ -1201,7 +1201,7 @@ JOB_STATE:
     dependency_order: [<task_ids>]
   
   context_doc:
-    path: ~/goodai-base/jobs/<job-name>/ai/context.md
+    path: <JOBS_ROOT>/<job-name>/ai/context.md
     version: <current version>
     status: collected | updated | not-collected
   
@@ -1222,7 +1222,7 @@ JOB_STATE:
     tests: <result>
   
   documentation:
-    job_path: ~/goodai-base/jobs/<job-name>
+    job_path: <JOBS_ROOT>/<job-name>
     documents_created: [<paths>]
 ```
 
@@ -1547,16 +1547,15 @@ The orchestrator must keep the user informed during long-running execution. This
 The jobs documentation root is configurable, not hardcoded:
 
 **Resolution order:**
-1. `GOODAI_JOBS_ROOT` environment variable (if set)
-2. Project-level CLAUDE.md `jobs_root` setting (if present)
-3. Default: `~/goodai-base/jobs/`
+1. `JOBS_ROOT` passed explicitly by the orchestrator in the sub-agent dispatch prompt
+2. `GOODAI_JOBS_ROOT` environment variable (if set)
+3. Default: `<PROJECT_DIR>/jobs/`  ← project-local (PROJECT_DIR is known by Phase 0.2)
 
 ```bash
-JOBS_ROOT="${GOODAI_JOBS_ROOT:-$(grep 'jobs_root:' <project>/CLAUDE.md | awk '{print $2}')}"
-JOBS_ROOT="${JOBS_ROOT:-$HOME/goodai-base/jobs}"
+JOBS_ROOT="${GOODAI_JOBS_ROOT:-$PROJECT_DIR/jobs}"
 ```
 
-All references to `~/goodai-base/jobs/` in sub-agent prompts must use the resolved `JOBS_ROOT`.
+All references to job paths in sub-agent prompts must use the resolved `JOBS_ROOT`.
 
 ---
 
