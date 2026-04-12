@@ -67,7 +67,7 @@ Phase 5: DOCUMENT    ->  Save via job-documenter, return result
 ```
 ACTION:      collect | update
 JOB_NAME:    <kebab-case job folder name>
-JOBS_ROOT:   ~/goodai-base/jobs
+JOBS_ROOT:   <JOBS_ROOT>
 PROJECT_DIR: <absolute path to project directory>
 
 DATA:
@@ -149,7 +149,7 @@ Scan local sources for relevant context. Be selective — only include what is d
    - Summarize: 3-5 bullet points per doc, only task-relevant info
 ```
 
-### 2.2 Previous Jobs (`~/goodai-base/jobs/`)
+### 2.2 Previous Jobs (`<JOBS_ROOT>/`)
 
 ```
 1. List existing job folders:
@@ -470,7 +470,7 @@ If JOB_NAME is provided, dispatch `job-documenter`:
 ```
 ACTION: add-document
 JOB_NAME: <JOB_NAME>
-JOBS_ROOT: ~/goodai-base/jobs
+JOBS_ROOT: <JOBS_ROOT>
 
 DATA:
   DOC_TYPE:    context
@@ -580,7 +580,7 @@ Load the skill from: skills/context-collector/SKILL.md
 
 ACTION: collect
 JOB_NAME: <job-name>
-JOBS_ROOT: ~/goodai-base/jobs
+JOBS_ROOT: <JOBS_ROOT>
 PROJECT_DIR: <project path>
 
 DATA:
@@ -602,7 +602,7 @@ Load the skill from: skills/context-collector/SKILL.md
 
 ACTION: update
 JOB_NAME: <job-name>
-JOBS_ROOT: ~/goodai-base/jobs
+JOBS_ROOT: <JOBS_ROOT>
 PROJECT_DIR: <project path>
 
 DATA:

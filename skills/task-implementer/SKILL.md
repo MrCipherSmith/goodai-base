@@ -126,7 +126,7 @@ Deep-read the target files and surrounding module to understand patterns.
 **2.0 Read job context (if available):**
 
 If the orchestrator provided `JOB_NAME` and `CONTEXT_PATH`:
-- Read `CONTEXT_PATH` (e.g., `~/goodai-base/jobs/<job-name>/ai/context.md`)
+- Read `CONTEXT_PATH` (e.g., `<JOBS_ROOT>/<job-name>/ai/context.md`)
 - Extract relevant sections: library docs, codebase patterns, conventions, best practices
 - Use this context throughout Phase 2-4 to guide implementation decisions
 - If the file does not exist, proceed without it — context is optional
@@ -343,9 +343,9 @@ Write the full result to a file, then emit a compact STATUS response to the orch
 
 If the orchestrator provided `JOB_NAME` in the workspace context:
 ```bash
-mkdir -p ~/goodai-base/jobs/<JOB_NAME>/results
+mkdir -p <JOBS_ROOT>/<JOB_NAME>/results
 ```
-Write full JSON to `~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json`:
+Write full JSON to `<JOBS_ROOT>/<JOB_NAME>/results/<task_id>.json`:
 ```json
 {
   "task_id": "<task_id>",
@@ -478,7 +478,7 @@ STATUS: DONE
 - type-check: pass
 - tests: 14 passed, 0 failed
 
-Result file: ~/goodai-base/jobs/<job-name>/results/task-1.json
+Result file: <JOBS_ROOT>/<job-name>/results/task-1.json
 ```
 
 For `DONE_WITH_CONCERNS`:
@@ -500,7 +500,7 @@ STATUS: DONE_WITH_CONCERNS
 ## Concerns for orchestrator
 - The acceptance criterion "support legacy tokens" was ambiguous — implemented support for both v1 and v2 token formats. If only v2 is needed, the v1 branch can be removed.
 
-Result file: ~/goodai-base/jobs/<job-name>/results/task-2.json
+Result file: <JOBS_ROOT>/<job-name>/results/task-2.json
 ```
 
 For `BLOCKED`:
@@ -528,7 +528,7 @@ When dispatched by `job-orchestrator`, the prompt MAY include:
 
 ```
 JOB_NAME:     <job-name>
-CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_PATH: <JOBS_ROOT>/<job-name>/ai/context.md
 ```
 
 If provided, read the context document at the start of Phase 2 (RESEARCH) before reading target files. The context document contains:
