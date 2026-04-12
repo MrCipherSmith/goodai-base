@@ -39,7 +39,7 @@ Phase 2: RESEARCH   →  Deep-read target files, understand module patterns
 Phase 3: PLAN       →  Decide implementation approach, list file changes
 Phase 4: IMPLEMENT  →  Write code, tests, stories
 Phase 5: VERIFY     →  Run lint, type-check, tests
-Phase 6: REPORT     →  Emit JSON result object
+Phase 6: REPORT     →  Write result file + emit compact STATUS response
 ```
 
 ---
@@ -337,10 +337,15 @@ task: <task_id>"
 
 ### Phase 6: REPORT
 
-Emit a JSON result object as the final message to the orchestrator.
+Write the full result to a file, then emit a compact STATUS response to the orchestrator.
 
-**Output structure:**
+**6.1 Write result file (when `JOB_NAME` is provided):**
 
+If the orchestrator provided `JOB_NAME` in the workspace context:
+```bash
+mkdir -p ~/goodai-base/jobs/<JOB_NAME>/results
+```
+Write full JSON to `~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json`:
 ```json
 {
   "task_id": "<task_id>",
@@ -361,10 +366,18 @@ Emit a JSON result object as the final message to the orchestrator.
 }
 ```
 
+If `JOB_NAME` is not provided, skip the file write.
+
+**6.2 Emit compact STATUS response:**
+
+Return a compact STATUS response following `rules/core/subagent-status-protocol.md`.
+**Do NOT include the full JSON block inline** — the orchestrator reads the result file when it needs details.
+The inline response must contain only: STATUS line + Completed bullets + Files changed + Verification summary.
+
 **Status classification:**
-- `success`: All acceptance criteria met, all verifications pass
-- `partial`: Some criteria met or some verification failures after self-fix attempts
-- `failed`: Critical blockers prevented implementation. Worktree must be reverted via `git reset --hard`.
+- `success` → `STATUS: DONE`
+- `partial` → `STATUS: DONE_WITH_CONCERNS`
+- `failed` → `STATUS: BLOCKED`
 
 ---
 
@@ -431,7 +444,7 @@ This skill is designed to run fully autonomously. The following settings control
 
 **Rule:** `rules/core/subagent-status-protocol.md`
 
-Every final response to the orchestrator MUST begin with `STATUS: <STATUS>`. The JSON result object from Phase 6 is the structured payload — but the status line comes first, before the JSON block.
+Every final response to the orchestrator MUST begin with `STATUS: <STATUS>`. The full JSON result object is written to a file in Phase 6.1 — the inline response contains only the compact STATUS format. No JSON in the response body.
 
 ### Iron Law
 
@@ -460,11 +473,12 @@ STATUS: DONE
 - src/components/PipelineStep.tsx — added validateStep() method
 - src/components/PipelineStep.test.tsx — new test file, 14 tests
 
-{
-  "task_id": "task-1",
-  "status": "success",
-  ...
-}
+## Verification
+- lint: pass
+- type-check: pass
+- tests: 14 passed, 0 failed
+
+Result file: ~/goodai-base/jobs/<job-name>/results/task-1.json
 ```
 
 For `DONE_WITH_CONCERNS`:
@@ -478,14 +492,15 @@ STATUS: DONE_WITH_CONCERNS
 ## Files changed
 - src/services/auth.ts — updated token refresh logic
 
+## Verification
+- lint: pass
+- type-check: pass
+- tests: 8 passed, 0 failed
+
 ## Concerns for orchestrator
 - The acceptance criterion "support legacy tokens" was ambiguous — implemented support for both v1 and v2 token formats. If only v2 is needed, the v1 branch can be removed.
 
-{
-  "task_id": "task-2",
-  "status": "success",
-  ...
-}
+Result file: ~/goodai-base/jobs/<job-name>/results/task-2.json
 ```
 
 For `BLOCKED`:

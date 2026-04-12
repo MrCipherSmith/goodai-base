@@ -602,106 +602,120 @@ BRANCH_STATE:
 
 **Document:** Update README via job-documenter (update-readme) with branch info.
 
-### 2.4.1 Step: TESTS-CREATOR (mandatory, before implement)
+### 2.4.1 Step: TESTS-CREATOR + IMPLEMENT — Wave Isolation
 
 **IRON LAW: tests-creator MUST run before task-implementer for every task. No exceptions.**
 
-For each task wave, dispatch `tests-creator` in parallel (one per task) to generate failing test stubs:
+**CONTEXT BUDGET RULE: Each wave runs as a single isolated sub-agent. The orchestrator never dispatches task-implementers or tests-creator directly. This keeps the orchestrator context bounded to compact wave summaries regardless of job size.**
+
+---
+
+#### Why wave isolation
+
+When the orchestrator dispatches task-implementers directly, each sub-agent result (STATUS text + verification output) accumulates in the orchestrator's context. After 3–4 waves this context can reach 100k+ tokens, causing the session to freeze during context reload. Wave isolation prevents this: each wave sub-agent runs in its own context and returns only a compact summary.
+
+---
+
+#### Execution pattern
 
 ```
-FOR wave in WAVES:
-  # Step A: Generate test stubs for all tasks in this wave FIRST
-  FOR task in wave (parallel):
-    Dispatch tests-creator:
-      INPUT:
-        task:         { task_id, task_name, task_type, acceptance_criteria,
-                        target_files, description, context, existing_tests }
-        workspace:    { codebase_path, branch, issue_number }
-        automation:   { skip_confirmation: true, commit_test_stubs: true, verify_red: true }
-        context_path: CONTEXT_PATH (from job state)
-    
-    Collect: TEST_SPECS[task_id] = test_case_specs from response
-  
-  # Step B: Only AFTER all test stubs committed — dispatch task-implementer
-  FOR task in wave (parallel if no file overlap):
-    Pass task object WITH test_case_specs: TEST_SPECS[task_id]
-    → task-implementer makes RED tests GREEN
-```
-
-**Why mandatory:** `requires_tests_creator: true` is set on every task by issue-analyzer v1.1.0+. Skipping tests-creator means implementing without a verifiable definition of done — the orchestrator MUST NOT skip this step even if the user says "just implement".
-
-### 2.5 Step: IMPLEMENT
-
-Dispatch `task-implementer` for tasks. **Parallelize independent tasks** where possible. Each task receives the `test_case_specs` produced by `tests-creator` in step 2.4.1.
-
-**Dependency-aware execution strategy:**
-
-```
-# Build dependency graph from analysis
-# Group tasks into execution waves — tasks in the same wave have no dependencies on each other
-
 WAVES = topological_sort_into_waves(dependency_order, task_dependencies)
 
-# Example:
-# Wave 1: [task-1, task-2]    ← no dependencies, run in PARALLEL
-# Wave 2: [task-3]            ← depends on task-1, run after wave 1
-# Wave 3: [task-4, task-5]    ← depend on task-3, run in PARALLEL
-
-FOR wave in WAVES:
-  # tests-creator already ran for this wave in step 2.4.1
-  IF wave has 1 task:
-    # Sequential — single task
-    Launch task-implementer for the task (with test_case_specs)
-  ELSE:
-    # PARALLEL — launch all tasks in this wave simultaneously
-    # IMPORTANT: parallel tasks must modify DIFFERENT files to avoid git conflicts
-    # If file overlap detected → fall back to sequential within this wave
-    Launch all task-implementers in a single turn (each with their test_case_specs)
-    Wait for all to complete
-
-  FOR task in wave:
-    Parse JSON result:
-      - status: success | partial | failed
-      - files_modified, files_created, files_deleted: arrays of paths
-      - commits: array of commit hashes
-      - lint_result, type_check_result, test_result, story_result: strings
-      - acceptance_criteria_met: "all" | "partial: <list>" | "none"
-      - notes: string
-    
-    Record: TASK_RESULTS[task_id] = result
-    
-    Decision:
-      - success → continue
-      - partial → log warnings, continue
-      - failed → STOP implementation, ask user
+FOR wave_index, wave_tasks in enumerate(WAVES):
+  Dispatch SINGLE Agent("wave-executor") with all tasks in this wave.
+  
+  Receive compact WAVE_RESULT:
+    STATUS: WAVE_DONE | WAVE_PARTIAL | WAVE_FAILED
+    Wave: <index>
+    Commits: [hash msg, hash msg, ...]
+    Tests: <N passed, M failed>
+    Tasks: task-1 ✅, task-2 ✅
+    Result files: ~/goodai-base/jobs/<job-name>/results/task-*.json
+  
+  Decision:
+    WAVE_DONE    → continue to next wave
+    WAVE_PARTIAL → log warnings, continue (read result files for details)
+    WAVE_FAILED  → STOP, read result files for failed tasks, ask user
 ```
 
-**Parallel safety check:** Before launching parallel tasks, verify no two tasks in the same wave share target_files. If overlap exists, split into sub-waves or run sequentially.
+#### Wave executor prompt template
 
-**Each task-implementer receives only:**
-- Its specific task object (NOT other tasks)
-- `CONTEXT_PATH` for the job context document
-- `worktree_path` as workspace
-- `package_manager` and `run_command` from JOB_STATE
+```
+Task({
+  description: "Wave <N>: implement tasks <task_ids>",
+  subagent_type: "general",
+  prompt: |
+    You are a wave executor. Implement all tasks in this wave, then return a compact summary.
+    
+    ## Wave
+    Wave <N> of <total>
+    
+    ## Tasks
+    <JSON array of task objects for this wave>
+    
+    ## Workspace
+    - worktree_path: <absolute path>
+    - branch: <branch name>
+    - package_manager: <pm>
+    - run_command: <runner>
+    - issue_number: <N>
+    - job_name: <job-name>
+    - context_path: <path to context_vN.md>
+    
+    ## Instructions
+    
+    **Step A — tests-creator (MANDATORY, run first):**
+    For each task in this wave, dispatch tests-creator in parallel:
+      Load skill: skills/tests-creator/SKILL.md
+      Pass: task object, workspace, context_path
+      Collect: TEST_SPECS[task_id] from each response
+    Wait for ALL tests-creator agents to finish before Step B.
+    
+    **Step B — task-implementer (after all test stubs committed):**
+    For each task in this wave, dispatch task-implementer in parallel (if no file overlap; sequential otherwise):
+      Load skill: skills/task-implementer/SKILL.md
+      Pass: task object WITH test_case_specs: TEST_SPECS[task_id], workspace, job_name, context_path
+    Wait for ALL task-implementer agents to finish.
+    
+    **Parallel safety check:** Before Step B, verify no two tasks share target_files.
+    If overlap → run sequentially within this wave.
+    
+    ## Required response format (compact — no inline JSON)
+    
+    STATUS: WAVE_DONE
+    Wave: <N>
+    Commits: [abc1234 feat(x): ..., def5678 feat(y): ...]
+    Tests: <N passed, M failed>
+    Tasks: task-1 ✅, task-2 ✅
+    Result files: ~/goodai-base/jobs/<job-name>/results/task-1.json, task-2.json
+    
+    Use WAVE_PARTIAL if any task is DONE_WITH_CONCERNS.
+    Use WAVE_FAILED if any task is BLOCKED or failed.
+    Do NOT include full task output inline — write details to result files.
+})
+```
 
-**After all tasks, document:**
+**After all waves, document:**
 ```
 ACTION: add-document
 DATA:
   DOC_TYPE: implementation-report
   TARGET: both
   TITLE: Implementation Report
-  CONTENT: <summary of all tasks, files changed, commits>
-  AGENT: task-implementer
+  CONTENT: <summary of all waves, commits, test totals>
+  AGENT: wave-executor
   TASK: Implementation phase
 ```
 
 ### 2.5.1 Post-Implementation Checkpoint
 
-After implementation completes, check if tests were created. If not, offer `test-gen`:
+After all waves complete, check if tests were created. If not, offer `test-gen`:
 
 ```
-IF no test files in TASK_RESULTS.all_files:
+# Derive all modified files from wave summaries and result files
+ALL_FILES = collect from WAVE_RESULTS (read result files for details if needed)
+
+IF no test files in ALL_FILES:
   Auto-trigger test-gen for new/modified source files
   (skip test files, config files, types-only files)
 ```
@@ -729,8 +743,8 @@ What's next?
 
 ### 2.5.5 Step: IMPLEMENT SANITY CHECK
 
-Lightweight verification after `task-implementer` completes, **before** launching review.
-This catches the common LLM failure where a sub-agent claims success but made no actual changes.
+Lightweight verification after all waves complete, **before** launching review.
+This catches the case where a wave sub-agent claims WAVE_DONE but made no actual git changes.
 
 ```bash
 # Run in worktree directory
@@ -742,13 +756,13 @@ git log <merge_base>..HEAD --oneline
 
 | Check | Pass | Fail action |
 |-------|------|-------------|
-| At least 1 commit exists | ≥1 commit | `retryable` — re-dispatch task-implementer with: "No commits were made. Implement the changes and commit them." |
+| At least 1 commit exists | ≥1 commit | `retryable` — re-dispatch the failed wave-executor with: "No commits were made. Implement the changes and commit them." |
 | At least 1 file modified | ≥1 file changed | Same as above |
-| Claimed files actually modified | All `files_modified` in diff | Log discrepancy as WARNING, continue |
+| Claimed files actually modified | All files in wave result match diff | Log discrepancy as WARNING, continue |
 
 **If retry also produces no commits** → classify as `terminal`, ABORT with:
 ```
-"task-implementer returned success twice but made no git changes.
+"wave-executor returned WAVE_DONE twice but made no git changes.
 Please implement manually and re-run from the review step."
 ```
 
