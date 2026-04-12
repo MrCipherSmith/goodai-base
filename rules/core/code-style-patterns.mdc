@@ -38,6 +38,7 @@ Key principles (see canonical source for full detail with examples):
 - Service layer: IO/API only.
 - Store layer: business logic and state transitions.
 - Component layer: view rendering.
+- UI components should preferably have their own local MobX store to manage their specific view state and encapsulate UI-specific logic, implementing reactivity via MobX instead of `useState` where possible.
 
 ## Review Flags
 - API calls directly in UI components.
