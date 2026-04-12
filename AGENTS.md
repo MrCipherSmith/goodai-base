@@ -1,7 +1,7 @@
-
 # AGENTS Rule Index
 
 ## Purpose
+
 This file is the single always-on rule for the repository rule system.
 It defines global behavior and tells the agent how to select the required rule files from `rules/core` OR invoke appropriate skills from `Skills Catalog`.
 
@@ -12,17 +12,17 @@ It defines global behavior and tells the agent how to select the required rule f
 **When user asks for analysis/investigation → Use SKILLS**
 **When user asks for coding standards/review guidelines → Use RULES**
 
-| User Request Type | Action | Examples |
-|------------------|--------|----------|
-| "Implement issue...", "Issue to PR..." | **ASK: orchestrator or direct?** | "Implement issue #4141", "Auto-implement" |
-| "Analyze...", "Study...", "Investigate..." | **ASK: orchestrator or direct?** | "Analyze branch", "Study pipeline changes" |
-| "Review code...", "Check style..." | **ASK: orchestrator or direct?** | "Review my code", "Check architecture" |
-| "Full review", "Full implementation", "Orchestrate..." | **Job Orchestrator directly** | "Полное ревью", "Run pipeline" |
-| Explicit skill name (e.g., "Run feature-analyzer") | **Invoke named skill directly** | "Use feature-analyzer", "Run feature-analyzer" |
-| "Add PR description", "Document PR", "Create issue for PR" | **`pr-issue-documenter` directly** | "Describe PR changes", "Update PR and issue" |
-| "How to write...", "Standards for..." | **Check Core Rule Catalog** | "How to write DTOs", "Git commit format" |
-| "Create...", "Add..." (with specific type) | **Check Core Rule Catalog** | "Create documentation", "Add pipeline step" |
-| "Change model", "Use different model", "Switch model" | **Check Model Selection** | "Use GPT-5 for sub-agent", "Switch to claude" |
+| User Request Type                                          | Action                             | Examples                                       |
+| ---------------------------------------------------------- | ---------------------------------- | ---------------------------------------------- |
+| "Implement issue...", "Issue to PR..."                     | **ASK: orchestrator or direct?**   | "Implement issue #4141", "Auto-implement"      |
+| "Analyze...", "Study...", "Investigate..."                 | **ASK: orchestrator or direct?**   | "Analyze branch", "Study pipeline changes"     |
+| "Review code...", "Check style..."                         | **ASK: orchestrator or direct?**   | "Review my code", "Check architecture"         |
+| "Full review", "Full implementation", "Orchestrate..."     | **Job Orchestrator directly**      | "Полное ревью", "Run pipeline"                 |
+| Explicit skill name (e.g., "Run feature-analyzer")         | **Invoke named skill directly**    | "Use feature-analyzer", "Run feature-analyzer" |
+| "Add PR description", "Document PR", "Create issue for PR" | **`pr-issue-documenter` directly** | "Describe PR changes", "Update PR and issue"   |
+| "How to write...", "Standards for..."                      | **Check Core Rule Catalog**        | "How to write DTOs", "Git commit format"       |
+| "Create...", "Add..." (with specific type)                 | **Check Core Rule Catalog**        | "Create documentation", "Add pipeline step"    |
+| "Change model", "Use different model", "Switch model"      | **Check Model Selection**          | "Use GPT-5 for sub-agent", "Switch to claude"  |
 
 > **Orchestrator Routing Rule:** When the user does NOT explicitly name a specific skill
 > (e.g., "run code-ai-review", "use feature-analyzer"), and the request CAN be handled
@@ -39,23 +39,27 @@ It defines global behavior and tells the agent how to select the required rule f
 ## 📚 Understanding Rules vs Skills
 
 ### What are RULES? (in `rules/core/*.mdc`)
+
 - **Reference documentation** for coding standards and workflows
 - **Guidelines** on HOW to write code, format commits, structure docs
 - **Static** - don't change based on context
 - **Used for**: learning conventions, checking compliance, understanding patterns
 
 **Rule Examples:**
+
 - `nestjs-dto.mdc` - How to write NestJS DTOs
 - `code-style-patterns.mdc` - Architecture patterns for TS/React/MobX
 - `commit-message-formatting.mdc` - How to format commit messages
 
 ### What are SKILLS? (in `skills/*/`)
+
 - **Actionable procedures** for complex multi-step tasks
 - **Intelligent agents** that perform analysis, reviews, investigations
 - **Dynamic** - adapt to user context and repository state
 - **Used for**: analyzing code, reviewing changes, investigating features
 
 **Skill Examples:**
+
 - `feature-analyzer` - Deep analysis of feature branches across repos
 - `pr-review-comments` - Analyze PR review comments
 
@@ -64,6 +68,7 @@ It defines global behavior and tells the agent how to select the required rule f
 ## 🔍 SELECTION PROTOCOL (Step-by-Step)
 
 ### Step 1: Analyze User Intent
+
 Identify what user wants to do:
 
 **Intent: ANALYZE / INVESTIGATE / REVIEW / IMPLEMENT**
@@ -117,19 +122,19 @@ SCAN Skills Catalog:
 
 **Skill Selection Examples:**
 
-| User Request | Correct Action | Why |
-|-------------|----------------|-----|
-| "Implement issue #4141" | **ASK:** `job-orchestrator` or `issue-analyzer` + `task-implementer` | User didn't name skill — ask first |
-| "Full implementation", "Issue to PR" | `job-orchestrator` | Implies orchestration — go directly |
-| "Analyze branch changes" | **ASK:** `job-orchestrator` or `feature-analyzer` | User didn't name skill — ask first |
-| "Use feature-analyzer on branch X" | `feature-analyzer` | User explicitly named skill — direct |
-| "Analyze variables in pipelines" | **ASK:** `job-orchestrator` or `feature-analyzer` | User didn't name skill — ask first |
-| "Decompose issue into tasks" | **ASK:** `job-orchestrator` or `issue-analyzer` | User didn't name skill — ask first |
-| "Review my code changes" | **ASK:** `job-orchestrator` or `feature-analyzer` | User didn't name skill — ask first |
-| "Full review", "Полное ревью" | `job-orchestrator` | Implies orchestration — go directly |
-| "Analyze PR comments" | `pr-review-comments` | Specialized domain skill — direct |
-| "Add PR description", "Document PR" | `pr-issue-documenter` | Specialized domain skill — direct |
-| "Create issue for PR changes" | `pr-issue-documenter` | Specialized domain skill — direct |
+| User Request                         | Correct Action                                                       | Why                                  |
+| ------------------------------------ | -------------------------------------------------------------------- | ------------------------------------ |
+| "Implement issue #4141"              | **ASK:** `job-orchestrator` or `issue-analyzer` + `task-implementer` | User didn't name skill — ask first   |
+| "Full implementation", "Issue to PR" | `job-orchestrator`                                                   | Implies orchestration — go directly  |
+| "Analyze branch changes"             | **ASK:** `job-orchestrator` or `feature-analyzer`                    | User didn't name skill — ask first   |
+| "Use feature-analyzer on branch X"   | `feature-analyzer`                                                   | User explicitly named skill — direct |
+| "Analyze variables in pipelines"     | **ASK:** `job-orchestrator` or `feature-analyzer`                    | User didn't name skill — ask first   |
+| "Decompose issue into tasks"         | **ASK:** `job-orchestrator` or `issue-analyzer`                      | User didn't name skill — ask first   |
+| "Review my code changes"             | **ASK:** `job-orchestrator` or `feature-analyzer`                    | User didn't name skill — ask first   |
+| "Full review", "Полное ревью"        | `job-orchestrator`                                                   | Implies orchestration — go directly  |
+| "Analyze PR comments"                | `pr-review-comments`                                                 | Specialized domain skill — direct    |
+| "Add PR description", "Document PR"  | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
+| "Create issue for PR changes"        | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 
 ### Step 2B: If Using Rules (Standards/Reference)
 
@@ -158,6 +163,7 @@ Reference guidelines for coding standards and workflows:
 - `core/requirements-management.mdc`: Requirements document workflow and structure.
 
 **Code Quality & Style:**
+
 - `core/code-style-patterns.mdc`: Architecture and style patterns for TS/React/MobX.
 - `core/frontend-assistant.mdc`: Frontend delivery standards for TS/React/MobX/AntD/Tailwind.
 - `core/mobx-store-template.mdc`: Reference structure for MobX stores.
@@ -176,6 +182,7 @@ Reference guidelines for coding standards and workflows:
 - `core/implementation-doc-mandate.mdc`: Mandatory documentation for all implementing agents — spec before code, change report after. Covers all agents: job-orchestrator, feature-dev, task-implementer. Iron Laws + Red Flags table.
 
 **Review & Testing:**
+
 - `core/code-review-ai-assistant.mdc`: Default AI code review baseline.
 - `core/code-review-boss-profile.mdc`: boss-style review profile and tone constraints.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
@@ -183,6 +190,7 @@ Reference guidelines for coding standards and workflows:
 - `core/tdd-workflow.mdc`: Red-green-refactor cycle, test-first mandate, no-done-without-green invariant. Loaded with `task-implementer` and `tests-creator`.
 
 **Development Workflow:**
+
 - `core/git-rules.mdc`: Commit safety, protected paths, and apply-changes gate.
 - `core/commit-message-formatting.mdc`: Conventional commit format policy.
 - `rules/core/subagent-status-protocol.md` — Subagent response format: required STATUS: prefix, four status types (DONE/DONE_WITH_CONCERNS/BLOCKED/NEEDS_CONTEXT), orchestrator handling logic
@@ -190,6 +198,7 @@ Reference guidelines for coding standards and workflows:
 
 
 **System Management:**
+
 - `core/rule-management-workflow.mdc`: Add/edit/sync workflow for rule files and rule metadata.
 - `core/skills-storage-workflow.mdc`: Skill authoring best practices and sync workflow for Cursor, Codex, Zed, OpenCode.
 - `core/model-selection.mdc`: Model selection workflow for sub-agents. Run `detect-models.sh` to see available models.
@@ -203,6 +212,7 @@ Intelligent agents for complex analysis and review tasks:
 ### Analysis & Investigation Skills
 
 **`skills/feature-analyzer`** ⭐ PRIMARY FOR ANALYSIS
+
 - **Purpose**: Deep cross-repository analysis of feature branches
 - **Use When**:
   - "Analyze branch changes"
@@ -224,25 +234,29 @@ Intelligent agents for complex analysis and review tasks:
 ### Code Review Skills
 
 **`skills/code-ai-review`**
+
 - **Purpose**: General AI code review — correctness, type safety, security, performance, error handling
 - **Use When**: "Review code changes", "Check my code", "AI code review"
 - **Key Features**: Focuses on P0 (correctness/security), P1 (architecture), P2 (style); follows `code-review-ai-assistant.mdc`; outputs structured findings with severity/file/line/suggestion
 - **Output**: JSON findings object (blocker/major/minor severities)
 - **Invoked by**: `job-orchestrator` review loop, or directly
 
-**`skills/code-boss-review`**
-- **Purpose**: Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code
-- **Use When**: "boss review", "logic review", called by `job-orchestrator` review loop
-- **Key Features**: Logic in correct layer, inter-store callbacks must be `private`, no premature optimization; follows `code-review-boss-profile.mdc`
+**`skills/code-b091-review`**
+
+- **Purpose**: Direct logic-first review in b091 style — architecture, layer correctness, no duct-tape code
+- **Use When**: "b091 review", "logic review", called by `job-orchestrator` review loop
+- **Key Features**: Logic in correct layer, inter-store callbacks must be `private`, no premature optimization; follows `code-review-b091-profile.mdc`
 - **Output**: JSON findings object
 
 **`skills/code-style-review`**
+
 - **Purpose**: Code style and architecture review — TypeScript strictness, MobX patterns, React structure
 - **Use When**: "Style review", "Architecture check", called by `job-orchestrator` review loop
 - **Key Features**: No `any` types, proper MobX observable/action patterns, naming conventions; follows `code-style-patterns.mdc`
 - **Output**: JSON findings object
 
 **`skills/code-mobx-store-review`**
+
 - **Purpose**: Targeted MobX store review — member ordering, accessibility modifiers, action binding, bidirectional sync
 - **Use When**: Store files modified (`.store.ts`), called by `job-orchestrator` when MobX files detected
 - **Key Features**: Member ordering rules, no `public` keyword, `makeObservable(this)` in constructor, `runInAction` after `await`, bounce protection for bidirectional sync
@@ -251,6 +265,7 @@ Intelligent agents for complex analysis and review tasks:
 ### Implementation & Orchestration Skills
 
 **`skills/job-orchestrator`** ⭐ PRIMARY FOR ORCHESTRATION
+
 - **Purpose**: Dynamic orchestrator that builds execution plans based on user intent
 - **Use When**:
   - "Implement issue #N"
@@ -273,6 +288,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Version**: v2.0.0
 
 **`skills/job-documenter`**
+
 - **Purpose**: Creates and maintains structured job documentation in `jobs/`
 - **Use When**: Called by `job-orchestrator` — NOT invoked directly by users
 - **Actions**: init (create job folder), add-document, update-readme, finalize
@@ -280,6 +296,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Output**: Persistent documentation in `~/goodai-base/jobs/<job-name>/`
 
 **`skills/context-collector`**
+
 - **Purpose**: Collects, summarizes, and maintains a unified context document for a job
 - **Use When**:
   - "Collect context", "Build context", "Gather context"
@@ -295,6 +312,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Version**: v1.0.0
 
 **`skills/issue-analyzer`**
+
 - **Purpose**: Decompose GitHub issue into atomic implementation tasks
 - **Use When**: "Analyze issue", "Decompose issue", "Break down issue"
 - **Output**: JSON object with `issue` metadata, `tasks` array (each with task_id, target_files, acceptance_criteria, context, module_patterns, `requires_tests_creator: true`), and `dependency_order`
@@ -445,11 +463,13 @@ Intelligent agents for complex analysis and review tasks:
 ### PR & Comments Skills
 
 **`skills/pr-review-comments`**
+
 - **Purpose**: Analyze PR review comments
 - **Use When**: "Analyze PR comments", "What did reviewers say?"
 - **Features**: Groups by author, suggests fixes, proposes rule updates
 
 **`skills/pr-issue-documenter`**
+
 - **Purpose**: Generate structured PR descriptions and issue documentation from branch changes
 - **Use When**:
   - "Add PR description", "Document PR"
@@ -538,6 +558,48 @@ Intelligent agents for complex analysis and review tasks:
 
 ---
 
+## ⚠️ CRITICAL: Skill Execution Rule
+
+### After loading ANY orchestrator/agent skill — you MUST invoke it via Task()
+
+**This is the most common failure mode:**
+
+```
+❌ WRONG (what I did):
+  1. skill(name: "job-orchestrator")
+  2. Read the instructions
+  3. Continue in SAME context, doing work manually
+
+✅ CORRECT:
+  1. skill(name: "job-orchestrator")
+  2. Read instructions
+  3. Task({
+       description: "Run job-orchestrator: <task>",
+       subagent_type: "general",
+       prompt: "Load skill: skills/job-orchestrator/SKILL.md\n..."
+     })
+```
+
+**Why this matters:**
+
+- Skills define complex multi-step workflows (sub-agents, documentation, state)
+- Doing the work manually bypasses all that infrastructure
+- Results are not persisted, no traceability, no proper reports
+
+**The pattern:**
+
+```javascript
+// After ANY skill() call that returns agent instructions:
+Task({
+  description: "<descriptive task name>",
+  subagent_type: "general",
+  prompt:
+    "Load skill: skills/<skill-name>/SKILL.md\n<context>\nExecute the skill."
+});
+```
+
+---
+
 ## 🔄 Selection Protocol Summary
 
 1. **Read this file first** (AGENTS.md)
@@ -573,6 +635,7 @@ Six improvements govern how agents and orchestrators behave in this system:
 ---
 
 ## Global Contract
+
 - All rule files are authored in English.
 - Final user-facing deliverables MUST be in Markdown.
 - Any code snippet MUST be inside fenced Markdown code blocks.
@@ -582,6 +645,7 @@ Six improvements govern how agents and orchestrators behave in this system:
 ---
 
 ## Maintenance Rules
+
 - Add new thematic rules only under `rules/core` as `.mdc`.
 - Add new skills under `~/goodai-base/skills/<skill-name>/`.
 - Keep this file updated with descriptions when rules/skills added/renamed/removed.
