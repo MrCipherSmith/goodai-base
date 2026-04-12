@@ -14,13 +14,13 @@ Total: 26 rules
 | `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
 | `commit-message-formatting` | Conventional commit formatting rules. | Git | No |
 | `database-patterns` | Database access patterns: no N+1 queries, indexes before deploy, backward-compatible migrations, ... | General | No |
-| `documentation-management` | Manage project documentation in <PROJECT_DIR>/docs (default) or $GOODAI_DOCS_ROOT with synchronized multilingual outputs. | Documentation | No |
+| `documentation-management` | Manage project documentation in <PROJECT_DIR>/docs (default) or $GOODAI_DOCS_ROOT with synchroniz... | Documentation | No |
 | `error-handling` | Error handling standards: Result pattern, explicit typed errors, no silent failures, no throw-eve... | General | No |
 | `frontend-assistant` | Frontend delivery guidelines for TypeScript, React, MobX, Ant Design, and Tailwind CSS. | Frontend | No |
 | `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
 | `implementation-doc-mandate` | Documentation mandate for all implementing agents: spec document at start, change report at end. ... | Planning | No |
 | `implementation-plans` | Rules for creating implementation plans in date-stamped requirement folders. | Planning | No |
-| `jobs-documentation` | Job documentation structure and conventions for <PROJECT_DIR>/jobs (default) or $GOODAI_JOBS_ROOT. Used by job-documenter skill ... | Documentation | No |
+| `jobs-documentation` | Job documentation structure and conventions for <PROJECT_DIR>/jobs (default) or $GOODAI_JOBS_ROOT... | Documentation | No |
 | `mobx-store-template` | Reference template and checklist for MobX store structure and async state handling. | MobX / State | No |
 | `model-selection` | Model selection workflow for sub-agents. Detects available models and allows user to choose. | AI / Models | No |
 | `nestjs-dto` | NestJS DTO standards for Swagger decorators, validation, and typing. | Backend / NestJS | No |
