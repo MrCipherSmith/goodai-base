@@ -11,7 +11,7 @@
       "id": "documentation-management",
       "type": "rule",
       "path": "rules/core/documentation-management.mdc",
-      "description": "Documentation lifecycle and multilingual doc structure in `~/goodai-base/docs`.",
+      "description": "Documentation lifecycle and multilingual doc structure in `<PROJECT_DIR>/docs` (default) or `$GOODAI_DOCS_ROOT`.",
       "triggers": {
         "keywords": [
           "documentation",

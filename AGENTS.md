@@ -152,7 +152,7 @@ SCAN Core Rule Catalog:
 Reference guidelines for coding standards and workflows:
 
 **Documentation & Planning:**
-- `core/documentation-management.mdc`: Documentation lifecycle and multilingual doc structure in `~/goodai-base/docs`.
+- `core/documentation-management.mdc`: Documentation lifecycle and multilingual doc structure in `<PROJECT_DIR>/docs` (default) or `$GOODAI_DOCS_ROOT`.
 - `core/jobs-documentation.mdc`: Job documentation structure and conventions for `~/goodai-base/jobs`. Used by `job-orchestrator` and `job-documenter`.
 - `core/implementation-plans.mdc`: Implementation plan format and storage.
 - `core/requirements-management.mdc`: Requirements document workflow and structure.

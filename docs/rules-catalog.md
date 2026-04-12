@@ -14,7 +14,7 @@ Total: 26 rules
 | `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
 | `commit-message-formatting` | Conventional commit formatting rules. | Git | No |
 | `database-patterns` | Database access patterns: no N+1 queries, indexes before deploy, backward-compatible migrations, ... | General | No |
-| `documentation-management` | Manage project documentation in ~/goodai-base/docs with synchronized multilingual outputs. | Documentation | No |
+| `documentation-management` | Manage project documentation in <PROJECT_DIR>/docs (default) or $GOODAI_DOCS_ROOT with synchronized multilingual outputs. | Documentation | No |
 | `error-handling` | Error handling standards: Result pattern, explicit typed errors, no silent failures, no throw-eve... | General | No |
 | `frontend-assistant` | Frontend delivery guidelines for TypeScript, React, MobX, Ant Design, and Tailwind CSS. | Frontend | No |
 | `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
