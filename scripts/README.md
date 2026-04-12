@@ -28,9 +28,14 @@ cd scripts && bun install
 ## Usage
 
 ```bash
-# Validate and sync skills to all agent directories
-cd scripts && bun run validate-skills-before-sync
+# Validate and sync skills to configured tools (reads goodai.config.json)
 cd scripts && bun run sync-skills
+
+# Sync to specific tools only
+cd scripts && bun src/sync-skills.ts --tools claude,cursor
+
+# Force sync to all known tools regardless of config
+cd scripts && bun src/sync-skills.ts --all
 
 # Regenerate documentation catalogs
 cd scripts && bun run generate-skill-catalog
@@ -49,16 +54,20 @@ cd scripts && bun run deploy-skill-hook /path/to/your/project
 
 ## Sync targets
 
-`sync-skills` copies platform-specific skill variants to:
+`sync-skills` syncs to tools selected during setup (`goodai.config.json: sync_tools`). Override with `--tools` or `--all`.
 
-1. `~/.cursor/skills/`
-2. `~/.codex/skills/`
-3. `~/.antigravity/skills/`
-4. `~/.config/zed/skills/`
-5. `~/.config/opencode/skills/`
-6. `~/.claude/skills/`
+| Tool | Skills dir | AGENTS.md | Commands |
+|------|-----------|-----------|----------|
+| Claude Code | `~/.claude/skills/` | via CLAUDE.md | `~/.claude/commands/` |
+| Cursor | `~/.cursor/skills/` | `~/.cursor/rules/AGENTS.md` | — |
+| Codex | `~/.codex/skills/` | `~/.codex/AGENTS.md` | — |
+| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/AGENTS.md` | — |
+| Zed | `~/.config/zed/skills/` | `~/.config/zed/AGENTS.md` | — |
+| Antigravity | `~/.antigravity/skills/` | — | — |
 
-And Claude slash commands (`SKILL.claude.md`) to `~/.claude/commands/`.
+**Global config** (injected by setup wizard, not by sync-skills):
+- Claude Code: `~/.claude/CLAUDE.md` — goodai-base routing block
+- Cursor: `~/.cursor/rules/goodai-base.mdc` — `alwaysApply: true` routing rule
 
 ## Shared modules (`src/shared/`)
 
