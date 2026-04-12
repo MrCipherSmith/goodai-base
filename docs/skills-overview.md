@@ -27,12 +27,13 @@ User request
 │  issue-analyzer  →  context-collector                    │
 │       │                    │                             │
 │       ▼                    ▼                             │
-│  tests-creator  ←── acceptance_criteria + framework      │
-│       │                                                  │
-│       ▼  (RED stubs committed)                           │
-│  task-implementer × N  (wave-parallel)                   │
-│       │                                                  │
-│       ▼  (GREEN code)                                    │
+│  wave-executor × waves  ←── tasks + context              │
+│    │  (isolated sub-agent per wave)                      │
+│    ├─ tests-creator × tasks  (RED stubs)                 │
+│    └─ task-implementer × tasks  (GREEN code)             │
+│       │  writes JSON → results/task-N.json               │
+│       │  returns compact STATUS: DONE                    │
+│       ▼  wave returns: "WAVE_N: DONE. N commits."        │
 │  code-verifier  ──── gate: FAIL → fix loop               │
 │       │                                                  │
 │       ▼  (PASS)                                          │
@@ -88,14 +89,16 @@ tests-creator  →  task-implementer  →  code-verifier
 
 | Skill | What it does | Output |
 |---|---|---|
+| `wave-executor` | Dispatched by `job-orchestrator` per wave — runs tests-creator + task-implementers in isolated context | Compact `WAVE_DONE` summary (5 lines) |
 | `tests-creator` | Detects test framework, converts acceptance_criteria into failing test stubs, commits RED state | `TEST_CASE_SPECS { framework, test_files, run_command }` |
-| `task-implementer` | Reads RED stubs, implements code until tests go GREEN, never rewrites tests | Committed code, STATUS report |
+| `task-implementer` | Reads RED stubs, implements code until tests go GREEN, never rewrites tests | JSON file at `jobs/<job>/results/<task_id>.json` + compact `STATUS: DONE` response |
 | `code-verifier` | Runs lint + type-check + tests + circular imports, classifies findings by severity, issues gate verdict | `VERIFICATION_RESULT { gate, checks, findings, summary }` |
 
 **Iron Laws:**
-1. `tests-creator` MUST run before every `task-implementer` wave
+1. `tests-creator` MUST run before every `task-implementer` — enforced inside wave-executor
 2. `code-verifier` gate must be PASS before review launches
 3. `task-implementer` must never rewrite or delete test stubs
+4. `job-orchestrator` MUST dispatch wave-executor, never task-implementers directly (context budget rule)
 
 ---
 
@@ -169,13 +172,22 @@ Key outputs that flow between agents:
 ```
 issue-analyzer
   └─ ANALYSIS_RESULT.tasks[]
-       ├─ acceptance_criteria  →  tests-creator
-       ├─ target_files         →  task-implementer
+       ├─ acceptance_criteria  →  wave-executor → tests-creator
+       ├─ target_files         →  wave-executor → task-implementer
        └─ requires_tests_creator: true
+
+wave-executor (per wave)
+  └─ WAVE_RESULT (compact, 5 lines)    →  job-orchestrator context
+       ├─ commits[]                     →  sanity-check
+       └─ result files[]                →  readable on demand only
+
+task-implementer (inside wave-executor)
+  └─ jobs/<job>/results/<task_id>.json  →  wave-executor (reads only if PARTIAL/FAILED)
+  └─ STATUS: DONE response (compact)    →  wave-executor (always)
 
 tests-creator
   └─ TEST_CASE_SPECS
-       ├─ framework            →  task-implementer (knows how to run tests)
+       ├─ framework            →  task-implementer (inside wave-executor)
        └─ test_files[].path    →  task-implementer (reads RED stubs)
 
 code-verifier

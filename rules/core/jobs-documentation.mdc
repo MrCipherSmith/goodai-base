@@ -59,7 +59,13 @@ jobs/<job-name>/
   README.md          # Job index — always present, always up-to-date
   man/               # Human-readable documents
   ai/                # AI-optimized documents (structured markdown, Gherkin, etc.)
+  results/           # task-implementer JSON result files (created automatically)
+    task-1.json      # Full result for task-1 (written by task-implementer Phase 6)
+    task-2.json      # Full result for task-2
+    ...
 ```
+
+> **`results/` folder:** Created by `task-implementer` during Phase 6 (one file per task). The orchestrator and wave-executor never receive full task results inline — they read these files only when a task reports `DONE_WITH_CONCERNS` or `BLOCKED`. This keeps the orchestrator context bounded.
 
 ## README.md Format
 

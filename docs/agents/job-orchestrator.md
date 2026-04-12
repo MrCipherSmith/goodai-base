@@ -62,22 +62,22 @@ Phase 2: EXECUTION
   Step 1   analyze          → issue-analyzer
   Step 2   context          → context-collector (incl. test framework detection)
   Step 3   prepare          → create feature branch via wt switch -c
-  Step 4   tests-creator    → generate RED test stubs per task (MANDATORY)
-  Step 5   implement        → task-implementer × N tasks (wave-parallel)
-  Step 6   sanity-check     → verify commits exist (orchestrator-internal)
-  Step 7   verify           → code-verifier (lint + types + tests + imports)
-  Step 8   review           → code-review × 4 parallel agents
-  Step 9   security         → security-audit [conditional: auth/API/DB files]
-  Step 10  fix              → task-implementer [conditional: CRITICAL/HIGH findings]
-  Step 11  verify-post-fix  → code-verifier [conditional: after fix]
-  Step 12  perf-check       → perf-check [conditional: frontend/bundle files]
-  Step 13  report           → orchestrator produces final summary
-  Step 14  pr               → gh CLI creates PR [conditional: create_pr=true]
-  Step 15  deploy           → deploy [conditional: user confirms staging deploy]
+  Step 4   implement        → wave-executor × waves (each wave: tests-creator + task-implementers inside)
+  Step 5   sanity-check     → verify commits exist (orchestrator-internal)
+  Step 6   verify           → code-verifier (lint + types + tests + imports)
+  Step 7   review           → code-review × 4 parallel agents
+  Step 8   security         → security-audit [conditional: auth/API/DB files]
+  Step 9   fix              → task-implementer [conditional: CRITICAL/HIGH findings]
+  Step 10  verify-post-fix  → code-verifier [conditional: after fix]
+  Step 11  perf-check       → perf-check [conditional: frontend/bundle files]
+  Step 12  report           → orchestrator produces final summary
+  Step 13  pr               → gh CLI creates PR [conditional: create_pr=true]
+  Step 14  deploy           → deploy [conditional: user confirms staging deploy]
 
 Phase 3: COMPLETION
   - Final report with all findings, links, metrics
   - Job documentation saved in jobs/<job-name>/
+  - Task result files saved in jobs/<job-name>/results/task-*.json
 ```
 
 ---
@@ -88,13 +88,16 @@ Phase 3: COMPLETION
 |---|---|---|
 | `issue-analyzer` | Step 1 | Decomposes issue into tasks with acceptance_criteria |
 | `context-collector` | Step 2 | Gathers docs, library refs, test framework info |
-| `tests-creator` | Step 4, **always** | Generates failing test stubs before implementation |
-| `task-implementer` | Step 5, 10 | Implements tasks; in fix mode applies review findings |
+| `wave-executor` | Step 5 | Runs one full wave: tests-creator + task-implementers internally; returns compact `WAVE_DONE` summary |
+| `task-implementer` | Inside wave-executor | Implements one atomic task; writes JSON result to file; returns compact STATUS response |
+| `tests-creator` | Inside wave-executor, **always** | Generates failing test stubs before implementation (step A of every wave) |
 | `code-verifier` | Step 7, 11 | Runs lint, type-check, tests, circular imports |
 | `code-review` | Step 8 | 4-agent parallel review (correctness, security, style, architecture) |
 | `security-audit` | Step 9 | Dependency audit + secrets scan (if security-sensitive files changed) |
 | `perf-check` | Step 12 | Bundle size, slow queries, async patterns (if frontend files changed) |
 | `job-documenter` | Throughout | Creates and maintains job documentation in jobs/<job-name>/ |
+
+> **Context budget:** The orchestrator dispatches `wave-executor`, not `task-implementer` directly. Each wave sub-agent runs tests-creator + task-implementers in its own isolated context and returns only a compact summary to the orchestrator. This keeps the orchestrator context bounded to O(waves) regardless of job size.
 
 ---
 
@@ -155,16 +158,27 @@ Phase 0: Collect context
 Phase 1: Plan built, user confirms
 
 Phase 2 execution:
-  analyze:       3 tasks (service_api × 2, fix × 1)
-  context:       detects vitest, loads api-contracts.mdc
-  prepare:       branch feature/42-rate-limiting created
-  tests-creator: 12 test stubs committed (RED, all failing)
-  implement:     3 task-implementer agents (wave 1: task-1,2 parallel; wave 2: task-3)
-  verify:        PASS — 12/12 tests green, 0 lint errors, 0 type errors
-  review:        2 HIGH findings (missing error handling in middleware)
-  fix:           task-implementer fixes 2 findings
-  verify-post:   PASS
-  pr:            PR #43 created → github.com/org/myapp/pull/43
+  analyze:  3 tasks (service_api × 2, fix × 1) — dependency graph: wave-1:[task-1,task-2], wave-2:[task-3]
+  context:  detects vitest, loads api-contracts.mdc
+  prepare:  branch feature/42-rate-limiting created
+
+  wave-executor(wave-1):               ← single Agent() call
+    ├─ tests-creator × 2 (parallel)    → 8 RED stubs committed
+    ├─ task-implementer × 2 (parallel) → task-1 ✅, task-2 ✅
+    └─ returns: "WAVE_1: DONE. 2 commits. 8/8 tests."
+
+  wave-executor(wave-2):               ← single Agent() call
+    ├─ tests-creator × 1               → 4 RED stubs committed
+    ├─ task-implementer × 1            → task-3 ✅
+    └─ returns: "WAVE_2: DONE. 1 commit. 4/4 tests."
+
+  verify:       PASS — 12/12 tests green, 0 lint errors, 0 type errors
+  review:       2 HIGH findings (missing error handling in middleware)
+  fix:          task-implementer fixes 2 findings
+  verify-post:  PASS
+  pr:           PR #43 created → github.com/org/myapp/pull/43
+
+  Result files: jobs/issue-42--rate-limiting/results/task-{1,2,3}.json
 ```
 
 ---
