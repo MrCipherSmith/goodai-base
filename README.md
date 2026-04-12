@@ -61,15 +61,21 @@ Reference standards loaded on demand, not always-on:
 curl -fsSL https://raw.githubusercontent.com/MrCipherSmith/goodai-base/main/install.sh | bash
 ```
 
-This clones the repo, installs dependencies, and launches an interactive setup wizard that configures artifact paths, sub-agent model, TDD enforcement, and doc language preferences.
+The installer clones the repo, installs dependencies, and launches an interactive setup wizard. The wizard:
+
+1. **AI tools** — choose which tools to sync (Claude Code, Cursor, Codex, OpenCode, Zed)
+2. **Global config** — injects goodai-base routing block into each tool's global instructions file
+3. **Artifact paths** — optionally set `GOODAI_JOBS_ROOT` / `GOODAI_DOCS_ROOT` env vars
+4. **Sub-agent model** — sonnet / opus / haiku
+5. **TDD enforcement** — strict Iron Laws / relaxed for fix tasks
+6. **Languages** — ru+en+ai / en+ai / en
 
 **Manual install:**
 
 ```bash
 git clone https://github.com/MrCipherSmith/goodai-base.git ~/goodai-base
 cd ~/goodai-base/scripts && bun install
-bun setup.ts        # run setup wizard
-bun run sync-skills # sync to AI tools
+bun ~/goodai-base/setup.ts    # run setup wizard
 ```
 
 **Re-configure at any time:**
@@ -78,15 +84,24 @@ bun run sync-skills # sync to AI tools
 bun ~/goodai-base/setup.ts --reconfigure
 ```
 
-The sync script copies skills and the `AGENTS.md` routing table to all configured AI tools:
+**Sync only (after initial setup):**
 
-| Tool | Target |
-|------|--------|
-| Claude Code | `~/.claude/` |
-| Cursor | `~/.cursor/skills/` |
-| Codex | `~/.codex/skills/` |
-| Zed | `~/.config/zed/skills/` |
-| OpenCode | `~/.config/opencode/skills/` |
+```bash
+cd ~/goodai-base/scripts
+bun run sync-skills                    # sync to tools from goodai.config.json
+bun src/sync-skills.ts --tools claude,cursor  # sync to specific tools
+bun src/sync-skills.ts --all           # force all tools
+```
+
+Skills and `AGENTS.md` are synced to each tool's directory. Global config (routing instructions) is injected separately by the wizard:
+
+| Tool | Skills synced to | Global config |
+|------|-----------------|---------------|
+| Claude Code | `~/.claude/skills/` | `~/.claude/CLAUDE.md` |
+| Cursor | `~/.cursor/skills/` | `~/.cursor/rules/goodai-base.mdc` |
+| Codex | `~/.codex/skills/` | `~/.codex/AGENTS.md` (auto-synced) |
+| Zed | `~/.config/zed/skills/` | `~/.config/zed/AGENTS.md` (auto-synced) |
+| OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/AGENTS.md` (auto-synced) |
 
 ---
 
