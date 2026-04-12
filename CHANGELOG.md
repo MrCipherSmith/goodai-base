@@ -4,6 +4,39 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [Unreleased] — Setup wizard + multi-tool sync
+
+### Added
+
+- **`install.sh`** — curl-installable bash bootstrapper: checks git/bun prereqs, clones or updates repo, installs script deps, launches `setup.ts`
+- **`setup.ts`** — interactive setup wizard (6 sections):
+  1. **AI tools** — multi-select which tools to sync (claude/cursor/codex/opencode/zed), detects installed tools automatically
+  2. **Global config per tool** — injects routing block into each tool's global instructions file:
+     - Claude Code: `~/.claude/CLAUDE.md` (goodai-base routing block)
+     - Cursor: `~/.cursor/rules/goodai-base.mdc` (`alwaysApply: true`)
+     - Codex/OpenCode/Zed: AGENTS.md sync is sufficient
+  3. Artifact paths (GOODAI_JOBS_ROOT / GOODAI_DOCS_ROOT)
+  4. Default sub-agent model
+  5. TDD enforcement mode
+  6. Documentation languages + post-install actions
+  Saves preferences to `goodai.config.json` (gitignored)
+
+### Changed
+
+- **`scripts/src/sync-skills.ts`** — tool selection support:
+  - `--tools claude,cursor` flag: sync to specific tools only
+  - `--all` flag: force sync to all known tools
+  - Reads `sync_tools` from `goodai.config.json` when no flag provided
+  - Falls back to all tools if no config exists
+  - Unified `ToolTarget` registry replacing separate `TARGETS[]` + `AGENTS_TARGETS[]` arrays
+  - Claude slash commands scoped to claude tool only
+- **`scripts/README.md`** — updated sync usage examples and sync targets table
+- **`README.md`** — one-line install command, detailed wizard description, updated tool table
+- **`CLAUDE.md`** — setup wizard section added
+- **`.gitignore`** — `goodai.config.json` added
+
+---
+
 ## [Unreleased] — DOCS_ROOT resolution
 
 > Mirrors the JOBS_ROOT refactor: docs/ artifacts now default to `<PROJECT_DIR>/docs/` instead of the hardcoded `~/goodai-base/docs/`. All skills and rules use `<DOCS_ROOT>` placeholder.
