@@ -55,10 +55,27 @@ Reference standards loaded on demand, not always-on:
 
 ## Quick start
 
+**One-line install (recommended):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/MrCipherSmith/goodai-base/main/install.sh | bash
+```
+
+This clones the repo, installs dependencies, and launches an interactive setup wizard that configures artifact paths, sub-agent model, TDD enforcement, and doc language preferences.
+
+**Manual install:**
+
 ```bash
 git clone https://github.com/MrCipherSmith/goodai-base.git ~/goodai-base
 cd ~/goodai-base/scripts && bun install
-bun run sync-skills
+bun setup.ts        # run setup wizard
+bun run sync-skills # sync to AI tools
+```
+
+**Re-configure at any time:**
+
+```bash
+bun ~/goodai-base/setup.ts --reconfigure
 ```
 
 The sync script copies skills and the `AGENTS.md` routing table to all configured AI tools:
