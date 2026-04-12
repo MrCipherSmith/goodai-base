@@ -2,6 +2,10 @@
 # goodai-base — one-line installer
 # Usage: curl -fsSL https://raw.githubusercontent.com/MrCipherSmith/goodai-base/main/install.sh | bash
 #
+# Env vars:
+#   GOODAI_BASE     — install directory (default: ~/goodai-base)
+#   GOODAI_VERSION  — pin to a specific release tag, e.g. v1.7.0 (default: latest)
+#
 # What it does:
 # 1. Checks prerequisites (git, bun)
 # 2. Clones the repo (or updates if already exists)
@@ -20,6 +24,7 @@ NC='\033[0m'
 REPO="https://github.com/MrCipherSmith/goodai-base.git"
 DEFAULT_DIR="$HOME/goodai-base"
 INSTALL_DIR="${GOODAI_BASE:-$DEFAULT_DIR}"
+VERSION="${GOODAI_VERSION:-}"
 
 echo -e "\n${BOLD}goodai-base Installer${NC}\n"
 
@@ -60,15 +65,30 @@ echo ""
 
 if [ -d "$INSTALL_DIR/.git" ]; then
   echo -e "${BOLD}Updating${NC} existing installation at ${CYAN}$INSTALL_DIR${NC}"
-  git -C "$INSTALL_DIR" pull --ff-only 2>/dev/null || {
-    echo -e "  ${DIM}Pull failed (local changes?), skipping update${NC}"
-  }
+  if [ -n "$VERSION" ]; then
+    git -C "$INSTALL_DIR" fetch --depth 1 origin "refs/tags/$VERSION:refs/tags/$VERSION" 2>/dev/null && \
+      git -C "$INSTALL_DIR" checkout "$VERSION" --quiet || {
+        echo -e "  ${RED}✗${NC} Could not switch to $VERSION"
+        exit 1
+      }
+  else
+    git -C "$INSTALL_DIR" fetch --depth 1 origin main 2>/dev/null && \
+      git -C "$INSTALL_DIR" reset --hard origin/main --quiet || {
+        echo -e "  ${DIM}Update failed (local changes?), skipping${NC}"
+      }
+  fi
 else
   echo -e "${BOLD}Cloning${NC} to ${CYAN}$INSTALL_DIR${NC}"
   mkdir -p "$(dirname "$INSTALL_DIR")"
-  git clone "$REPO" "$INSTALL_DIR"
+  if [ -n "$VERSION" ]; then
+    git clone --depth 1 --branch "$VERSION" "$REPO" "$INSTALL_DIR"
+  else
+    git clone --depth 1 "$REPO" "$INSTALL_DIR"
+  fi
 fi
 
+INSTALLED_VERSION=$(git -C "$INSTALL_DIR" describe --tags --abbrev=0 2>/dev/null || echo "unknown")
+echo -e "  ${GREEN}✓${NC} version ${BOLD}$INSTALLED_VERSION${NC}"
 echo ""
 
 # --- Install script dependencies ---
