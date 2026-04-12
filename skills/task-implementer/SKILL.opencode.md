@@ -1,6 +1,6 @@
 ---
 name: task-implementer
-description: "Autonomous implementation agent that receives a single atomic task (Gherkin Scenario from issue-analyzer) and implements it end-to-end: researches codebase, plans changes, writes code, creates tests/stories as needed, verifies via lint/type-check/test, and reports results. Use when: implementing a single decomposed task from issue-analyzer, executing code changes autonomously."
+description: "Autonomous implementation agent that receives a single atomic task (JSON task object from issue-analyzer) and implements it end-to-end: researches codebase, plans changes, writes code, creates tests/stories as needed, verifies via lint/type-check/test, and reports results. Use when: implementing a single decomposed task from issue-analyzer, executing code changes autonomously."
 triggers:
   - "Implement task"
   - "Execute task scenario"
@@ -19,10 +19,10 @@ compatibility: "cursor,codex,zed,opencode"
 
 ## Purpose
 
-Receives a single atomic task (one Gherkin Scenario from `issue-analyzer`) and implements it end-to-end. Designed to run autonomously as a sub-agent — no user interaction required. Commits its changes to a shared feature branch managed by the orchestrator.
+Receives a single atomic task (JSON task object from `issue-analyzer`) and implements it end-to-end. Designed to run autonomously as a sub-agent — no user interaction required. Commits its changes to a shared feature branch managed by the orchestrator.
 
-**Input:** Task Scenario (Gherkin) + workspace context (branch, codebase path, issue number)
-**Output:** Gherkin Scenario report with implementation status, files modified, verification results
+**Input:** JSON task object + workspace context (branch, codebase path, issue number)
+**Output:** JSON result object with implementation status, files modified, verification results
 
 ## When to Use
 
@@ -38,7 +38,7 @@ Phase 2: RESEARCH   →  Deep-read target files, understand module patterns
 Phase 3: PLAN       →  Decide implementation approach, list file changes
 Phase 4: IMPLEMENT  →  Write code, tests, stories
 Phase 5: VERIFY     →  Run lint, type-check, tests
-Phase 6: REPORT     →  Emit Gherkin result report
+Phase 6: REPORT     →  Emit JSON result object
 ```
 
 ---
@@ -59,22 +59,22 @@ Task Implementer Progress:
 
 Parse the incoming task and validate all required fields.
 
-**1.1 Extract from Gherkin Scenario:**
+**1.1 Extract from JSON task object:**
 
 ```
-TASK:
-  task_id:              from Scenario name (e.g., "task-1")
-  task_name:            from Scenario name (e.g., "Add validation to form")
-  task_type:            from Given "task type is" (ui_component|store_logic|service_api|refactoring|fix|mixed)
-  complexity:           from Given "estimated complexity is" (low|medium|high)
-  dependencies:         from Given "depends on" (task IDs or "none")
-  description:          from table row "Description"
-  target_files:         from table row "Target Files" (comma-separated paths)
-  acceptance_criteria:  from table row "Acceptance Criteria" (semicolon-separated)
-  context:              from table row "Context" (code context, types, signatures)
-  existing_tests:       from table row "Existing Tests" (paths or "none")
-  existing_stories:     from table row "Existing Stories" (paths or "none")
-  module_patterns:      from table row "Module Patterns" (how similar code is written)
+TASK: (from JSON object passed by orchestrator)
+  task_id:              string, e.g. "task-1"
+  task_name:            string, e.g. "Add validation to form"
+  task_type:            string: ui_component|store_logic|service_api|refactoring|fix|mixed
+  complexity:           string: low|medium|high
+  dependencies:         array of task_id strings (already satisfied — orchestrator ensures order)
+  description:          string: what to implement
+  target_files:         array of file path strings
+  acceptance_criteria:  array of criterion strings
+  context:              string: code context, types, signatures
+  existing_tests:       array of file path strings (may be empty)
+  existing_stories:     array of file path strings (may be empty)
+  module_patterns:      string: how similar code is written in this module
 ```
 
 **1.2 Extract from workspace context:**
@@ -102,7 +102,7 @@ ASSERT task_id IS NOT EMPTY           → otherwise ABORT("Missing task_id")
 ASSERT task_type IN valid_types       → otherwise ABORT("Invalid task_type")
 ASSERT target_files IS NOT EMPTY      → otherwise ABORT("No target files")
 ASSERT codebase_path EXISTS           → otherwise ABORT("Codebase path not found")
-ASSERT branch IS current branch       → otherwise ABORT("Wrong branch checked out")
+ASSERT branch IS NOT EMPTY            → otherwise ABORT("Wrong branch checked out")
 ```
 
 ### Phase 2: RESEARCH
@@ -135,7 +135,7 @@ If the orchestrator provided `JOB_NAME` and `CONTEXT_PATH`:
   - Export patterns (named vs default)
   - TypeScript patterns (interfaces vs types, generics usage)
   - Component patterns (observer wrapping, props interface naming)
-  - Store patterns (makeAutoObservable, runInAction after await)
+  - Store patterns (makeObservable(this), explicit decorators, private fields before public fields, thin public @action.bound UI actions, non-mutating public helpers, private API methods, runInAction inside private mutation blocks after await)
 
 **2.4 Load relevant rules (from `module_patterns` or by detection):**
 
@@ -216,7 +216,7 @@ Execute the change plan. Write production-quality code.
 - TypeScript strict mode — no `any`, no `as` casts unless justified
 - Use project path aliases for imports (`@components/...`, `@utils/...`)
 - React components: `observer()` wrapping for MobX, named function components
-- MobX stores: `makeAutoObservable(this)` in constructor, `runInAction()` after every `await`
+- MobX stores: `makeObservable(this)` in constructor with explicit decorators, member order `private fields → public fields → constructor → public methods → private methods`, thin public `@action.bound` UI methods, non-mutating public helpers without actions, private API/IO methods, and `runInAction()` in private mutation blocks after every `await`
 - Naming: PascalCase for components/types, camelCase for functions/variables, kebab-case for files
 - Follow existing module patterns discovered in Phase 2
 
@@ -298,36 +298,34 @@ task: <task_id>"
 
 ### Phase 6: REPORT
 
-Emit a Gherkin Scenario report as the final message.
+Emit a JSON result object as the final message to the orchestrator.
 
 **Output structure:**
 
-```gherkin
-Feature: Task Implementation Report
-
-  Scenario: <task_id> — <task_name>
-    Given task type is "<task_type>"
-    And implementation status is "<success|partial|failed>"
-
-    | Aspect | Detail |
-    | Status | <success / partial / failed> |
-    | Description | <what was implemented> |
-    | Files Modified | <comma-separated paths of modified files> |
-    | Files Created | <comma-separated paths of new files, or "none"> |
-    | Files Deleted | <comma-separated paths of deleted files, or "none"> |
-    | Commits | <comma-separated commit hashes> |
-    | Lint Result | <pass / N errors> |
-    | Type Check Result | <pass / N errors> |
-    | Test Result | <pass / N passed, M failed / skipped> |
-    | Story Result | <pass / build error / not applicable> |
-    | Acceptance Criteria Met | <all / partial: list unmet / none> |
-    | Notes | <any additional notes, warnings, or blockers> |
+```json
+{
+  "task_id": "<task_id>",
+  "task_name": "<task_name>",
+  "task_type": "<task_type>",
+  "status": "<success|partial|failed>",
+  "description": "<what was implemented>",
+  "files_modified": ["src/path/file.ts"],
+  "files_created": ["src/path/newfile.ts"],
+  "files_deleted": [],
+  "commits": ["abc1234", "def5678"],
+  "lint_result": "<pass|N errors: details>",
+  "type_check_result": "<pass|N errors: details>",
+  "test_result": "<pass|N passed, M failed: details|skipped>",
+  "story_result": "<pass|build error: details|not applicable>",
+  "acceptance_criteria_met": "<all|partial: list of unmet criteria|none>",
+  "notes": "<any warnings, blockers, or additional context>"
+}
 ```
 
 **Status classification:**
 - `success`: All acceptance criteria met, all verifications pass
 - `partial`: Some criteria met or some verification failures after self-fix attempts
-- `failed`: Critical blockers prevented implementation. (Worktree must be reverted via `git reset --hard`)
+- `failed`: Critical blockers prevented implementation. Worktree must be reverted via `git reset --hard`.
 
 ---
 
@@ -372,7 +370,7 @@ This skill is designed to run fully autonomously. The following settings control
 7. **DO** use `runInAction()` after every `await` in MobX actions.
 8. **DO** commit with conventional commit format referencing the issue number.
 9. **DO** verify your work before reporting.
-10. Return the Gherkin report as your **final message** to the orchestrator.
+10. Return the JSON result object as your **final message** to the orchestrator.
 
 ---
 
