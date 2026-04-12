@@ -22,11 +22,15 @@ Apply when reviewing or implementing TypeScript/React/MobX code in the frontend 
 For complete MobX store patterns, see `core/mobx-store-template.mdc`.
 
 Key principles (see canonical source for full detail with examples):
-- All state must be `makeObservable` with explicit decorators
-- Use `runInAction` for async state changes
+- All state must use `makeObservable(this)` with explicit decorators
+- Store layout should stay predictable: private fields → public fields → constructor → public methods → private methods
+- Public UI entrypoints called from React should be `@action.bound`, usually as thin `on...` methods
+- Public non-mutating helpers/selectors are not actions and do not use `runInAction`
+- Private API/IO and orchestration belong in private methods; async private methods use `try/catch/finally`
+- Use `runInAction` for private mutation blocks after `await`, and for private orchestration-state updates
 - Wrap React components with `observer`
-- Inter-store callbacks must be private (`private readonly onX = action(...)`)
-- Use equality guards (`=== value`) not truthy checks for computed flags
+- Inter-store callbacks and internal handlers must be private (see `core/mobx-store-template.mdc` for the canonical callback rules)
+- Use equality guards, not truthy checks, when optional values must propagate clearing
 - Implement bounce protection for bidirectional sync
 
 ## React

@@ -63,129 +63,114 @@ git ls-files --others --exclude-standard
 
 ### Store Structure
 - Store class MUST have `makeObservable(this)` in constructor.
-- State is stored in `@observable`/`@observable.shallow`/`@observable.ref`.
-- Derived values in `@computed`, not in View.
+- State is stored in `@observable` / `@observable.shallow` / `@observable.ref` / `@observable.struct`.
+- Derived values live in `@computed`, not in View.
+- `@observable.ref` is preferred for large external objects or when inner reactivity is handled elsewhere.
+- Private backing field (`@observable private _value`) with `@computed get value()` and a public setter action is the correct pattern for controlled access.
 
 ### Member Ordering
-Check class member order (matches `@typescript-eslint/member-ordering` and project convention):
-1. `@observable` fields (public state, no modifier)
-2. `private` fields (internal state: `disposed`, `initialized`, etc.)
+Check class member order against the canonical layout:
+1. `private` fields
+2. public fields (`@observable`, `readonly`, public plain props)
 3. `constructor`
-4. `@computed` getters
-5. `dispose()` — lifecycle cleanup
-6. `init()` / `onMount()` — lifecycle initialization
-7. `@action.bound` methods — UI-facing actions
-8. `private` methods — API calls and internal logic
+4. public methods (`@computed` getters, lifecycle methods, public non-mutating helpers/selectors, public `@action.bound` UI entrypoints)
+5. `private` methods
 
 ### Member Accessibility Modifiers
 ESLint: `@typescript-eslint/explicit-member-accessibility: ["error", { accessibility: "no-public" }]` — the word `public` is **forbidden**.
 
-- *(no modifier)*: `@observable` fields, `@computed` getters, `@action.bound` methods, `dispose()`, `init()` — public store API.
-- `private`: internal state (`disposed`, `initialized`), helper methods, API-call methods (`fetchX`, `performX`), inter-store callbacks (`onChangeX`, `onFireX`, `handleX`, `syncX`).
-- `private readonly`: constructor-injected dependencies, immutable configuration (`id`, `context`).
+- *(no modifier)*: public observable fields, computed getters, lifecycle methods, public helper methods, public `@action.bound` UI methods.
+- `private`: internal state (`disposed`, `initialized`, `_value`), helper methods, API-call methods (`fetchX`, `performX`), inter-store callbacks (`onChangeX`, `onFireX`, `handleX`, `syncX`).
+- `private readonly`: constructor-injected dependencies, immutable configuration (`service`, `context`, `id`).
 - `readonly`: immutable public identity fields (`pipelineType`, `contextActions`).
 - `protected`: only in abstract base classes for extension points.
 
 Review flags:
-- Using the word `public` — **ESLint error** (error level).
-- `private` field that could be `private readonly` — suggest `readonly`.
+- Using the word `public` — **error**.
 - Missing `private` on internal state or helper methods — **warning**.
+- Internal dependency that should be `private readonly` — **suggestion**.
+
+### Observable Collections
+- `IObservableArray` and `ObservableMap` MUST use MobX-specific mutation methods inside `runInAction`.
+- Do **not** reassign the whole collection variable when using `IObservableArray` / `ObservableMap` — mutate in place.
+- `@observable.ref` is correct for large external objects or when the object handles its own reactivity.
+
+Review flags:
+- `IObservableArray` field reassigned instead of using `.replace()` — **warning**.
+- `ObservableMap` field reassigned instead of using `.replace()` — **warning**.
+- Deep `@observable` on a large external object/instance — **suggestion**: consider `@observable.ref`.
+
+### Reactions and Disposers
+- `autorun`, `reaction`, `when` created in constructor/store setup MUST be disposed in `dispose()`.
+- Disposers should be stored in a `private disposers: IReactionDisposer[]` array.
+
+Review flags:
+- `autorun` / `reaction` / `when` without a disposer call in `dispose()` — **warning**.
+- Missing `dispose()` in a store that has reactions — **warning**.
 
 ### Actions and Async
-- Any state mutation inside actions (`@action.bound` or via `runInAction`).
-- After `await` for mutations, use `runInAction`.
-- Avoid direct store mutations from outside the action layer.
-
-### Action Binding Rules
-- **`@action.bound`**: only for methods called from UI (components). These are thin wrappers delegating to private methods.
-- **Private method + `runInAction`**: for methods containing API calls and state mutations.
-- **Never** use `@action.bound` on private methods.
-- **Exception**: `@action.bound private` is acceptable for inter-store callbacks — methods passed as bound references to child/sibling stores (e.g. `new CodeEditorStore(this.onChangeEditorState)`).
+- Public methods called from React components or route/UI handlers MUST be `@action.bound`.
+- Public sync `@action.bound` methods may mutate store state directly and should not wrap those direct mutations in `runInAction`.
+- Public async `@action.bound` methods should stay thin: optional guard → delegate to `private async` method.
+- Public non-mutating helpers/selectors are not actions and should not use `runInAction`; arrow helpers are acceptable when context can escape.
+- Private async/orchestration methods should usually use `try/catch/finally`.
+- State mutations inside private methods must happen in `runInAction`, especially after `await`.
+- `catch (err: unknown)` MUST be used.
 
 Review flags:
-- `@action.bound` method contains an API call directly — **warning**: move API call to private method.
-- `@action.bound` on private method (except inter-store callbacks) — **warning**: remove decorator, use `runInAction` inside.
-- Method called from another store marked `@action.bound` instead of plain method — **suggestion**.
+- Public UI method missing `@action.bound` — **warning**.
+- Public helper method marked `@action.bound` even though it does not mutate state — **warning**.
+- Public async action doing API/IO itself instead of delegating — **warning**.
+- Private async method mutating state outside `runInAction` — **warning**.
+- Missing `try/catch/finally` around private async workflow that owns loading/saving flags — **warning**.
 
 ### Inter-Store Callbacks and Internal Handlers
-Methods serving as **internal callbacks** between stores or internal event handlers MUST be `private`. They are NOT part of the store's public API.
+Methods serving as internal callbacks between stores or internal event handlers MUST be `private`.
 
-**Name patterns that MUST be `private`:**
-- `onChangeEditorState(state)` — callback receiving state from child/sibling store
-- `onFireExecutorChange()` — internal sync handler on executor change
-- `onChangeX(value)` — handler for internal state synchronization between stores
-- `handleX()`, `syncX()` — any internal coordination method
+Name patterns that MUST be `private` unless they are React-facing UI entrypoints:
+- `onChangeEditorState(state)`
+- `onFireExecutorChange()`
+- `onChangeX(value)`
+- `handleX()`
+- `syncX()`
 
-**Decision rule:** Ask "Is this method called from a React component via JSX/event handler?" If NO — it is `private`.
+Decision rule: ask "Is this called from JSX / a React event handler?" If NO — it is `private`.
 
 Review flags:
-- Public method with `onChangeX`, `onFireX`, `handleX`, `syncX` pattern not called from components — **warning**: make `private`.
-- Inter-store callback without `private` — **warning**: violation of store encapsulation.
+- Public method with `onChangeX`, `onFireX`, `handleX`, `syncX` pattern not called from components — **warning**.
+- Inter-store callback without `private` — **warning**.
+- `@action.bound` on a private method that is not passed as a callback reference — **warning**.
 
 ### Bidirectional Sync Bounce Protection
-When two stores synchronize state **in both directions** (Store A → Store B and Store B → Store A), at least one direction MUST have an equality guard (`if (newValue !== currentValue)`) before writing to the other store, to prevent infinite callback loops.
-
-```typescript
-// CORRECT — equality guard prevents bounce
-private onChangeEditorState(editorState: ICodeEditorState) {
-  this.setRawScript(editorState.script);
-  const codeExecutorId = this.codeExecutor?.id;
-  if (codeExecutorId && this.codeEditorStore.executorId !== codeExecutorId) {
-    this.codeEditorStore.setExecutorId(codeExecutorId);
-  }
-}
-
-// WRONG — no guard, infinite loop
-private onChangeEditorState(editorState: ICodeEditorState) {
-  this.setRawScript(editorState.script);
-  const codeExecutorId = this.codeExecutor?.id;
-  if (codeExecutorId) {
-    this.codeEditorStore.setExecutorId(codeExecutorId); // bounces back
-  }
-}
-```
+When two stores synchronize state in both directions, at least one direction MUST have an equality guard (`if (newValue !== currentValue)`) before writing to the other store.
 
 Review flags:
-- Bidirectional store sync without equality guard — **critical**: risk of infinite callback loop.
+- Bidirectional store sync without equality guard — **critical**.
 - Store A writes to Store B in a callback from Store B without `!==` check — **critical**.
 
 ### Truthy vs Equality Guards for Optional Values
-For state update guards, prefer **equality comparison** (`!==`) over **truthy checks** (`if (value && ...)`) for optional/nullable fields. Truthy guards block propagation of legitimate `undefined`/`null`/`0`/`""` values.
-
-```typescript
-// WRONG — truthy guard blocks clearing
-if (executor && executor.id !== this.executorId) {
-  this.setExecutorId(executor.id);
-}
-// executor = undefined → nothing happens → stale value
-
-// CORRECT — equality guard allows clearing
-if (executor?.id !== this.executorId) {
-  this.setExecutorId(executor?.id);
-}
-// executor = undefined → executorId = undefined → field cleared
-```
+For state update guards, prefer equality comparison (`!==`) over truthy checks (`if (value && ...)`) for optional/nullable fields.
 
 Review flags:
-- Truthy guard (`if (x && x !== y)`) on optional/nullable field — **warning**: blocks propagation of `undefined`/falsy clearing.
-- `if (value)` instead of `if (value !== currentValue)` in inter-store sync logic — **warning**: potentially blocks clearing.
+- Truthy guard on optional/nullable field — **warning**.
+- `if (value)` instead of `if (value !== currentValue)` in inter-store sync logic — **warning**.
 
 ### API Calls Placement
-- API/IO calls **only** in `private` store methods.
-- `@action.bound` methods are thin: guard-check → delegate to private method.
-- Components **never** call API directly.
+- API/IO calls belong in `private` store methods.
+- Public `@action.bound` methods are thin: guard-check → delegate to private method.
+- Components never call API directly.
 
 Review flags:
-- API call inside an `@action.bound` method — **warning**: move to private method.
-- API call in a component — **critical**: move to store.
+- API call inside a public `@action.bound` method — **warning**.
+- API call in a component — **critical**.
 
 ### Lifecycle Initialization
 - `init()` / `onMount()` of a child store is called from the **parent store**, not from component `useEffect`.
-- Components **must not** trigger store data loading via `useEffect`. The parent store orchestrates child store lifecycle.
+- Components must not trigger store data loading via `useEffect`.
 - `dispose()` is called by the parent store in its `onUnmount()` to prevent stale-state updates.
 
 Review flags:
-- Component `useEffect` calls `store.loadX()` or `store.init()` — **warning**: move call to parent store `onMount`.
+- Component `useEffect` calls `store.loadX()` or `store.init()` — **warning**.
 - Missing `dispose()` / disposed guard in store with async operations — **warning**.
 - Parent store does not call `child.dispose()` in `onUnmount()` — **warning**.
 

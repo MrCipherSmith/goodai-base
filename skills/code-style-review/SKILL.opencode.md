@@ -73,11 +73,14 @@ Use only these changes as input for the review.
 
 ### MobX
 - Stores must have `makeObservable(this)` in constructor.
-- For async mutations after `await` — `runInAction`.
-- Action methods: `@action.bound`.
+- Member order should stay predictable: private fields → public fields → constructor → public methods → private methods.
+- Public UI methods called from React/components should be `@action.bound`, usually thin `on...` wrappers.
+- Public sync `@action.bound` methods may mutate directly; `runInAction` belongs in private orchestration/async mutation blocks.
+- Public non-mutating helpers/selectors are not actions and do not use `runInAction`.
+- Private API/IO methods own async orchestration, usually with `try/catch/finally`, and use `runInAction` after `await`.
 - Derived state: `@computed`.
 - For collections/lists — `@observable.shallow` (where applicable).
-- Inter-store callbacks (`onChangeX`, `onFireX`, `handleX`, `syncX`) MUST be `private`. Public `@action.bound` only for methods called from React components.
+- Inter-store callbacks (`onChangeX`, `onFireX`, `handleX`, `syncX`) MUST be `private` unless they are true React-facing UI entrypoints.
 
 ### React Components
 - Components reading observables MUST be `observer(...)`.
