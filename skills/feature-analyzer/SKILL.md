@@ -367,7 +367,7 @@ Wait for user confirmation before generating full report.
 ### Output Structure
 
 ```
-~/goodai-base/docs/analysis/<feature-name>-<YYYY-MM-DD>/
+<DOCS_ROOT>/analysis/<feature-name>-<YYYY-MM-DD>/
 ├── README.md                    # Index and navigation
 ├── report/
 │   ├── en/report.md             # English for humans
@@ -437,7 +437,7 @@ Before finalizing:
 
 ## Step 15: Post-Analysis
 
-Follow `documentation-management.mdc`: update `~/goodai-base/docs/readme.md`, add entry to analysis index, tag with keywords.
+Follow `documentation-management.mdc`: update `<DOCS_ROOT>/readme.md`, add entry to analysis index, tag with keywords.
 
 ---
 

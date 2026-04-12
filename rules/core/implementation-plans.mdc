@@ -12,7 +12,7 @@ Define structure and storage for implementation plans.
 Apply when creating or updating an implementation plan document.
 
 ## Location
-`~/goodai-base/docs/requirements/<requirement-name>/<YYYY-MM-DD>/`
+`<DOCS_ROOT>/requirements/<requirement-name>/<YYYY-MM-DD>/`
 
 ## Mandatory Behavior
 1. Ask for target location and folder name before creation.

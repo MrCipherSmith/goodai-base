@@ -220,7 +220,7 @@
       "properties": {
         "base_dir": {
           "type": "string",
-          "description": "Base directory for analysis output. Defaults to ~/goodai-base/docs/analysis/",
+          "description": "Base directory for analysis output. Defaults to <DOCS_ROOT>/analysis/",
           "examples": ["/Users/dev/.<PROJECT>/docs/analysis"]
         },
         "folder_name": {

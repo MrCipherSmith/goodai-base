@@ -381,7 +381,7 @@ grep -r "focus_keyword" --include="*.spec.ts" --include="*.test.ts" src/
 Generate **Feature Specification Document** instead of Change Analysis:
 
 ```
-~/goodai-base/docs/analysis/<feature>-current-state-<date>/
+<DOCS_ROOT>/analysis/<feature>-current-state-<date>/
 ├── README.md
 ├── specification/
 │   ├── en/
@@ -480,10 +480,10 @@ Recommended: Option [suggested]
 # Check if analysis already exists for this branch
 git_branch="$(git rev-parse --abbrev-ref HEAD)"
 git_sha="$(git rev-parse HEAD)"
-analysis_dir="~/goodai-base/docs/analysis/${git_branch}-*"
+analysis_dir="<DOCS_ROOT>/analysis/${git_branch}-*"
 
 # Look for recent analysis (within last 7 days)
-find ~/goodai-base/docs/analysis/ -name "*.md" -mtime -7 | grep "${git_branch}"
+find <DOCS_ROOT>/analysis/ -name "*.md" -mtime -7 | grep "${git_branch}"
 ```
 
 ### Existing Report Detection
@@ -546,7 +546,7 @@ Analyzing only new changes...
 
 ### Cache Storage
 
-**Metadata file for caching:** `~/goodai-base/docs/analysis/.cache/index.json`
+**Metadata file for caching:** `<DOCS_ROOT>/analysis/.cache/index.json`
 
 ```json
 {
@@ -1052,7 +1052,7 @@ Wait for user confirmation before proceeding.
 
 ### Output Structure
 ```
-~/goodai-base/docs/analysis/<feature-name>-<YYYY-MM-DD>/
+<DOCS_ROOT>/analysis/<feature-name>-<YYYY-MM-DD>/
 ├── README.md                    # Index and navigation
 ├── report/
 │   ├── en/
@@ -1376,7 +1376,7 @@ Before finalizing, verify:
 
 ### Update Documentation Registry
 Follow `documentation-management.mdc`:
-- Update `~/goodai-base/docs/readme.md`
+- Update `<DOCS_ROOT>/readme.md`
 - Add entry to analysis index
 - Tag with relevant keywords
 
@@ -1384,7 +1384,7 @@ Follow `documentation-management.mdc`:
 User manages cleanup manually, but suggest:
 ```
 Tip: Consider archiving analyses older than 3 months to:
-~/goodai-base/docs/analysis/archived/
+<DOCS_ROOT>/analysis/archived/
 ```
 
 ---

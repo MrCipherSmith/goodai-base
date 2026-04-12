@@ -209,7 +209,7 @@ TICKET REFERENCE:
   OUTPUT CONFIGURATION
 ═══════════════════════════════════════════════
 
-Base directory: {{output.base_dir | default("~/goodai-base/docs/analysis")}}
+Base directory: {{output.base_dir | default("<DOCS_ROOT>/analysis")}}
 Folder name:    {{output.folder_name | default("auto-generated per SKILL.md rules")}}
 Languages:      {{output.languages | default("en, ru, ai")}}
 Include metrics: {{output.include_metrics | default("true")}}

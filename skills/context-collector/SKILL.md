@@ -135,7 +135,7 @@ If this is an update:
 
 Scan local sources for relevant context. Be selective — only include what is directly relevant to the task.
 
-### 2.1 Documentation (`~/goodai-base/docs/`)
+### 2.1 Documentation (`<DOCS_ROOT>/`)
 
 ```
 1. List available docs:
@@ -161,7 +161,7 @@ Scan local sources for relevant context. Be selective — only include what is d
    - Note: "Previous job <name> addressed <related topic>"
 ```
 
-### 2.3 Rules (`~/goodai-base/rules/core/`)
+### 2.3 Rules (`<PROJECT_DIR>/rules/core/` or repo rules path)
 
 ```
 1. Based on focus_areas and task_description, identify applicable rules:
@@ -488,7 +488,7 @@ For ACTION=update, use the same flow — `job-documenter` will overwrite the exi
 ### 5.2 Save directly (when running standalone without a job)
 
 If no JOB_NAME is provided:
-- Write context to `~/goodai-base/docs/context/<descriptive-slug>.md`
+- Write context to `<DOCS_ROOT>/context/<descriptive-slug>.md`
 - Include full metadata block
 
 ## Reporting Results

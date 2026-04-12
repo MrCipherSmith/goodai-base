@@ -1,12 +1,12 @@
 ---
-description: "Manage project documentation in ~/goodai-base/docs with synchronized multilingual outputs."
+description: "Manage project documentation in <PROJECT_DIR>/docs (default) or $GOODAI_DOCS_ROOT with synchronized multilingual outputs."
 alwaysApply: false
 ---
 
 # Documentation Management Rules
 
 ## Purpose
-Define how the agent creates and updates documentation under `~/goodai-base/docs`.
+Define how the agent creates and updates documentation under `<DOCS_ROOT>` (`<PROJECT_DIR>/docs` by default, or `$GOODAI_DOCS_ROOT`).
 
 ## When To Apply
 Apply when the user asks to create or update documentation, plans, requirements, communication notes, reports, or review artifacts.
@@ -15,12 +15,26 @@ Apply when the user asks to create or update documentation, plans, requirements,
 1. Ask for target location and folder name before writing any doc.
 2. Use date-stamped folders; never overwrite previous doc sets.
 3. Keep language variants synchronized.
-4. Update `~/goodai-base/docs/README.md` after doc changes.
+4. Update `<DOCS_ROOT>/README.md` after doc changes.
 5. Ask whether to apply changes (branch/commit/PR) after edits.
 
 ## Required Locations
-- Root: `~/goodai-base/docs`
-- Standard pattern: `~/goodai-base/docs/<category>/<name>-<YYYY-MM-DD>/`
+- Root: `<DOCS_ROOT>` (default: `<PROJECT_DIR>/docs`)
+- Standard pattern: `<DOCS_ROOT>/<category>/<name>-<YYYY-MM-DD>/`
+
+## DOCS_ROOT Resolution
+
+The docs root is resolved in this priority order:
+
+1. **`DOCS_ROOT` passed explicitly** by the orchestrator in the sub-agent dispatch prompt
+2. **`GOODAI_DOCS_ROOT` environment variable** (if set in the shell)
+3. **`<PROJECT_DIR>/docs/`** — default, relative to the project being worked on
+
+```bash
+DOCS_ROOT="${GOODAI_DOCS_ROOT:-$PROJECT_DIR/docs}"
+```
+
+`PROJECT_DIR` is always known by Phase 0.2 of the orchestrator. Sub-agents (context-collector, feature-analyzer, etc.) **never resolve DOCS_ROOT themselves** — they receive it explicitly from the orchestrator.
 
 ## Category Definitions
 

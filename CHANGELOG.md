@@ -4,6 +4,20 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [Unreleased] — DOCS_ROOT resolution
+
+> Mirrors the JOBS_ROOT refactor: docs/ artifacts now default to `<PROJECT_DIR>/docs/` instead of the hardcoded `~/goodai-base/docs/`. All skills and rules use `<DOCS_ROOT>` placeholder.
+
+### Changed
+
+- **DOCS_ROOT default** — changed from `~/goodai-base/docs/` to `<PROJECT_DIR>/docs/` across all skills and rules. Resolution order: (1) `DOCS_ROOT` passed explicitly in the dispatch prompt, (2) `GOODAI_DOCS_ROOT` env var, (3) `<PROJECT_DIR>/docs/` as the new default. Sub-agents never resolve DOCS_ROOT themselves — they receive it from the orchestrator.
+- **`rules/core/documentation-management.mdc`** — Root Location section updated, new `DOCS_ROOT Resolution` section added.
+- **`rules/core/implementation-plans.mdc`**, **`requirements-management.mdc`**, **`git-rules.mdc`** — location references updated.
+- **`skills/feature-analyzer/`** (all SKILL variants + orchestrator-prompt) — all `~/goodai-base/docs/analysis` references replaced with `<DOCS_ROOT>/analysis`.
+- **`skills/context-collector/`** (all SKILL variants) — docs path references updated.
+
+---
+
 ## [Unreleased] — JOBS_ROOT resolution + Wave isolation + compact task results
 
 > Fixes orchestrator context bloat: after 4+ waves the orchestrator session was
