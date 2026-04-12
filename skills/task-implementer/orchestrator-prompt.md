@@ -47,7 +47,7 @@ WORKSPACE:
 
 JOB_CONTEXT (optional):
   job_name             → job folder name
-  context_path         → ~/goodai-base/jobs/<job-name>/ai/context.md
+  context_path         → <JOBS_ROOT>/<job-name>/ai/context.md
 ```
 
 ## Step 2: Validate
@@ -97,7 +97,7 @@ ISSUE_TITLE:   <ISSUE_TITLE>
 
 <!-- If job context available: -->
 JOB_NAME:     <JOB_NAME>
-CONTEXT_PATH: ~/goodai-base/jobs/<JOB_NAME>/ai/context.md
+CONTEXT_PATH: <JOBS_ROOT>/<JOB_NAME>/ai/context.md
 
 ═══════════════════════════════════════════════
   AUTOMATION SETTINGS
@@ -116,7 +116,7 @@ CONTEXT_PATH: ~/goodai-base/jobs/<JOB_NAME>/ai/context.md
 
 1. Load task-implementer SKILL.md
 2. Execute all 6 phases: RECEIVE → RESEARCH → PLAN → IMPLEMENT → VERIFY → REPORT
-3. Phase 6: Write full JSON result to ~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json
+3. Phase 6: Write full JSON result to <JOBS_ROOT>/<JOB_NAME>/results/<task_id>.json
 4. Return a compact STATUS response as your FINAL MESSAGE — NO inline JSON:
 
    STATUS: DONE
@@ -126,7 +126,7 @@ CONTEXT_PATH: ~/goodai-base/jobs/<JOB_NAME>/ai/context.md
    - <file> — <change>
    ## Verification
    - lint: pass / type-check: pass / tests: N passed
-   Result file: ~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json
+   Result file: <JOBS_ROOT>/<JOB_NAME>/results/<task_id>.json
 
 DO NOT ask questions. DO NOT stop for user input. DO NOT include the JSON block in your response. Run to completion.
 ```
@@ -198,7 +198,7 @@ After receiving the sub-agent STATUS response, the wave-executor must:
    - Verification results
    - Commits (from "Completed" bullets or result file)
 3. **Read the result file** only when needed (DONE_WITH_CONCERNS or BLOCKED):
-   - Path: `~/goodai-base/jobs/<JOB_NAME>/results/<task_id>.json`
+   - Path: `<JOBS_ROOT>/<JOB_NAME>/results/<task_id>.json`
    - Fields: task_id, status, files_modified, files_created, commits, lint_result, type_check_result, test_result, acceptance_criteria_met
 4. Decision based on STATUS:
    - `DONE` → continue, collect commit hashes from response

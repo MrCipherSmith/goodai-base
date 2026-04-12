@@ -4,7 +4,7 @@ All notable changes to goodai-base are documented here.
 
 ---
 
-## [Unreleased] — Wave isolation + compact task results
+## [Unreleased] — JOBS_ROOT resolution + Wave isolation + compact task results
 
 > Fixes orchestrator context bloat: after 4+ waves the orchestrator session was
 > reaching 100k+ tokens and freezing in "Unfurling" state due to accumulated
@@ -12,6 +12,10 @@ All notable changes to goodai-base are documented here.
 > directly and receiving full verbose output inline.
 
 ### Changed
+
+- **JOBS_ROOT default** — changed from `~/goodai-base/jobs/` to `<PROJECT_DIR>/jobs/` across all skills and rules. Resolution order: (1) `JOBS_ROOT` passed explicitly in the dispatch prompt, (2) `GOODAI_JOBS_ROOT` env var, (3) `<PROJECT_DIR>/jobs/` as the new default. Sub-agents (job-documenter, context-collector, task-implementer, review skills) never resolve JOBS_ROOT themselves — they receive it from the orchestrator.
+- **`job-orchestrator`** — `Configurable Jobs Root` section updated to reflect new resolution order and `JOBS_ROOT="${GOODAI_JOBS_ROOT:-$PROJECT_DIR/jobs}"` pseudocode.
+- **`rules/core/jobs-documentation.mdc`** — Root Location section updated, new `JOBS_ROOT Resolution` section added explaining the 3-priority resolution.
 
 - **`job-orchestrator` v3.3.0** — Steps 2.4.1 + 2.5 rewritten: each wave now dispatches as a single `wave-executor` sub-agent that runs tests-creator + task-implementers internally and returns only a compact `WAVE_DONE` summary (5 lines). Orchestrator context grows O(waves), not O(∑tokens of all sub-agent results). Added `CONTEXT BUDGET RULE` and `Why wave isolation` explanation.
 - **`task-implementer` v1.3.0** — Phase 6 now writes the full JSON result to `jobs/<job-name>/results/<task_id>.json` instead of returning it inline. The STATUS response contains only a compact summary (STATUS line + files changed + verification). Orchestrators read the result file only when needed (DONE_WITH_CONCERNS or BLOCKED).
