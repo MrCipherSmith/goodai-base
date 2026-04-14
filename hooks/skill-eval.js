@@ -19,7 +19,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const REGISTRY_PATH = path.join(__dirname, 'skill-registry.json');
+const REGISTRY_PATH = process.env.GOODAI_REGISTRY_OVERRIDE || path.join(__dirname, 'skill-registry.json');
 const LOG_DIR = path.join(os.homedir(), '.claude', 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'skill-eval.log');
 const LOG_MAX_BYTES = 500 * 1024; // 500KB

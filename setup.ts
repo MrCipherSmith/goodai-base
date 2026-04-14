@@ -232,9 +232,6 @@ function updateClaudeMd(goodaiPath: string): string {
   mkdirSync(claudeDir, { recursive: true });
   const block = CLAUDE_MD_BLOCK(goodaiPath);
 
-  if (!existsSync(CONFIG_PATH.replace("goodai.config.json", ".claude/CLAUDE.md"))) {
-    // resolve actual path
-  }
   const claudeMdPath = join(HOME, ".claude", "CLAUDE.md");
 
   if (!existsSync(claudeMdPath)) {
@@ -246,7 +243,7 @@ function updateClaudeMd(goodaiPath: string): string {
     const idx = content.indexOf(CLAUDE_MD_BLOCK_MARKER);
     const after = content.slice(idx + CLAUDE_MD_BLOCK_MARKER.length);
     const nextHeading = after.search(/\n# [^#]/);
-    const tail = nextHeading >= 0 ? after.slice(nextHeading) : "";
+    const tail = nextHeading >= 0 ? after.slice(nextHeading) : after.trimStart().length > 0 ? "\n" + after.trimStart() : "";
     writeFileSync(claudeMdPath, content.slice(0, idx) + block.trimStart() + tail);
     return "updated";
   }
