@@ -153,7 +153,7 @@ function main(): void {
 
     const result = match(prompt);
     // Match Python json.dumps default: spaces after ":" and ","
-    const output = JSON.stringify(result).replace(/":/g, '": ').replace(/,/g, ', ');
+    const output = JSON.stringify(result, null, 2);
 
     // Log activation event (non-blocking) only when something matched
     if (result.matched_rules.length > 0 || result.matched_skills.length > 0) {

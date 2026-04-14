@@ -106,8 +106,9 @@ function buildEntry(
     paths = toStringArray(t['paths']);
   }
 
-  // Derive keywords from description if no triggers block provided any
-  if (keywords.length === 0 && description.length > 0) {
+  // Derive keywords from description only when the triggers block is absent entirely
+  // (if the author wrote triggers: { keywords: [] } they intentionally disabled keyword-matching)
+  if (!hasTriggers && keywords.length === 0 && description.length > 0) {
     keywords = deriveKeywords(description);
   }
 
