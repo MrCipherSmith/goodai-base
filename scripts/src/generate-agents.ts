@@ -2,7 +2,7 @@
 // generate-agents.ts — generate native Claude Code sub-agents from agent-worthy skills
 //
 // Usage:
-//   bun src/generate-agents.ts [--output-dir <path>] [--dry-run] [--force]
+//   bun src/generate-agents.ts [--output-dir <path>] [--registry-path <path>] [--dry-run] [--force]
 //
 // Reads skills/*/SKILL.md files with metadata.agent_worthy: true and generates
 // <output-dir>/<name>.md files in Claude Code native agent format.
@@ -64,7 +64,8 @@ const dryRun = getFlag(args, 'dry-run');
 const force = getFlag(args, 'force');
 
 const skillsDir = join(repoRoot, 'skills');
-const registryFile = join(repoRoot, 'skills', 'agents-registry.json');
+const defaultRegistryFile = join(repoRoot, 'skills', 'agents-registry.json');
+const registryFile = expandHome(getOption(args, 'registry-path', defaultRegistryFile));
 
 // Load existing registry
 const existingRegistry = loadRegistry(registryFile);
@@ -160,7 +161,7 @@ for (const dirName of dirEntries) {
     console.log(`  [DRY] ${action}: ${skillName} → ${agentPath}`);
   } else {
     // Build agent frontmatter
-    const escapedDescription = description.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const escapedDescription = description.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '');
     const fmLines = ['---', `name: ${skillName}`, `description: "${escapedDescription}"`];
     if (model) fmLines.push(`model: ${model}`);
     if (tools) fmLines.push(`tools: ${tools}`);

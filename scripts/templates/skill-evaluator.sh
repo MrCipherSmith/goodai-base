@@ -55,39 +55,35 @@ EXTRA_CONTEXT=""
 LOCAL_SKILLS_JSON="[]"
 
 if [[ -f "$OVERRIDES_FILE" ]]; then
-  DISABLED_SKILLS=$(python3 -c "
-import json, sys
-try:
-    data = json.load(open('$OVERRIDES_FILE'))
-    disabled = data.get('disabled', [])
-    print(','.join(disabled))
-except:
-    print('')
-" 2>/dev/null || true)
+  # All data is passed via process.argv — no shell interpolation into code strings
+  DISABLED_SKILLS=$(node -e "
+    try {
+      const data = JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'));
+      process.stdout.write((data.disabled || []).join(','));
+    } catch { process.stdout.write(''); }
+  " "$OVERRIDES_FILE" 2>/dev/null || true)
 
-  EXTRA_CONTEXT=$(python3 -c "
-import json, sys
-try:
-    data = json.load(open('$OVERRIDES_FILE'))
-    print(data.get('extra_context', ''))
-except:
-    print('')
-" 2>/dev/null || true)
+  EXTRA_CONTEXT=$(node -e "
+    try {
+      const data = JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'));
+      process.stdout.write(data.extra_context || '');
+    } catch { process.stdout.write(''); }
+  " "$OVERRIDES_FILE" 2>/dev/null || true)
 
-  LOCAL_SKILLS_JSON=$(python3 -c "
-import json, sys
-try:
-    data = json.load(open('$OVERRIDES_FILE'))
-    local_skills = data.get('local_skills', [])
-    # Resolve relative paths relative to project root
-    for s in local_skills:
-        p = s.get('path', '')
-        if p and not p.startswith('/'):
-            s['path'] = '$PROJECT_ROOT/' + p
-    print(json.dumps(local_skills))
-except:
-    print('[]')
-" 2>/dev/null || true)
+  LOCAL_SKILLS_JSON=$(node -e "
+    const path = require('path');
+    try {
+      const data = JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'));
+      const projectRoot = process.argv[2];
+      const localSkills = (data.local_skills || []).map(s => {
+        if (s.path && !path.isAbsolute(s.path)) {
+          s.path = path.join(projectRoot, s.path);
+        }
+        return s;
+      });
+      process.stdout.write(JSON.stringify(localSkills));
+    } catch { process.stdout.write('[]'); }
+  " "$OVERRIDES_FILE" "$PROJECT_ROOT" 2>/dev/null || true)
 fi
 
 # Build a registry override that respects disabled list and local skills
@@ -97,63 +93,53 @@ REGISTRY="$GOODAI_BASE/hooks/skill-registry.json"
 MERGED_REGISTRY=""
 
 if [[ -n "$DISABLED_SKILLS" || "$LOCAL_SKILLS_JSON" != "[]" ]]; then
-  MERGED_REGISTRY=$(python3 -c "
-import json, sys, os
+  # All data passed via process.argv — safe from shell injection
+  MERGED_REGISTRY=$(node -e "
+    const fs = require('fs');
+    const path = require('path');
+    const registryPath = process.argv[1];
+    const disabledArg = process.argv[2];
+    const localSkillsArg = process.argv[3];
 
-registry_path = '$REGISTRY'
-disabled = [s.strip() for s in '$DISABLED_SKILLS'.split(',') if s.strip()]
-local_skills_json = '$LOCAL_SKILLS_JSON'
+    try {
+      const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+      const disabled = new Set(disabledArg ? disabledArg.split(',').map(s => s.trim()).filter(Boolean) : []);
+      const localSkills = JSON.parse(localSkillsArg || '[]');
 
-try:
-    with open(registry_path) as f:
-        registry = json.load(f)
-except Exception as e:
-    sys.exit(0)
+      // Remove disabled skills
+      registry.skills = (registry.skills || []).filter(s => !disabled.has(s.name));
 
-# Remove disabled skills
-registry['skills'] = [s for s in registry.get('skills', []) if s.get('name') not in disabled]
+      // Add local skills
+      for (const ls of localSkills) {
+        const name = ls.name || '';
+        const skillPath = ls.path || '';
+        if (!name || !skillPath || disabled.has(name)) continue;
 
-# Add local skills (read their SKILL.md descriptions)
-try:
-    local_skills = json.loads(local_skills_json)
-    for ls in local_skills:
-        skill_path = ls.get('path', '')
-        name = ls.get('name', '')
-        if not name or not skill_path:
-            continue
-        if name in disabled:
-            continue
-        # Try to read description from SKILL.md frontmatter
-        description = ''
-        keywords = []
-        if os.path.exists(skill_path):
-            with open(skill_path) as f:
-                lines = f.readlines()
-            in_fm = False
-            for line in lines:
-                line = line.rstrip()
-                if line == '---':
-                    in_fm = not in_fm
-                    continue
-                if in_fm:
-                    if line.startswith('description:'):
-                        description = line.split('description:', 1)[1].strip().strip('\"')
-                    if line.startswith('  keywords:') or line.startswith('keywords:'):
-                        pass  # handled below with triggers
-        entry = {
-            'name': name,
-            'description': description or name,
-            'keywords': keywords,
-            'patterns': [],
-            'paths': [],
-            'minScore': 4,
+        let description = '';
+        if (fs.existsSync(skillPath)) {
+          const lines = fs.readFileSync(skillPath, 'utf8').split('\n');
+          let inFm = false;
+          for (const line of lines) {
+            const trimmed = line.trimEnd();
+            if (trimmed === '---') { inFm = !inFm; continue; }
+            if (inFm && trimmed.startsWith('description:')) {
+              description = trimmed.replace(/^description:\s*/, '').replace(/^\"|\"$/g, '');
+            }
+          }
         }
-        registry['skills'].append(entry)
-except:
-    pass
+        registry.skills.push({
+          name,
+          description: description || name,
+          keywords: [],
+          patterns: [],
+          paths: [],
+          minScore: 4,
+        });
+      }
 
-print(json.dumps(registry))
-" 2>/dev/null || true)
+      process.stdout.write(JSON.stringify(registry));
+    } catch { process.exit(0); }
+  " "$REGISTRY" "$DISABLED_SKILLS" "$LOCAL_SKILLS_JSON" 2>/dev/null || true)
 fi
 
 # Run skill-eval.js
@@ -168,19 +154,19 @@ else
 fi
 
 # Inject extra_context if present
+# Data is passed via environment variables — no shell interpolation into code strings
 if [[ -n "$EXTRA_CONTEXT" && "$RESULT" != '{}' ]]; then
-  RESULT=$(python3 -c "
-import json, sys
-try:
-    data = json.loads('$RESULT')
-    existing = data.get('context', '')
-    extra = '$EXTRA_CONTEXT'
-    if extra:
-        data['context'] = extra + '\n\n' + existing if existing else extra
-    print(json.dumps(data))
-except:
-    print('$RESULT')
-" 2>/dev/null || echo "$RESULT")
+  RESULT=$(HOOK_RESULT="$RESULT" HOOK_EXTRA_CONTEXT="$EXTRA_CONTEXT" node -e "
+    try {
+      const data = JSON.parse(process.env.HOOK_RESULT);
+      const extra = process.env.HOOK_EXTRA_CONTEXT;
+      if (extra) {
+        const existing = data.context || '';
+        data.context = existing ? extra + '\n\n' + existing : extra;
+      }
+      process.stdout.write(JSON.stringify(data));
+    } catch { process.stdout.write(process.env.HOOK_RESULT || '{}'); }
+  " 2>/dev/null || echo "$RESULT")
 fi
 
 _log "hook executed | result_len=${#RESULT}"

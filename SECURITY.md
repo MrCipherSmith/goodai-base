@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-goodai-base is a documentation and workflow repository — it contains no executable runtime code, compiled binaries, or server infrastructure. There is no version matrix for security patches.
+goodai-base is a knowledge-base repository for AI agent skills and rules. It contains executable shell scripts (`install.sh`, `scripts/templates/skill-evaluator.sh`), TypeScript build scripts (`scripts/src/`), and a JavaScript hook (`hooks/skill-eval.js`) that runs with user-level privileges inside Claude Code sessions. There are no compiled binaries or server infrastructure. There is no version matrix for security patches.
 
 ## Reporting a Vulnerability
 
@@ -27,8 +27,9 @@ We aim to respond within **72 hours** and resolve confirmed issues within **7 da
 | In scope | Out of scope |
 |---|---|
 | Skills/rules instructing unsafe agent behavior | Bugs in Claude, Cursor, or other AI tools themselves |
-| Shell scripts with injection vulnerabilities | Issues in third-party MCP servers |
+| Shell scripts with injection vulnerabilities (e.g. `skill-evaluator.sh`) | Issues in third-party MCP servers |
 | Hook configs that could expose sensitive data | Feature requests |
+| Shell injection in `scripts/templates/skill-evaluator.sh` via project config files | Theoretical attacks requiring physical machine access |
 
 ## Philosophy
 

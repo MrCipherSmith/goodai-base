@@ -23,7 +23,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: "1.2"
 
       - name: Install script dependencies
         run: cd scripts && bun install
@@ -41,7 +41,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/skill-catalog.md docs/ai/skill-catalog.yaml docs/rules-catalog.md
+          git add docs/skill-catalog.md docs/ai/skill-catalog.yaml docs/rules-catalog.md hooks/skill-registry.json
           if git diff --cached --quiet; then
             echo "No catalog changes to commit."
           else
