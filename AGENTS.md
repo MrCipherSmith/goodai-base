@@ -280,12 +280,16 @@ Intelligent agents for complex analysis and review tasks:
 - **Key Features**:
   - 4-phase dynamic pipeline: Context Collection → Plan Building → Execution → Completion
   - Intent-driven: adapts plan to implement, analyze, review, or custom workflows
+  - **Wave-based execution**: tasks grouped into dependency waves, each wave runs as isolated sub-agent — prevents context freeze on large jobs
+  - **State resumption**: checks `state.json` on start, offers to resume interrupted jobs
   - Dispatches issue-analyzer, context-collector, tests-creator, task-implementer, code-verifier, and review skills as sub-agents
   - Persistent job documentation via job-documenter in `jobs/<job-name>/`
   - Dynamic plan extension (e.g., analyze → user confirms → implement)
-  - Review-fix loop (max 2 iterations)
+  - Review-fix loop (max 3 iterations)
   - Draft PR proposal with user confirmation
-- **Version**: v2.0.0
+  - Post-implementation sanity check (verifies commits exist before review)
+  - Dry-run mode (`--dry-run`): full plan without executing
+- **Version**: v3.2.0
 
 **`skills/job-documenter`**
 
