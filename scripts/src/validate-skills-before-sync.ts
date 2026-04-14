@@ -95,7 +95,7 @@ function validateSkillProfile(file: string, skillName: string, suffix: string): 
   const frontmatter = frontmatterLines.join('\n');
 
   // Check name: field
-  if (!/^name:[  \t]*/m.test(frontmatter)) {
+  if (!/^name:[  \t]+\S/m.test(frontmatter)) {
     return `FAIL: ${skillName} (${suffix}) - missing 'name' in frontmatter`;
   }
 

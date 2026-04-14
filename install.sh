@@ -72,10 +72,15 @@ if [ -d "$INSTALL_DIR/.git" ]; then
         exit 1
       }
   else
-    git -C "$INSTALL_DIR" fetch --depth 1 origin main 2>/dev/null && \
-      git -C "$INSTALL_DIR" reset --hard origin/main --quiet || {
-        echo -e "  ${DIM}Update failed (local changes?), skipping${NC}"
-      }
+    if [[ -n "$(git -C "$INSTALL_DIR" status --porcelain 2>/dev/null)" ]]; then
+      echo -e "  ${DIM}Local changes detected — skipping update to avoid overwriting your edits.${NC}"
+      echo -e "  ${DIM}To force update: git -C $INSTALL_DIR fetch origin main && git -C $INSTALL_DIR reset --hard origin/main${NC}"
+    else
+      git -C "$INSTALL_DIR" fetch --depth 1 origin main 2>/dev/null && \
+        git -C "$INSTALL_DIR" reset --hard origin/main --quiet || {
+          echo -e "  ${DIM}Update failed, skipping${NC}"
+        }
+    fi
   fi
 else
   echo -e "${BOLD}Cloning${NC} to ${CYAN}$INSTALL_DIR${NC}"
