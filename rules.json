@@ -597,27 +597,6 @@
       }
     },
     {
-      "id": "code-b091-review",
-      "type": "skill",
-      "path": "skills/code-b091-review/SKILL.md",
-      "description": "Direct logic-first review in b091 style — architecture, layer correctness, no duct-tape code",
-      "triggers": {
-        "keywords": [
-          "direct",
-          "logic-first",
-          "review",
-          "b091",
-          "style",
-          "architecture",
-          "layer",
-          "correctness",
-          "duct-tape",
-          "code"
-        ],
-        "intents": []
-      }
-    },
-    {
       "id": "code-style-review",
       "type": "skill",
       "path": "skills/code-style-review/SKILL.md",
