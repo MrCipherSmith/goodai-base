@@ -4,6 +4,30 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.9.0] — gproject: project documentation pipeline
+
+> Released: 2026-04-15
+
+### Added
+
+- **`skills/gproject-orchestrator`** — New standalone 7-phase project documentation orchestrator. Drives the full pipeline from discovery to roadmap, enforces human gates at Phase 2 (stack), Phase 3 (architecture), and Phase 5 (consistency). Uses `decisions.md` as an append-only decisions registry. Supports two modes: `new_project` (full interview + discovery) and `task_in_project` (existing codebase, inherits stack). State is persisted in `state.json` with full resumption support.
+- **`skills/gproject-discovery`** — Phase 0 subagent. Collects and structures all available information: user input, uploaded documents, codebase scan (task_in_project), web research. Outputs `discovery-brief.md`.
+- **`skills/gproject-problem-definer`** — Phase 1 subagent. Converts discovery brief into a formal problem statement with SMART goals, non-goals, personas, and measurable success criteria.
+- **`skills/gproject-stack-advisor`** — Phase 2 subagent. Recommends technology stack matched to project scale level (MVP / pet / startup / production). May call `brainstorm` in parallel for contested architectural decisions.
+- **`skills/gproject-patterns-researcher`** — Phase 3 subagent. Produces `architecture.md` (structural decisions, layer breakdown, cross-cutting concerns) and `tech-bestpractices.md` (MUST / MUST NOT / SHOULD checklists per technology, used by consistency checker).
+- **`skills/gproject-spec-writer`** — Phase 4 subagent. Generates `prd.md` fully constrained by phases 0–3. Makes no new architectural decisions — translates existing decisions into user stories with acceptance criteria and a traceability matrix.
+- **`skills/gproject-consistency-checker`** — Phase 5 subagent. Adversarial validator: reads all artifacts and `decisions.md`, checks for cross-artifact contradictions, missing metrics, and constraint violations. Returns PASS / PASS_WITH_WARNINGS / FAIL.
+- **`skills/gproject-planner`** — Phase 6 subagent. Decomposes PRD into tasks with DAG dependency graph, groups into independently-deployable milestones (M0 Foundation → M1 Core → M2 Complete → M3 Launch-ready), calculates critical path and three-scenario duration estimates. `roadmap.md` is the final pipeline deliverable.
+- **`docs/gproject-pipeline.md`** — Detailed pipeline reference: all 7 phases, decisions registry, human gate protocol, NEEDS_CONTEXT protocol, state resumption, iron laws, and output structure.
+
+### Changed
+
+- **`AGENTS.md`** — Added full `gproject` sub-domain section: pipeline diagram, phase table, mode comparison, routing rules, and disambiguation. `gproject-orchestrator` is documented as a standalone top-level orchestrator — scope ends at `roadmap.md`.
+- **`README.md`** — Updated skill count (30 → 40), added "Project Documentation" category with all 9 gproject skills, added `gproject-orchestrator` as a notable example with link to pipeline docs.
+- **`rules.json`** — Removed stale `code-b091-review` entry (skill was renamed to `code-boss-review` in v1.8.0 but the rules index was not updated).
+
+---
+
 ## [1.7.0] — Setup wizard, multi-tool sync, MobX refinement
 
 > Released: 2026-04-12
