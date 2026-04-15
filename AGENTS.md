@@ -20,6 +20,7 @@ It defines global behavior and tells the agent how to select the required rule f
 | "Full review", "Full implementation", "Orchestrate..."     | **Job Orchestrator directly**      | "Полное ревью", "Run pipeline"                 |
 | Explicit skill name (e.g., "Run feature-analyzer")         | **Invoke named skill directly**    | "Use feature-analyzer", "Run feature-analyzer" |
 | "Add PR description", "Document PR", "Create issue for PR" | **`pr-issue-documenter` directly** | "Describe PR changes", "Update PR and issue"   |
+| "Write PRD", "Plan project", "Create spec", "gproject"     | **ASK: quick PRD or full pipeline?** | `prd-creator` (fast) vs `gproject-orchestrator` (full) |
 | "How to write...", "Standards for..."                      | **Check Core Rule Catalog**        | "How to write DTOs", "Git commit format"       |
 | "Create...", "Add..." (with specific type)                 | **Check Core Rule Catalog**        | "Create documentation", "Add pipeline step"    |
 | "Change model", "Use different model", "Switch model"      | **Check Model Selection**          | "Use GPT-5 for sub-agent", "Switch to claude"  |
@@ -435,6 +436,95 @@ Intelligent agents for complex analysis and review tasks:
 - **Purpose**: Auto-generate tests for a file or module matching existing project patterns
 - **Use When**: "Generate tests for", "Write tests for", "Add test coverage"
 - **Key Features**: Discovers test framework and patterns; covers happy path + edge cases + errors; runs generated tests to verify
+
+### Project Documentation Skills (gproject)
+
+**`skills/gproject-orchestrator`** ⭐ PRIMARY FOR PROJECT DOCUMENTATION
+
+- **Purpose**: Orchestrates full project documentation pipeline — from discovery to PRD to roadmap
+- **Use When**:
+  - "Create project documentation", "Write PRD", "Spec out feature"
+  - "Plan project", "Document how to implement", "Project planning"
+  - "gproject", "Создай документацию проекта", "Напиши PRD для..."
+  - "Implementation plan for...", "Tech spec for..."
+  - Any request involving structured project planning or specification writing
+- **Key Features**:
+  - 7-phase pipeline: Discovery → Problem → Stack → Patterns → PRD → Review → Roadmap
+  - Two modes: `new_project` (from scratch) and `task_in_project` (existing codebase)
+  - Human gates at key decision points (stack, architecture, final approval)
+  - Token-efficient: subagents write to files, return only compact summaries
+  - Decisions Registry: append-only log of all project decisions with traceability
+  - NEEDS_CONTEXT loop: structured questions with A/B/C/D options
+  - State resumption: interrupted jobs can be resumed from last phase
+  - Responds in the user's language (Russian if asked in Russian, etc.)
+  - Reuses existing skills: `interview`, `context-collector`, `brainstorm`
+- **Version**: v1.0.0
+- **vs `prd-creator`**: For quick, single-pass PRD → use `prd-creator`. For full pipeline with stack decisions, architecture, consistency review, and roadmap → use `gproject-orchestrator`. **When unclear, ask the user:**
+  - A) Quick PRD only (`prd-creator`) — faster, no persistent docs
+  - B) Full project documentation pipeline (`gproject-orchestrator`) — recommended for new projects or complex features
+
+**`skills/gproject-discovery`**
+- **Purpose**: Collects and structures initial project information from user input, documents, codebase, and web research
+- **Use When**: Dispatched by `gproject-orchestrator` Phase 0 — NOT directly by user
+- **Output**: `artifacts/discovery-brief.md`
+- **Reuses**: `interview`, `context-collector`
+
+**`skills/gproject-problem-definer`**
+- **Purpose**: Defines core problems, SMART goals, non-goals (min 3), and success metrics from discovery data
+- **Use When**: Dispatched by `gproject-orchestrator` Phase 1 — NOT directly by user
+- **Output**: `artifacts/problem-statement.md`
+
+**`skills/gproject-stack-advisor`**
+- **Purpose**: Determines project level (MVP/pet/startup/production) and recommends optimal tech stack with trade-off analysis
+- **Use When**: Dispatched by `gproject-orchestrator` Phase 2 — NOT directly by user
+- **Output**: `artifacts/stack-decision.md`
+- **Reuses**: `brainstorm` for architecture exploration
+
+**`skills/gproject-patterns-researcher`**
+- **Purpose**: Researches per-technology best practices and defines architecture patterns; output becomes binding PRD constraints
+- **Use When**: Dispatched by `gproject-orchestrator` Phase 3 — NOT directly by user
+- **Output**: `artifacts/architecture.md` + `artifacts/tech-bestpractices.md`
+
+**`skills/gproject-spec-writer`**
+- **Purpose**: Generates PRD (new_project) or Implementation Plan (task_in_project) constrained by all upstream decisions
+- **Use When**: Dispatched by `gproject-orchestrator` Phase 4 — NOT directly by user
+- **Output**: `artifacts/prd.md`
+
+**`skills/gproject-consistency-checker`**
+- **Purpose**: Validates PRD against decisions registry, architecture, and best practices — adversarial quality gate
+- **Use When**: Dispatched by `gproject-orchestrator` Phase 5 — NOT directly by user
+- **Output**: `artifacts/consistency-report.md`
+
+**`skills/gproject-planner`**
+- **Purpose**: Generates roadmap, milestones, task breakdown with dependency DAG and effort estimates
+- **Use When**: Dispatched by `gproject-orchestrator` Phase 6 — NOT directly by user
+- **Output**: `artifacts/roadmap.md`
+- **Integration**: Output format compatible with `job-orchestrator` / `issue-analyzer`
+
+**`skills/prd-creator`**
+- **Purpose**: Quick single-pass PRD — transforms unstructured request into a formal, testable Product Requirements Document
+- **Use When**: "Create a PRD", "Draft PRD", "Write product requirements document" — when the user wants a fast result without full pipeline
+- **vs `gproject-orchestrator`**: No stack/architecture decisions, no consistency review, no roadmap — simpler and faster
+- **Modes**: Direct (user interaction) or Orchestrated (called by another agent)
+
+---
+
+### gproject Routing Rules
+
+| User Request | Action |
+|-------------|--------|
+| "Write PRD for...", "Plan project..." | **ASK**: `prd-creator` (quick) or `gproject-orchestrator` (full pipeline)? |
+| "Create spec for feature in our app" | `gproject-orchestrator` (task_in_project mode) |
+| "gproject" | `gproject-orchestrator` directly |
+| "Analyze project requirements" | **ASK**: `gproject-orchestrator` or `feature-analyzer`? |
+| "Review PRD consistency" | `gproject-consistency-checker` (can run standalone) |
+
+**Disambiguation:**
+- "Implement issue #N" → `job-orchestrator` (code implementation, NOT gproject)
+- "Analyze branch changes" → `feature-analyzer` (code analysis, NOT gproject)
+- "Plan project from scratch" → `gproject-orchestrator`
+
+---
 
 ### Meta / Context Skills
 

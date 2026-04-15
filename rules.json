@@ -597,20 +597,24 @@
       }
     },
     {
-      "id": "code-boss-review",
+      "id": "code-b091-review",
       "type": "skill",
-      "path": "skills/code-boss-review/SKILL.md",
-      "description": "Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code",
+      "path": "skills/code-b091-review/SKILL.md",
+      "description": "Direct logic-first review in b091 style — architecture, layer correctness, no duct-tape code",
       "triggers": {
         "keywords": [
-          "boss review",
-          "logic review",
-          "boss"
+          "direct",
+          "logic-first",
+          "review",
+          "b091",
+          "style",
+          "architecture",
+          "layer",
+          "correctness",
+          "duct-tape",
+          "code"
         ],
-        "intents": [
-          "boss style review",
-          "logic-first code review"
-        ]
+        "intents": []
       }
     },
     {
@@ -1009,6 +1013,198 @@
       }
     },
     {
+      "id": "gproject-orchestrator",
+      "type": "skill",
+      "path": "skills/gproject-orchestrator/SKILL.md",
+      "description": "Orchestrates full project documentation pipeline — from discovery to PRD to roadmap",
+      "triggers": {
+        "keywords": [
+          "orchestrates",
+          "full",
+          "project",
+          "documentation",
+          "pipeline",
+          "discovery",
+          "prd",
+          "roadmap"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "gproject-discovery",
+      "type": "skill",
+      "path": "skills/gproject-discovery/SKILL.md",
+      "description": "Collects and structures initial project information from user input, documents, codebase, and web research",
+      "triggers": {
+        "keywords": [
+          "collects",
+          "structures",
+          "initial",
+          "project",
+          "information",
+          "user",
+          "input",
+          "documents",
+          "codebase",
+          "web",
+          "research"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "gproject-problem-definer",
+      "type": "skill",
+      "path": "skills/gproject-problem-definer/SKILL.md",
+      "description": "Defines core problems, SMART goals, non-goals (min 3), and success metrics from discovery data",
+      "triggers": {
+        "keywords": [
+          "defines",
+          "core",
+          "problems",
+          "smart",
+          "goals",
+          "non-goals",
+          "min",
+          "success",
+          "metrics",
+          "discovery",
+          "data"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "gproject-stack-advisor",
+      "type": "skill",
+      "path": "skills/gproject-stack-advisor/SKILL.md",
+      "description": "Determines project level (MVP/pet/startup/production) and recommends optimal tech stack with trade-off analysis",
+      "triggers": {
+        "keywords": [
+          "determines",
+          "project",
+          "level",
+          "mvp",
+          "pet",
+          "startup",
+          "production",
+          "recommends",
+          "optimal",
+          "tech",
+          "stack",
+          "trade-off",
+          "analysis"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "gproject-patterns-researcher",
+      "type": "skill",
+      "path": "skills/gproject-patterns-researcher/SKILL.md",
+      "description": "Researches per-technology best practices and defines architecture patterns; output becomes binding PRD constraints",
+      "triggers": {
+        "keywords": [
+          "researches",
+          "per-technology",
+          "best",
+          "practices",
+          "defines",
+          "architecture",
+          "patterns",
+          "output",
+          "becomes",
+          "binding",
+          "prd",
+          "constraints"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "gproject-spec-writer",
+      "type": "skill",
+      "path": "skills/gproject-spec-writer/SKILL.md",
+      "description": "Generates PRD (new_project) or Implementation Plan (task_in_project) constrained by all upstream decisions",
+      "triggers": {
+        "keywords": [
+          "generates",
+          "prd",
+          "new",
+          "project",
+          "implementation",
+          "plan",
+          "task",
+          "constrained",
+          "upstream",
+          "decisions"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "gproject-consistency-checker",
+      "type": "skill",
+      "path": "skills/gproject-consistency-checker/SKILL.md",
+      "description": "Validates PRD against decisions registry, architecture, and best practices — adversarial quality gate",
+      "triggers": {
+        "keywords": [
+          "validates",
+          "prd",
+          "against",
+          "decisions",
+          "registry",
+          "architecture",
+          "best",
+          "practices",
+          "adversarial",
+          "quality",
+          "gate"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "gproject-planner",
+      "type": "skill",
+      "path": "skills/gproject-planner/SKILL.md",
+      "description": "Generates roadmap, milestones, task breakdown with dependency DAG and effort estimates",
+      "triggers": {
+        "keywords": [
+          "generates",
+          "roadmap",
+          "milestones",
+          "task",
+          "breakdown",
+          "dependency",
+          "dag",
+          "effort",
+          "estimates"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "prd-creator",
+      "type": "skill",
+      "path": "skills/prd-creator/SKILL.md",
+      "description": "Quick single-pass PRD — transforms unstructured request into a formal, testable Product Requirements Document",
+      "triggers": {
+        "keywords": [
+          "create prd",
+          "write prd",
+          "product requirements",
+          "prd",
+          "requirements document"
+        ],
+        "intents": [
+          "create product requirements document",
+          "write prd"
+        ]
+      }
+    },
+    {
       "id": "brainstorm",
       "type": "skill",
       "path": "skills/brainstorm/SKILL.md",
@@ -1118,21 +1314,19 @@
       }
     },
     {
-      "id": "prd-creator",
+      "id": "code-boss-review",
       "type": "skill",
-      "path": "skills/prd-creator/SKILL.md",
-      "description": "Transforms unstructured user requests into structured Product Requirements Documents",
+      "path": "skills/code-boss-review/SKILL.md",
+      "description": "Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code",
       "triggers": {
         "keywords": [
-          "create prd",
-          "write prd",
-          "product requirements",
-          "prd",
-          "requirements document"
+          "boss review",
+          "logic review",
+          "boss"
         ],
         "intents": [
-          "create product requirements document",
-          "write prd"
+          "boss style review",
+          "logic-first code review"
         ]
       }
     }
