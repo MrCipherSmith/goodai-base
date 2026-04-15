@@ -451,8 +451,6 @@ Phase 3  gproject-patterns-researcher→ architecture.md + tech-bestpractices.md
 Phase 4  gproject-spec-writer        → prd.md (or implementation-plan.md)
 Phase 5  gproject-consistency-checker→ consistency-report.md      ← Human approval
 Phase 6  gproject-planner            → roadmap.md
-                                            ↓
-                               job-orchestrator / task-implementer
 ```
 
 All decisions accumulate in `decisions.md` (append-only registry). No phase overwrites a prior decision — it may only invalidate it (triggers rollback). Contract spec: `rules/core/gproject-contracts.mdc`.
@@ -481,7 +479,7 @@ All decisions accumulate in `decisions.md` (append-only registry). No phase over
   - State resumption from interrupted jobs (`state.json`)
   - Responds in user's language; decision keys always in English
   - Reuses: `interview` (Phase 0), `context-collector` (task_in_project), `brainstorm` (Phase 2 optional), `job-documenter`
-- **Integration with job-orchestrator**: `roadmap.md` output is the direct input to `job-orchestrator` for implementation
+- **Final deliverable**: `roadmap.md` — milestones, task breakdown, dependency graph, and effort estimates; what happens after is up to the team
 - **Version**: v1.0.0
 - **vs `prd-creator`**: Quick, single-pass → `prd-creator`. Full pipeline with stack decisions, architecture constraints, consistency review, roadmap → `gproject-orchestrator`. When unclear, ask:
   - A) Quick PRD only (`prd-creator`) — no persistent docs, no roadmap
@@ -505,7 +503,7 @@ Subagent notes:
 - `gproject-stack-advisor` may call `brainstorm` in parallel for architecture exploration
 - `gproject-spec-writer` makes NO new decisions — fully constrained by phases 0-3
 - `gproject-consistency-checker` adversarially validates all constraints; returns `DONE_WITH_CONCERNS` if CRITICAL violations found
-- `gproject-planner` output includes DAG of task dependencies, effort estimates, and critical path; format is directly consumable by `job-orchestrator`
+- `gproject-planner` output includes DAG of task dependencies, effort estimates (optimistic/realistic/pessimistic), and critical path; `roadmap.md` is the final pipeline deliverable
 
 ---
 
@@ -531,7 +529,7 @@ Subagent notes:
 - "Implement issue #N" → `job-orchestrator` (code implementation, NOT gproject)
 - "Analyze branch changes" → `feature-analyzer` (code analysis, NOT gproject)
 - "Plan project from scratch" → `gproject-orchestrator`
-- "I have a roadmap, implement it" → `job-orchestrator` (takes `roadmap.md` as input)
+- `gproject-orchestrator` scope ends at `roadmap.md` — code implementation is a separate concern
 
 ---
 
