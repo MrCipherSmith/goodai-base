@@ -10,24 +10,25 @@ Works with Claude Code, Cursor, Codex, Zed, and OpenCode.
 
 ## What's inside
 
-### 30 Skills
+### 40 Skills
 
-Structured, multi-step agent workflows across 8 categories:
+Structured, multi-step agent workflows across 9 categories:
 
 | Category | Skills |
 |----------|--------|
-| **Analysis** | `feature-analyzer`, `issue-analyzer`, `pr-review-comments`, `interview`, `interviewer` |
+| **Analysis** | `feature-analyzer`, `issue-analyzer`, `pr-review-comments`, `interview`, `interviewer`, `brainstorm` |
 | **Review** | `code-review`, `code-ai-review`, `code-boss-review`, `code-style-review`, `code-mobx-store-review` |
-| **Workflow** | `commit`, `push`, `pr`, `feature-dev`, `changelog` |
+| **Workflow** | `commit`, `push`, `pr`, `feature-dev`, `changelog`, `pr-issue-documenter` |
 | **Orchestration** | `job-orchestrator`, `job-documenter`, `context-collector` |
-| **Implementation** | `task-implementer` |
-| **Planning** | `prd-creator` |
-| **Quality** | `security-audit`, `perf-check`, `test-gen`, `db-migrate`, `dependency-update`, `deploy` |
+| **Implementation** | `task-implementer`, `tests-creator` |
+| **Project Documentation** | `gproject-orchestrator`, `gproject-discovery`, `gproject-problem-definer`, `gproject-stack-advisor`, `gproject-patterns-researcher`, `gproject-spec-writer`, `gproject-consistency-checker`, `gproject-planner`, `prd-creator` |
+| **Quality** | `security-audit`, `perf-check`, `code-verifier`, `test-gen`, `db-migrate`, `dependency-update`, `deploy` |
 | **Configuration** | `hookify`, `claude-md-management` |
 
 Notable examples:
 
-- **`job-orchestrator`** — Dynamic orchestrator: collects context, builds an execution plan, dispatches sub-agents, tracks progress in `jobs/` with full traceability
+- **`gproject-orchestrator`** — 7-phase project documentation pipeline: discovery → problem definition → stack selection → architecture → PRD → consistency review → roadmap. Decision-driven, with human gates and append-only decisions registry. See [gproject pipeline docs](docs/gproject-pipeline.md)
+- **`job-orchestrator`** — Dynamic implementation orchestrator: collects context, builds an execution plan, dispatches sub-agents, tracks progress in `jobs/` with full traceability
 - **`feature-analyzer`** — Deep cross-repository analysis of feature branches with architectural impact assessment
 - **`issue-analyzer`** — Decomposes a GitHub issue into atomic, implementation-ready tasks for parallel agent execution
 - **`task-implementer`** — Autonomous end-to-end implementation agent: reads the task, researches the codebase, writes code, verifies with lint/tests
