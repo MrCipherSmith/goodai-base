@@ -439,73 +439,81 @@ Intelligent agents for complex analysis and review tasks:
 
 ### Project Documentation Skills (gproject)
 
-**`skills/gproject-orchestrator`** ⭐ PRIMARY FOR PROJECT DOCUMENTATION
+> **Sub-domain purpose**: Transform a project idea or feature request into a complete, validated specification ready for implementation. `gproject` covers the gap between "we have an idea" and "we have an implementable PRD + roadmap" — using a decision-driven pipeline where each phase constrains the next.
 
-- **Purpose**: Orchestrates full project documentation pipeline — from discovery to PRD to roadmap
+#### Pipeline Overview
+
+```
+Phase 0  gproject-discovery          → discovery-brief.md
+Phase 1  gproject-problem-definer    → problem-statement.md
+Phase 2  gproject-stack-advisor      → stack-decision.md          ← Human gate
+Phase 3  gproject-patterns-researcher→ architecture.md + tech-bestpractices.md  ← Human gate
+Phase 4  gproject-spec-writer        → prd.md (or implementation-plan.md)
+Phase 5  gproject-consistency-checker→ consistency-report.md      ← Human approval
+Phase 6  gproject-planner            → roadmap.md
+                                            ↓
+                               job-orchestrator / task-implementer
+```
+
+All decisions accumulate in `decisions.md` (append-only registry). No phase overwrites a prior decision — it may only invalidate it (triggers rollback). Contract spec: `rules/core/gproject-contracts.mdc`.
+
+#### Modes
+
+| Mode | When | Difference |
+|------|------|-----------|
+| `new_project` | Building from scratch | Full 7-phase pipeline, interview at Phase 0 |
+| `task_in_project` | Feature in existing codebase | context-collector replaces interview, shorter PRD format |
+
+---
+
+**`skills/gproject-orchestrator`** ⭐ ENTRY POINT
+
+- **Purpose**: Thin routing orchestrator — drives the 7-phase pipeline, manages decisions registry, enforces human gates, handles state resumption
 - **Use When**:
-  - "Create project documentation", "Write PRD", "Spec out feature"
-  - "Plan project", "Document how to implement", "Project planning"
-  - "gproject", "Создай документацию проекта", "Напиши PRD для..."
-  - "Implementation plan for...", "Tech spec for..."
-  - Any request involving structured project planning or specification writing
+  - "Create project documentation", "Write PRD", "Spec out feature", "Plan project"
+  - "gproject", "Создай документацию проекта", "Напиши PRD для...", "Нужен тех. план"
+  - Any request involving structured project planning, specification, or architecture documentation
 - **Key Features**:
-  - 7-phase pipeline: Discovery → Problem → Stack → Patterns → PRD → Review → Roadmap
-  - Two modes: `new_project` (from scratch) and `task_in_project` (existing codebase)
-  - Human gates at key decision points (stack, architecture, final approval)
-  - Token-efficient: subagents write to files, return only compact summaries
-  - Decisions Registry: append-only log of all project decisions with traceability
-  - NEEDS_CONTEXT loop: structured questions with A/B/C/D options
-  - State resumption: interrupted jobs can be resumed from last phase
-  - Responds in the user's language (Russian if asked in Russian, etc.)
-  - Reuses existing skills: `interview`, `context-collector`, `brainstorm`
+  - 7-phase pipeline with human gates at Phase 2, 3, and 5
+  - `decisions.md` append-only registry — single source of truth for all choices
+  - Context-budget discipline: subagents write artifacts to files, return ≤150 token summaries
+  - NEEDS_CONTEXT loop: structured A/B/C/D questions, max 2 rounds per phase
+  - State resumption from interrupted jobs (`state.json`)
+  - Responds in user's language; decision keys always in English
+  - Reuses: `interview` (Phase 0), `context-collector` (task_in_project), `brainstorm` (Phase 2 optional), `job-documenter`
+- **Integration with job-orchestrator**: `roadmap.md` output is the direct input to `job-orchestrator` for implementation
 - **Version**: v1.0.0
-- **vs `prd-creator`**: For quick, single-pass PRD → use `prd-creator`. For full pipeline with stack decisions, architecture, consistency review, and roadmap → use `gproject-orchestrator`. **When unclear, ask the user:**
-  - A) Quick PRD only (`prd-creator`) — faster, no persistent docs
-  - B) Full project documentation pipeline (`gproject-orchestrator`) — recommended for new projects or complex features
+- **vs `prd-creator`**: Quick, single-pass → `prd-creator`. Full pipeline with stack decisions, architecture constraints, consistency review, roadmap → `gproject-orchestrator`. When unclear, ask:
+  - A) Quick PRD only (`prd-creator`) — no persistent docs, no roadmap
+  - B) Full pipeline (`gproject-orchestrator`) — recommended for new projects or complex features
 
-**`skills/gproject-discovery`**
-- **Purpose**: Collects and structures initial project information from user input, documents, codebase, and web research
-- **Use When**: Dispatched by `gproject-orchestrator` Phase 0 — NOT directly by user
-- **Output**: `artifacts/discovery-brief.md`
-- **Reuses**: `interview`, `context-collector`
+---
 
-**`skills/gproject-problem-definer`**
-- **Purpose**: Defines core problems, SMART goals, non-goals (min 3), and success metrics from discovery data
-- **Use When**: Dispatched by `gproject-orchestrator` Phase 1 — NOT directly by user
-- **Output**: `artifacts/problem-statement.md`
+**Subagents (dispatched by orchestrator only — NOT invoked directly by user):**
 
-**`skills/gproject-stack-advisor`**
-- **Purpose**: Determines project level (MVP/pet/startup/production) and recommends optimal tech stack with trade-off analysis
-- **Use When**: Dispatched by `gproject-orchestrator` Phase 2 — NOT directly by user
-- **Output**: `artifacts/stack-decision.md`
-- **Reuses**: `brainstorm` for architecture exploration
+| Phase | Skill | Input | Output | Human Gate |
+|-------|-------|-------|--------|-----------|
+| 0 | `gproject-discovery` | User input + docs + repo (optional) | `discovery-brief.md` | — |
+| 1 | `gproject-problem-definer` | `discovery-brief.md` | `problem-statement.md` | — |
+| 2 | `gproject-stack-advisor` | `problem-statement.md` | `stack-decision.md` | ✅ |
+| 3 | `gproject-patterns-researcher` | `stack-decision.md` + `problem-statement.md` | `architecture.md` + `tech-bestpractices.md` | ✅ |
+| 4 | `gproject-spec-writer` | `problem-statement.md` + `architecture.md` + `tech-bestpractices.md` | `prd.md` | — |
+| 5 | `gproject-consistency-checker` | All artifacts + `decisions.md` | `consistency-report.md` | ✅ |
+| 6 | `gproject-planner` | `prd.md` + `architecture.md` | `roadmap.md` | — |
 
-**`skills/gproject-patterns-researcher`**
-- **Purpose**: Researches per-technology best practices and defines architecture patterns; output becomes binding PRD constraints
-- **Use When**: Dispatched by `gproject-orchestrator` Phase 3 — NOT directly by user
-- **Output**: `artifacts/architecture.md` + `artifacts/tech-bestpractices.md`
+Subagent notes:
+- `gproject-stack-advisor` may call `brainstorm` in parallel for architecture exploration
+- `gproject-spec-writer` makes NO new decisions — fully constrained by phases 0-3
+- `gproject-consistency-checker` adversarially validates all constraints; returns `DONE_WITH_CONCERNS` if CRITICAL violations found
+- `gproject-planner` output includes DAG of task dependencies, effort estimates, and critical path; format is directly consumable by `job-orchestrator`
 
-**`skills/gproject-spec-writer`**
-- **Purpose**: Generates PRD (new_project) or Implementation Plan (task_in_project) constrained by all upstream decisions
-- **Use When**: Dispatched by `gproject-orchestrator` Phase 4 — NOT directly by user
-- **Output**: `artifacts/prd.md`
-
-**`skills/gproject-consistency-checker`**
-- **Purpose**: Validates PRD against decisions registry, architecture, and best practices — adversarial quality gate
-- **Use When**: Dispatched by `gproject-orchestrator` Phase 5 — NOT directly by user
-- **Output**: `artifacts/consistency-report.md`
-
-**`skills/gproject-planner`**
-- **Purpose**: Generates roadmap, milestones, task breakdown with dependency DAG and effort estimates
-- **Use When**: Dispatched by `gproject-orchestrator` Phase 6 — NOT directly by user
-- **Output**: `artifacts/roadmap.md`
-- **Integration**: Output format compatible with `job-orchestrator` / `issue-analyzer`
+---
 
 **`skills/prd-creator`**
 - **Purpose**: Quick single-pass PRD — transforms unstructured request into a formal, testable Product Requirements Document
-- **Use When**: "Create a PRD", "Draft PRD", "Write product requirements document" — when the user wants a fast result without full pipeline
+- **Use When**: "Create a PRD", "Draft PRD", "Write product requirements" — fast result without full pipeline
 - **vs `gproject-orchestrator`**: No stack/architecture decisions, no consistency review, no roadmap — simpler and faster
-- **Modes**: Direct (user interaction) or Orchestrated (called by another agent)
+- **Modes**: Direct (user) or Orchestrated (called by another agent)
 
 ---
 
@@ -523,6 +531,7 @@ Intelligent agents for complex analysis and review tasks:
 - "Implement issue #N" → `job-orchestrator` (code implementation, NOT gproject)
 - "Analyze branch changes" → `feature-analyzer` (code analysis, NOT gproject)
 - "Plan project from scratch" → `gproject-orchestrator`
+- "I have a roadmap, implement it" → `job-orchestrator` (takes `roadmap.md` as input)
 
 ---
 
