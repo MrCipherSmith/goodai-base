@@ -1,12 +1,14 @@
 #!/usr/bin/env bun
 
 import { readdirSync, statSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { readTextFile } from './shared/fs-utils';
 
 const SKIP_DIRS = new Set(['shared']);
 const PLATFORMS = ['cursor', 'codex', 'zed', 'opencode'] as const;
+
+const REPO_ROOT = resolve(import.meta.dir, '../../');
 
 function expandHome(p: string): string {
   if (p.startsWith('~/') || p === '~') {
@@ -17,8 +19,8 @@ function expandHome(p: string): string {
 
 // Parse positional args (skip `bun` and script path from Bun.argv)
 const argv = Bun.argv.slice(2);
-const skillsDir = expandHome(argv[0] ?? `${homedir()}/goodai-base/skills`);
-const schemaFile = expandHome(argv[1] ?? `${homedir()}/goodai-base/rules/schemas/skill-workflow-result.schema.json`);
+const skillsDir = expandHome(argv[0] ?? join(REPO_ROOT, 'skills'));
+const schemaFile = expandHome(argv[1] ?? join(REPO_ROOT, 'rules/schemas/skill-workflow-result.schema.json'));
 
 // Validate skills directory exists
 if (!existsSync(skillsDir) || !statSync(skillsDir).isDirectory()) {
