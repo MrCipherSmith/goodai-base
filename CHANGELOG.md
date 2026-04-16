@@ -4,6 +4,55 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.10.0] — autodoc pipeline + review domain redesign
+
+> Released: 2026-04-16
+
+### Added
+
+**autodoc domain (6 skills):**
+- **`skills/autodoc-orchestrator`** — Autonomous 5-phase reverse-engineering pipeline. Runs entirely without human gates after the project path is provided. Interviews the user if needed, then dispatches scanner → analysts (parallel) → architect → writers (parallel) → assembler. Persists work in `state.json` under `<DOCS_ROOT>/<job>/`.
+- **`skills/autodoc-scanner`** — Phase 1. Scans project structure, detects stack/framework, maps entry points and module boundaries. Returns `project-map.md` and a `next_phase_hints.modules[]` list for the orchestrator to route analyst agents.
+- **`skills/autodoc-analyst`** — Phase 2 (one per module, parallel). Deep-reads each module: public API surface, dependencies, patterns, data flows. Returns `artifacts/analysis/<module>.md`.
+- **`skills/autodoc-architect`** — Phase 3. Synthesizes all module analyses into a system-level architecture description: layers, integration points, cross-cutting concerns.
+- **`skills/autodoc-writer`** — Phase 4 (one per section, parallel). Writes documentation sections from templates: onboarding, architecture, modules, api-reference, data-models.
+- **`skills/autodoc-assembler`** — Phase 5. Assembles `docs/README.md` and `docs/index.md` from all section files, validates cross-references, produces a final documentation package.
+- **`docs/autodoc-pipeline.md`** — Full pipeline reference: phases, parallel dispatch protocol, interview gate, output structure, and usage examples.
+
+**review domain redesign (11 skills, replacing 5):**
+- **`skills/review-orchestrator`** — Entry point replacing `code-review`. Parses flags (`--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--strict`, `--all`), auto-detects scope from diff file extensions, dispatches selected reviewers in parallel, consolidates findings into one unified report.
+- **`skills/review-logic`** — Logic correctness, spec compliance, null-safety, async error paths. Renamed and refocused from `code-ai-review` (partial).
+- **`skills/review-architecture`** — Layer violations, dependency direction, module coupling, SOLID at system level, NestJS/React+MobX structural patterns. Merged from `code-boss-review` + `code-style-review` (architecture parts).
+- **`skills/review-security-code`** — OWASP Top 10, injection, auth/authz gaps, secrets, missing NestJS guards. Split out from `code-ai-review`.
+- **`skills/review-performance`** — N+1 queries, React re-renders, memory leaks, bundle size, blocking calls. Split out from `code-ai-review`.
+- **`skills/review-frontend`** — React observer wrapping, MVVM boundary, useEffect misuse, full MobX store checklist (10 sections), TypeScript safety. Merged from `code-style-review` (frontend parts) + `code-mobx-store-review`. **v1.1.0**: added Step 0 (read project CLAUDE.md) and Part D (7 project-specific pattern checklist items derived from real frontend codebase).
+- **`skills/review-backend`** — NestJS patterns, DTO validation, API design, DB query patterns, service/repository separation. New skill with no prior equivalent.
+- **`skills/review-style`** — Naming conventions, dead code, readability, import order, cyclomatic complexity. Max severity: major.
+- **`skills/review-clean-code`** — Clean Code principles (Uncle Bob): meaningful names, function size/responsibility, argument count, comment quality, error handling, DRY. SOLID at function/class level (SRP, OCP, LSP, ISP, DIP). Distinct from `review-style` (formatting) and `review-architecture` (module structure). Max severity: major (blocker only for swallowed exceptions, blocking constructors, LSP runtime failures).
+- **`skills/review-strict`** — Meta-pass: re-reads all findings, elevates weak severities, adds direct engineering commentary. Refocused from `code-boss-review`.
+- **`skills/review-pr-feedback`** — Analyzes existing GitHub PR review comments. Renamed from `pr-review-comments`, fixed `JOBS_ROOT` convention.
+- **`rules/core/review-agent-profile.mdc`** — Unified baseline review standards (renamed from `code-review-ai-assistant.mdc`).
+- **`rules/core/review-strict-profile.mdc`** — Strict reviewer persona constraints (renamed from `code-review-boss-profile.mdc`).
+- **`docs/review-domain.md`** — Full domain reference: all 11 skills, routing table, unified contracts, severity system, STATUS protocol, scope boundaries, iron laws, project CLAUDE.md integration, and guide for adding future reviewers.
+
+### Changed
+
+- **`AGENTS.md`** — Added `autodoc` sub-domain section (pipeline diagram, phases, usage). Replaced "Code Review Skills" section with full `review` domain section (routing table, subagents table, scope boundaries). Updated all old skill name references.
+- **`README.md`** — Updated skill count (40 → 47). Added "Code Documentation" category (6 autodoc skills). Updated "Review" category (11 new `review-*` skills). Added `autodoc-orchestrator` as a notable example with pipeline doc link.
+
+### Removed
+
+- `skills/code-review` — replaced by `review-orchestrator`
+- `skills/code-ai-review` — scope split into `review-logic`, `review-security-code`, `review-performance`
+- `skills/code-boss-review` — scope split into `review-architecture`, `review-strict`
+- `skills/code-style-review` — scope split into `review-architecture`, `review-frontend`, `review-style`
+- `skills/code-mobx-store-review` — merged into `review-frontend`
+- `skills/pr-review-comments` — replaced by `review-pr-feedback`
+- `rules/core/code-review-ai-assistant.mdc` — replaced by `review-agent-profile.mdc`
+- `rules/core/code-review-boss-profile.mdc` — replaced by `review-strict-profile.mdc`
+
+---
+
 ## [1.9.0] — gproject: project documentation pipeline
 
 > Released: 2026-04-15
