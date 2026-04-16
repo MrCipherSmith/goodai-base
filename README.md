@@ -10,14 +10,14 @@ Works with Claude Code, Cursor, Codex, Zed, and OpenCode.
 
 ## What's inside
 
-### 46 Skills
+### 47 Skills
 
 Structured, multi-step agent workflows across 10 categories:
 
 | Category | Skills |
 |----------|--------|
 | **Analysis** | `feature-analyzer`, `issue-analyzer`, `interview`, `interviewer`, `brainstorm` |
-| **Review** | `review-orchestrator`, `review-logic`, `review-architecture`, `review-security-code`, `review-performance`, `review-frontend`, `review-backend`, `review-style`, `review-strict`, `review-pr-feedback` |
+| **Review** | `review-orchestrator`, `review-logic`, `review-architecture`, `review-security-code`, `review-performance`, `review-frontend`, `review-backend`, `review-style`, `review-clean-code`, `review-strict`, `review-pr-feedback` |
 | **Workflow** | `commit`, `push`, `pr`, `feature-dev`, `changelog`, `pr-issue-documenter` |
 | **Orchestration** | `job-orchestrator`, `job-documenter`, `context-collector` |
 | **Implementation** | `task-implementer`, `tests-creator` |

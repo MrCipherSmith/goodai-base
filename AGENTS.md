@@ -254,6 +254,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review-frontend` | React observer, MobX full checklist, MVVM boundaries | blocker |
 | `review-backend` | NestJS patterns, DTO validation, API design, DB patterns | blocker |
 | `review-style` | Naming, dead code, readability, DRY, cyclomatic complexity | major |
+| `review-clean-code` | Clean Code principles (names, functions, comments, error handling) + SOLID at code level | major |
 | `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
 | `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
 
@@ -266,11 +267,12 @@ Intelligent agents for complex analysis and review tasks:
 | Request | Dispatched reviewers |
 |---------|---------------------|
 | `review` / auto | logic + architecture + style + (frontend or backend from diff) |
-| `review --all` | all 8 reviewers |
+| `review --all` | all 9 reviewers |
 | `review --frontend` | logic + frontend + style |
 | `review --backend` | logic + backend + architecture |
 | `review --architecture` | architecture only |
 | `review --security` | security-code only |
+| `review --clean-code` | clean-code only |
 | `review --strict` | strict pass (after others or standalone) |
 | `review PR #N comments` | review-pr-feedback |
 
