@@ -10,9 +10,9 @@ Works with Claude Code, Cursor, Codex, Zed, and OpenCode.
 
 ## What's inside
 
-### 40 Skills
+### 46 Skills
 
-Structured, multi-step agent workflows across 9 categories:
+Structured, multi-step agent workflows across 10 categories:
 
 | Category | Skills |
 |----------|--------|
@@ -22,11 +22,13 @@ Structured, multi-step agent workflows across 9 categories:
 | **Orchestration** | `job-orchestrator`, `job-documenter`, `context-collector` |
 | **Implementation** | `task-implementer`, `tests-creator` |
 | **Project Documentation** | `gproject-orchestrator`, `gproject-discovery`, `gproject-problem-definer`, `gproject-stack-advisor`, `gproject-patterns-researcher`, `gproject-spec-writer`, `gproject-consistency-checker`, `gproject-planner`, `prd-creator` |
+| **Code Documentation** | `autodoc-orchestrator`, `autodoc-scanner`, `autodoc-analyst`, `autodoc-architect`, `autodoc-writer`, `autodoc-assembler` |
 | **Quality** | `security-audit`, `perf-check`, `code-verifier`, `test-gen`, `db-migrate`, `dependency-update`, `deploy` |
 | **Configuration** | `hookify`, `claude-md-management` |
 
 Notable examples:
 
+- **`autodoc-orchestrator`** — Autonomous 5-phase reverse-engineering pipeline: scans codebase → analyzes modules in parallel → synthesizes architecture → writes docs in parallel → assembles final package. No human gates, fully autonomous. See [autodoc docs](docs/autodoc-pipeline.md)
 - **`gproject-orchestrator`** — 7-phase project documentation pipeline: discovery → problem definition → stack selection → architecture → PRD → consistency review → roadmap. Decision-driven, with human gates and append-only decisions registry. See [gproject pipeline docs](docs/gproject-pipeline.md)
 - **`job-orchestrator`** — Dynamic implementation orchestrator: collects context, builds an execution plan, dispatches sub-agents, tracks progress in `jobs/` with full traceability
 - **`feature-analyzer`** — Deep cross-repository analysis of feature branches with architectural impact assessment
