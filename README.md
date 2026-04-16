@@ -16,8 +16,8 @@ Structured, multi-step agent workflows across 10 categories:
 
 | Category | Skills |
 |----------|--------|
-| **Analysis** | `feature-analyzer`, `issue-analyzer`, `pr-review-comments`, `interview`, `interviewer`, `brainstorm` |
-| **Review** | `code-review`, `code-ai-review`, `code-boss-review`, `code-style-review`, `code-mobx-store-review` |
+| **Analysis** | `feature-analyzer`, `issue-analyzer`, `interview`, `interviewer`, `brainstorm` |
+| **Review** | `review-orchestrator`, `review-logic`, `review-architecture`, `review-security-code`, `review-performance`, `review-frontend`, `review-backend`, `review-style`, `review-strict`, `review-pr-feedback` |
 | **Workflow** | `commit`, `push`, `pr`, `feature-dev`, `changelog`, `pr-issue-documenter` |
 | **Orchestration** | `job-orchestrator`, `job-documenter`, `context-collector` |
 | **Implementation** | `task-implementer`, `tests-creator` |
@@ -34,7 +34,7 @@ Notable examples:
 - **`feature-analyzer`** — Deep cross-repository analysis of feature branches with architectural impact assessment
 - **`issue-analyzer`** — Decomposes a GitHub issue into atomic, implementation-ready tasks for parallel agent execution
 - **`task-implementer`** — Autonomous end-to-end implementation agent: reads the task, researches the codebase, writes code, verifies with lint/tests
-- **`code-review`** — 4 parallel review agents: correctness, security, performance, style — consolidated into one report
+- **`review-orchestrator`** — Routes review requests to specialized subagents (logic, architecture, security, performance, frontend, backend, style, strict) and consolidates findings into one report with unified severity
 - **`feature-dev`** — Full 7-phase feature development: requirements → design → implement → test → review → fix → PR
 - **`hookify`** — Generates Claude Code / Cursor hook configs from natural language descriptions
 
