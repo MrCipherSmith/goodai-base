@@ -4,6 +4,22 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.11.0] — review-highload + path mode for review
+
+> Released: 2026-04-16
+
+### Added
+
+- **`skills/review-highload`** — New reviewer for high-load and distributed systems. 7-part checklist: concurrency & race conditions (singleton state, TOCTOU, unbounded `Promise.all`), resource management (connection pools, file handles, in-memory caches), caching (invalidation, stampede, namespacing), database under load (missing indexes, lock contention, external I/O inside transactions), async/queues (backpressure, dead letters, ordering), retry/timeout/circuit breaker (idempotency keys, exponential backoff with jitter), distributed invariants (distributed locks, distributed cron, clock ordering). Iron Laws: race condition on shared state = blocker; non-idempotent retry without key = blocker; blocking I/O on event loop = major. Triggered by `review --highload`.
+
+### Changed
+
+- **`skills/review-orchestrator` v1.3.0** — Added **path mode**: detects when user names a module, component, store, or provides a file/directory path, and reviews full file contents instead of git diff. Natural language resolution: "review the UserStore" or "review src/pipelines/" both activate path mode. Diff mode remains the default for branch/PR reviews. Auto-detection now also recognizes `*.store.ts` and `makeObservable` as frontend signals.
+- **`docs/review-domain.md`** — Added path mode usage examples and explanation.
+- **`README.md`** — Updated skill count 47 → 48.
+
+---
+
 ## [1.10.0] — autodoc pipeline + review domain redesign
 
 > Released: 2026-04-16
