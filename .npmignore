@@ -1,0 +1,11 @@
+# Exclude dev/internal files from npm package
+scripts/
+jobs/
+hooks/
+*.jsonl
+goodai.config.json
+install.sh
+setup.ts
+CONTRIBUTING.md
+SECURITY.md
+.github/

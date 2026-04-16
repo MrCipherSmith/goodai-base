@@ -1,0 +1,36 @@
+{
+  "name": "goodai-base",
+  "version": "1.11.0",
+  "description": "48 reusable AI agent skills and coding rules for Claude Code, Cursor, Codex, Zed, and OpenCode",
+  "keywords": [
+    "claude-code",
+    "cursor",
+    "ai-agent",
+    "skills",
+    "prompts",
+    "code-review",
+    "claude"
+  ],
+  "author": "MrCipherSmith",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrCipherSmith/goodai-base.git"
+  },
+  "homepage": "https://github.com/MrCipherSmith/goodai-base#readme",
+  "bin": {
+    "goodai-base": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "rules/",
+    "AGENTS.md",
+    "AGENTS.mdc",
+    "docs/"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
