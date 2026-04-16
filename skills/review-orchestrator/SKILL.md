@@ -7,7 +7,7 @@ description: |
   "review --strict", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.2.0"
+version: "1.3.0"
 triggers:
   - "review"
   - "code review"
@@ -24,7 +24,7 @@ triggers:
   - "review --highload"
 metadata:
   author: "MrCipherSmith"
-  version: "1.2.0"
+  version: "1.3.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -43,12 +43,13 @@ unified report sorted by severity. It does not perform any review logic itself.
 ```
 Review Orchestrator Progress:
 - [ ] Step 1: Read Job Context (if provided)
-- [ ] Step 2: Determine git scope (merge-base)
-- [ ] Step 3: Parse flags / auto-detect domain from diff
-- [ ] Step 4: Stage 1 gate — spec compliance check (if issue/task provided)
-- [ ] Step 5: Dispatch selected reviewers in PARALLEL
-- [ ] Step 6: Collect and consolidate all findings
-- [ ] Step 7: Sort by severity, deduplicate, emit unified report
+- [ ] Step 2: Detect review mode (diff mode vs. path mode)
+- [ ] Step 3: Collect scope — git diff OR file list from path
+- [ ] Step 4: Parse flags / auto-detect domain from scope
+- [ ] Step 5: Stage 1 gate — spec compliance check (if issue/task provided)
+- [ ] Step 6: Dispatch selected reviewers in PARALLEL
+- [ ] Step 7: Collect and consolidate all findings
+- [ ] Step 8: Sort by severity, deduplicate, emit unified report
 ```
 
 ---
@@ -57,8 +58,9 @@ Review Orchestrator Progress:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--strict`, `--all` |
-| `commit_range` | string | no | Explicit commit hash or range (e.g., `abc123..HEAD`). Overrides merge-base detection. |
+| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--highload`, `--strict`, `--all` |
+| `path` | string | no | File or directory path to review (e.g., `src/stores/`, `src/components/UserCard.tsx`). Activates **path mode** — reviews the files at this path directly, not a git diff. |
+| `commit_range` | string | no | Explicit commit hash or range (e.g., `abc123..HEAD`). Overrides merge-base detection. Ignored in path mode. |
 | `issue_url` | string | no | GitHub issue or task URL. If provided, Stage 1 gate checks spec compliance before dispatching reviewers. |
 | `context_doc` | string | no | Path to job context document (e.g., `~/goodai-base/jobs/<job>/ai/context.md`). |
 
@@ -66,21 +68,66 @@ Review Orchestrator Progress:
 
 ## Scope Detection
 
+### Step 1: Determine Review Mode
+
+Before anything else, determine whether the request is **diff mode** or **path mode**:
+
+**Path mode** is active when ANY of these is true:
+- User explicitly provides a file or directory path (`src/stores/`, `src/components/UserCard.tsx`)
+- User names a specific module, component, or store: "review the UserStore", "review the pipelines module", "review src/auth/"
+- User says "review [the entire / whole / all of] X" where X is a module name, not a branch name
+
+**Diff mode** (default) is active when:
+- No path or target name provided
+- User says "review", "review my changes", "review PR", "review this branch"
+
+---
+
+### Diff Mode
+
 See shared script: `skills/shared/git-merge-base.md`
 
-Run the script from that file to determine `BASE_SHA` before auto-detection or dispatching any reviewer.
-
-### Auto-detection (no flag provided)
-
-When no flag is present, scan changed file extensions to determine which reviewers to invoke:
+Run the script to determine `BASE_SHA`, then:
 
 ```bash
-git diff --name-only "${BASE_SHA}"
+git diff --name-only "${BASE_SHA}"   # changed files for auto-detection
+git diff "${BASE_SHA}"               # full diff passed to reviewers
 ```
+
+Scope is limited to **changes introduced in the current branch since merge-base**.
+
+---
+
+### Path Mode
+
+When a path or target is named, collect the files to review:
+
+```bash
+# If a directory path is given:
+find <path> -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) | sort
+
+# If a file path is given:
+cat <file>
+
+# If a module name is given (e.g. "UserStore", "pipelines module"):
+find . -type f -name "*<name>*" \( -name "*.ts" -o -name "*.tsx" \)
+# Also check common locations: src/stores/, src/modules/, src/components/
+```
+
+Pass the full **file contents** (not a diff) to sub-reviewers. Set `SCOPE_MODE: path`.
+
+**Reviewer behavior in path mode:** reviewers check the entire file content — not just added lines. All findings apply to the current state of the code, not only to changes.
+
+---
+
+### Auto-detection of Reviewers (both modes)
+
+When no flag is provided, infer reviewers from the collected file list:
 
 | File pattern | Domain detected | Reviewers invoked |
 |---|---|---|
 | `*.tsx`, `*.jsx`, `*.css`, `*.scss`, `*.html` | frontend | `review-logic` + `review-frontend` + `review-style` |
+| `*.store.ts`, files containing `makeObservable` | frontend/store | `review-logic` + `review-frontend` + `review-style` |
 | `*.ts`, `*.js` in `src/api/`, `src/services/`, `src/controllers/`, `src/modules/` | backend | `review-logic` + `review-backend` + `review-architecture` |
 | `*.ts`, `*.js` mixed (both UI and service files) | fullstack | all of the above |
 | Migration files, `*.sql`, `prisma/schema.prisma` | backend | `review-backend` + `review-architecture` |
@@ -127,14 +174,23 @@ Multiple flags may be combined. Example: `review --backend --security` dispatche
 Dispatch all selected reviewers **in parallel**. Pass to each sub-reviewer:
 
 ```
-BRANCH:        <branch>
-BASE_SHA:      <base sha>
-SCOPE_MODE:    <default-with-uncommitted | explicit-hash-range>
+SCOPE_MODE:    diff | path
 CONTEXT_DOC:   <path or empty>
 ISSUE_URL:     <url or empty>
+
+# If SCOPE_MODE = diff:
+BRANCH:        <branch>
+BASE_SHA:      <base sha>
+DIFF:          <git diff output>
+
+# If SCOPE_MODE = path:
+TARGET_PATH:   <resolved path or file list>
+FILE_CONTENTS: <full file contents>
 ```
 
 Each reviewer returns findings in the unified format defined in the Output Contract below.
+
+**Important for path mode:** instruct each reviewer to check the **entire file**, not just changes. The scope report should say "Path: `<TARGET_PATH>`" instead of a branch/merge-base.
 
 ---
 
@@ -253,3 +309,5 @@ If absent, proceed normally — context is optional and non-blocking.
 | "I'll deduplicate findings manually in my head" | Always normalize to [F-NNN] format before consolidation to avoid losing findings |
 | "Minor findings from one reviewer cancel out the major from another" | Each finding stands independently; severity is per-finding, not averaged |
 | "No flags means no reviewers" | No flags → run auto-detection; never produce an empty review |
+| "User named a module so I'll use diff mode" | Named module/component/store → path mode; diff mode is only for branch changes |
+| "Path mode should only show lines I'd flag in diff mode" | Path mode reviews the entire file — all findings apply, not just added lines |

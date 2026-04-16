@@ -42,6 +42,8 @@ By separating reviewers, each can apply deep, focused rules without diluting fin
 
 ## How to Invoke
 
+### Diff mode (default) — reviews changes in the current branch
+
 ```
 review                     # auto-detect scope from diff
 review --all               # dispatch all 10 reviewers
@@ -58,6 +60,21 @@ review PR #N comments      # analyze existing PR comments
 ```
 
 Multiple flags combine: `review --backend --security` dispatches logic + backend + architecture + security-code.
+
+### Path mode — reviews a specific module, component, or store (entire file contents, not a diff)
+
+```
+review src/stores/UserStore.ts         # single file
+review src/pipelines/                  # entire directory
+review the UserStore                   # orchestrator resolves by name
+review the auth module                 # orchestrator finds src/auth/ or similar
+```
+
+In path mode the orchestrator:
+1. Resolves the path or name to actual files
+2. Reads full file contents (not a diff)
+3. Auto-detects reviewers from file types (or uses provided flags)
+4. Reviewers check the **entire file** — findings are not limited to changed lines
 
 ---
 
