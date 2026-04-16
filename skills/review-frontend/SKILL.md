@@ -11,7 +11,7 @@ triggers:
   - dispatched by review-orchestrator
 metadata:
   author: "MrCipherSmith"
-  version: "1.0.0"
+  version: "1.1.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -91,6 +91,32 @@ For explicit hash/range mode:
 git diff --stat --name-status <FROM_SHA>..<TO_SHA>
 git diff <FROM_SHA>..<TO_SHA>
 ```
+
+---
+
+## Step 0: Read Project CLAUDE.md
+
+Before running the checklist, scan the project for CLAUDE.md files that define project-specific conventions:
+
+```bash
+# Project root
+cat PROJECT_DIR/CLAUDE.md 2>/dev/null
+
+# Module-level overrides (common in monorepos and large SPAs)
+find PROJECT_DIR/src -name "CLAUDE.md" -maxdepth 3 2>/dev/null | xargs cat 2>/dev/null
+```
+
+Extract and note:
+- MobX patterns that differ from defaults (decorator style, lifecycle names, store init patterns)
+- Naming conventions (store suffix, file casing, interface prefix rules)
+- Style guides and their enforcement level
+- Links to external documentation
+- Any patterns explicitly declared as project standard — follow them, do NOT flag as violations
+- Any patterns explicitly declared as anti-patterns — flag them even if not in this skill's generic checklist
+
+**Resolution rule:** When a project CLAUDE.md pattern conflicts with this skill's generic checklist, the CLAUDE.md pattern wins — unless it violates an Iron Law.
+
+If no CLAUDE.md is found, proceed normally. CLAUDE.md is optional and non-blocking.
 
 ---
 
@@ -319,6 +345,121 @@ Flags:
 - `!` non-null assertion without justification comment — **minor**
 - Props interface without `I` prefix — **minor**
 - `catch (err: any)` — **minor**
+
+---
+
+### Part D: Project-Specific Patterns (populated from CLAUDE.md in Step 0)
+
+When Step 0 finds project-specific patterns, apply them here. The examples below are drawn from a real frontend CLAUDE.md and illustrate what to look for and how to apply project conventions.
+
+#### D1. `currentState` @computed Pattern
+
+Some projects define a canonical `currentState` computed getter for dirty-checking, save, and snapshot:
+
+```typescript
+@computed get currentState() {
+  return toJS({
+    name: this.name,
+    isEnabled: this.isEnabled,
+    // ...
+  });
+}
+```
+
+- `toJS()` is required when the returned object contains observable arrays or maps
+- `isEqual(this.currentState, savedState)` is the canonical dirty-check pattern
+- If the project defines this pattern, flag its absence in stores that have save/cancel/dirty-check UX — **minor**
+- Returning observables directly from `currentState` without `toJS()` when the result is passed outside the store — **major**
+- Composite stores should compose child stores' `currentState` rather than re-declaring child state — flag manual re-declaration as **minor**
+
+#### D2. Composite Store Pattern
+
+Projects with root stores holding child stores may define rules for child store reference types:
+
+```typescript
+class RootStore {
+  // Fixed child stores: plain property (NOT @observable — identity never changes)
+  readonly childA = new ChildAStore(this);
+
+  // Swappable child stores: @observable.shallow (identity can change, internals self-manage)
+  @observable.shallow childB: ChildBStore | null = null;
+}
+```
+
+- Fixed child stores must NOT be `@observable` — they never change identity; deep observation is wasted overhead — **minor** if violated
+- Swappable stores MUST use `@observable.shallow`, not `@observable` — deep observation of child store internals causes double-tracking — **major** if using `@observable` on swappable stores
+- Context interface (callbacks the child calls back into the parent) should be passed as arrow functions, not raw store references — flag raw store reference leak as **minor**
+
+#### D3. Inter-Store Method Style: Arrow Functions vs. @action.bound
+
+When a project CLAUDE.md defines which binding style to use for methods passed between stores:
+
+```typescript
+// Inter-store callback: arrow function property (auto-bound; no @action.bound needed)
+handleChildChange = (value: string) => {
+  runInAction(() => { this.value = value; });
+};
+
+// UI entrypoint called from JSX: @action.bound
+@action.bound
+submit() { ... }
+```
+
+If the project follows this distinction:
+- Arrow function for store-to-store methods: correct — do NOT flag
+- `@action.bound` on an inter-store method: **minor** (stylistically wrong per project convention, functionally OK)
+- Neither arrow nor `@action.bound` on a mutating method — **major** (Iron Laws still apply regardless of style choice)
+
+#### D4. React Hooks to Avoid (MobX Equivalents)
+
+When a project CLAUDE.md explicitly forbids certain hooks in favor of MobX equivalents:
+
+| Forbidden Pattern | MobX Replacement | Severity if found |
+|-------------------|-----------------|-------------------|
+| `useState` for store-managed state | `@observable` in store | major |
+| `useMemo` for derived store values | `@computed` getter | major |
+| `useCallback` wrapping a store method | `@action.bound` or arrow method | minor |
+
+Flag only when the hook manages state that belongs in a store. Local UI-only state (`useState` for a controlled input that never persists) is acceptable.
+
+#### D5. Store Initialization in Components
+
+When a project defines a canonical store initialization pattern:
+
+```typescript
+// Canonical: useLocalObservable with lazy initializer (store created once, not on every render)
+const store = useLocalObservable(() => props.store ?? new ComponentStore(props.service));
+```
+
+- `new Store()` directly in the component body — **major** (store recreated on every render)
+- Store created with `useMemo` instead of `useLocalObservable` — **minor** (not observable-aware; `useLocalObservable` is the correct primitive)
+- `useLocalObservable(() => props.store)` when the store is always provided externally is acceptable
+
+#### D6. Store Lifecycle Bridge via useEffect
+
+When a project routes store lifecycle through `useEffect` as a documented pattern:
+
+```typescript
+useEffect(() => {
+  store.onMount();
+  return () => store.onUnmount();
+}, [store]);
+```
+
+This IS the correct lifecycle bridge in projects that use this pattern — do NOT flag as an A3 violation. The A3 rule ("useEffect must not call store.init()") targets implicit data-loading, not explicit lifecycle hooks.
+
+Distinction:
+- `useEffect(() => { store.onMount(); return () => store.onUnmount(); }, [store])` — correct lifecycle bridge — **do not flag**
+- `useEffect(() => { store.loadData(); }, [])` — data trigger in component — **major** (A3 violation regardless of project conventions)
+
+#### D7. JSX and Naming Conventions
+
+When a project CLAUDE.md defines JSX and naming rules:
+
+- String props in JSX must use braces: `label={"Save"}` not `label="Save"` — flag as **minor** if the project mandates this
+- Boolean props without explicit value: `<Button disabled />` not `<Button disabled={true} />` — **minor** if the project mandates this
+- Store file naming: `kebab-case.store.ts`; class name ending in `Store` — flag deviations as **minor**
+- FC and ReactNode must be imported from `react`, not from `@types/react` directly — **minor** if project mandates it
 
 ---
 
