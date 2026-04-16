@@ -533,6 +533,74 @@ Subagent notes:
 
 ---
 
+### Code Documentation Skills (autodoc)
+
+> **Sub-domain purpose**: Reverse-engineer comprehensive developer documentation from an existing codebase. `autodoc` scans a project, runs parallel analysis agents per module, synthesizes architecture, and produces a complete documentation package — fully autonomously, no human gates.
+
+#### Pipeline Overview
+
+```
+Phase 0  Interview (if needed)    → project path + focus areas
+Phase 1  autodoc-scanner          → artifacts/project-map.md
+Phase 2  autodoc-analyst × N      → artifacts/analysis/<module>.md  [parallel]
+Phase 3  autodoc-architect        → artifacts/architecture.md
+Phase 4  autodoc-writer × N       → docs/<section>.md               [parallel]
+Phase 5  autodoc-assembler        → docs/README.md + docs/index.md
+```
+
+Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) run in parallel, one agent per module/section.
+
+---
+
+**`skills/autodoc-orchestrator`** ⭐ ENTRY POINT
+
+- **Purpose**: Thin routing orchestrator — drives the 5-phase pipeline, detects modules, launches parallel analysts and writers, assembles final docs
+- **Use When**:
+  - "autodoc", "автодок"
+  - "Generate docs for my project", "Document this codebase"
+  - "Create developer documentation from code"
+  - "Reverse engineer documentation", "задокументируй кодовую базу"
+  - User provides a repo path and wants documentation output
+- **Key Features**:
+  - Asks minimal questions upfront (only if project path is missing)
+  - Parallel analysts per module (Phase 2) and parallel writers per section (Phase 4)
+  - Produces: onboarding, architecture overview, module reference, API reference, data models
+  - State persisted in `state.json` with resumption support
+  - No human gates — fully autonomous after initial input
+- **Final deliverable**: `docs/README.md` + full documentation package in `jobs/autodoc-<name>/docs/`
+- **Version**: v1.0.0
+- **vs `gproject-orchestrator`**: autodoc reads existing code → produces docs. gproject-orchestrator takes an idea → produces spec + roadmap.
+
+---
+
+**Subagents (dispatched by orchestrator only — NOT invoked directly by user):**
+
+| Phase | Skill | Input | Output | Parallel? |
+|-------|-------|-------|--------|----------|
+| 1 | `autodoc-scanner` | Project directory | `project-map.md` | — |
+| 2 | `autodoc-analyst` | Module path + project-map | `analysis/<module>.md` | ✅ per module |
+| 3 | `autodoc-architect` | All analysis artifacts | `architecture.md` | — |
+| 4 | `autodoc-writer` | Analysis + architecture | `docs/<section>.md` | ✅ per section |
+| 5 | `autodoc-assembler` | All docs sections | `docs/README.md` + `index.md` | — |
+
+---
+
+### autodoc Routing Rules
+
+| User Request | Action |
+|-------------|--------|
+| "autodoc", "автодок" | `autodoc-orchestrator` directly |
+| "Document this codebase / project" | `autodoc-orchestrator` |
+| "Generate API docs", "Create onboarding guide" | `autodoc-orchestrator` |
+| "Write documentation from code" | `autodoc-orchestrator` |
+
+**Disambiguation:**
+- "Plan a new feature" → `gproject-orchestrator` (forward-looking spec, NOT autodoc)
+- "Review my code" → `code-review` (quality review, NOT autodoc)
+- "autodoc" with no project path → ask for path first, then run
+
+---
+
 ### Meta / Context Skills
 
 **`skills/brainstorm`**
