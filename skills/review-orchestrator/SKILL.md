@@ -7,7 +7,7 @@ description: |
   "review --strict", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.1.0"
+version: "1.2.0"
 triggers:
   - "review"
   - "code review"
@@ -21,9 +21,10 @@ triggers:
   - "review --strict"
   - "review --all"
   - "review --clean-code"
+  - "review --highload"
 metadata:
   author: "MrCipherSmith"
-  version: "1.1.0"
+  version: "1.2.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -99,7 +100,8 @@ git diff --name-only "${BASE_SHA}"
 | `--performance` | `review-performance` |
 | `--style` | `review-style` |
 | `--clean-code` | `review-clean-code` |
-| `--all` | all reviewers above (including `review-clean-code`) |
+| `--highload` | `review-highload` |
+| `--all` | all reviewers above (including `review-clean-code` and `review-highload`) |
 | `--strict` | runs AFTER all others; adds a strict commentary pass on consolidated findings |
 | (auto) | detected from diff file extensions — see Auto-detection table |
 
@@ -148,6 +150,7 @@ Each reviewer returns findings in the unified format defined in the Output Contr
 | Performance anti-patterns | NO | `review-performance` |
 | Style / naming / import order | NO | `review-style` |
 | Clean Code principles + SOLID at code level | NO | `review-clean-code` |
+| Concurrency, resource pools, caching, queues, idempotency | NO | `review-highload` |
 
 ---
 

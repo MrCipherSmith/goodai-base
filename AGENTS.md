@@ -255,6 +255,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review-backend` | NestJS patterns, DTO validation, API design, DB patterns | blocker |
 | `review-style` | Naming, dead code, readability, DRY, cyclomatic complexity | major |
 | `review-clean-code` | Clean Code principles (names, functions, comments, error handling) + SOLID at code level | major |
+| `review-highload` | Race conditions, connection pools, caching, DB lock contention, queues, retries, idempotency, distributed invariants | blocker |
 | `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
 | `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
 
@@ -273,6 +274,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review --architecture` | architecture only |
 | `review --security` | security-code only |
 | `review --clean-code` | clean-code only |
+| `review --highload` | highload only |
 | `review --strict` | strict pass (after others or standalone) |
 | `review PR #N comments` | review-pr-feedback |
 
