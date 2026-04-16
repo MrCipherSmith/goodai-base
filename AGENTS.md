@@ -26,7 +26,7 @@ It defines global behavior and tells the agent how to select the required rule f
 | "Change model", "Use different model", "Switch model"      | **Check Model Selection**          | "Use GPT-5 for sub-agent", "Switch to claude"  |
 
 > **Orchestrator Routing Rule:** When the user does NOT explicitly name a specific skill
-> (e.g., "run code-ai-review", "use feature-analyzer"), and the request CAN be handled
+> (e.g., "run review-logic", "use feature-analyzer"), and the request CAN be handled
 > by `job-orchestrator` (review, analyze, implement), the agent **MUST ask** the user:
 >
 > - **Job Orchestrator** — persistent documentation in `jobs/`, structured report, full traceability
@@ -62,7 +62,7 @@ It defines global behavior and tells the agent how to select the required rule f
 **Skill Examples:**
 
 - `feature-analyzer` - Deep analysis of feature branches across repos
-- `pr-review-comments` - Analyze PR review comments
+- `review-orchestrator` - Code review (routes to specialized reviewers)
 
 ---
 
@@ -83,7 +83,7 @@ Identify what user wants to do:
 Before dispatching to a specific skill, check if the user **explicitly named** a skill:
 
 ```
-IF user explicitly named a skill (e.g., "run code-ai-review", "use feature-analyzer"):
+IF user explicitly named a skill (e.g., "run review-logic", "use feature-analyzer"):
   → Go directly to Step 2A with that skill. SKIP orchestrator question.
 
 ELSE IF request clearly implies orchestration ("full review", "полное ревью", "issue to PR", "orchestrate"):
@@ -99,7 +99,7 @@ ELSE (user did NOT name a specific skill, e.g., "review my code", "analyze branc
 ```
 
 **Orchestratable intents:** `implement`, `analyze`, `review`
-**Non-orchestratable:** `pr-review-comments`, `pr-issue-documenter` (specialized domain skills — always direct)
+**Non-orchestratable:** `review-pr-feedback`, `pr-issue-documenter` (specialized domain skills — always direct)
 
 ### Step 2A: If Using Skills (Analysis Tasks)
 
@@ -131,9 +131,9 @@ SCAN Skills Catalog:
 | "Use feature-analyzer on branch X"   | `feature-analyzer`                                                   | User explicitly named skill — direct |
 | "Analyze variables in pipelines"     | **ASK:** `job-orchestrator` or `feature-analyzer`                    | User didn't name skill — ask first   |
 | "Decompose issue into tasks"         | **ASK:** `job-orchestrator` or `issue-analyzer`                      | User didn't name skill — ask first   |
-| "Review my code changes"             | **ASK:** `job-orchestrator` or `feature-analyzer`                    | User didn't name skill — ask first   |
+| "Review my code changes"             | **ASK:** `job-orchestrator` or `review-orchestrator`                 | User didn't name skill — ask first   |
 | "Full review", "Полное ревью"        | `job-orchestrator`                                                   | Implies orchestration — go directly  |
-| "Analyze PR comments"                | `pr-review-comments`                                                 | Specialized domain skill — direct    |
+| "Analyze PR comments"                | `review-pr-feedback`                                                 | Specialized domain skill — direct    |
 | "Add PR description", "Document PR"  | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 | "Create issue for PR changes"        | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 
@@ -184,8 +184,8 @@ Reference guidelines for coding standards and workflows:
 
 **Review & Testing:**
 
-- `core/code-review-ai-assistant.mdc`: Default AI code review baseline.
-- `core/code-review-boss-profile.mdc`: boss-style review profile and tone constraints.
+- `core/review-agent-profile.mdc`: Baseline review standards, verdict labels, output structure.
+- `core/review-strict-profile.mdc`: Strict review persona constraints and checklist.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
 - `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
 - `core/tdd-workflow.mdc`: Red-green-refactor cycle, test-first mandate, no-done-without-green invariant. Loaded with `task-implementer` and `tests-creator`.
@@ -232,36 +232,47 @@ Intelligent agents for complex analysis and review tasks:
   - "Study backend changes for frontend implementation"
   - "Cross-repo analysis"
 
-### Code Review Skills
+### Review Skills (review domain)
 
-**`skills/code-ai-review`**
+> **Sub-domain purpose**: Structured code review pipeline with specialized reviewers per concern. `review-orchestrator` routes requests to the right set of subagents and consolidates findings. All reviewers use a unified severity system (blocker/major/minor/info) and STATUS protocol.
 
-- **Purpose**: General AI code review — correctness, type safety, security, performance, error handling
-- **Use When**: "Review code changes", "Check my code", "AI code review"
-- **Key Features**: Focuses on P0 (correctness/security), P1 (architecture), P2 (style); follows `code-review-ai-assistant.mdc`; outputs structured findings with severity/file/line/suggestion
-- **Output**: JSON findings object (blocker/major/minor severities)
-- **Invoked by**: `job-orchestrator` review loop, or directly
+**`skills/review-orchestrator`** ⭐ ENTRY POINT
 
-**`skills/code-boss-review`**
+- **Purpose**: Entry point — routes review request to specialized reviewers, dispatches in parallel, consolidates unified report
+- **Use When**: "review", "code review", "review PR", "review --frontend", "review --architecture", any review request
+- **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--strict` · `--all` · (auto-detect from diff)
+- **Output**: Unified report — `APPROVE | APPROVE_WITH_SUGGESTIONS | REQUEST_CHANGES` + findings by severity
 
-- **Purpose**: Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code
-- **Use When**: "boss review", "b091 review", "logic review", called by `job-orchestrator` review loop
-- **Key Features**: Logic in correct layer, inter-store callbacks must be `private`, no premature optimization; follows `code-review-b091-profile.mdc`
-- **Output**: JSON findings object
+**Subagents (dispatched by orchestrator — can also run standalone):**
 
-**`skills/code-style-review`**
+| Skill | Scope | Severity cap |
+|-------|-------|-------------|
+| `review-logic` | Logic bugs, spec compliance, null-safety, async errors | blocker |
+| `review-architecture` | Layer violations, SOLID, module boundaries, dependency direction | blocker |
+| `review-security-code` | OWASP Top 10, injection, auth gaps, secrets in code | blocker |
+| `review-performance` | N+1, re-renders, memory leaks, blocking calls, bundle size | major |
+| `review-frontend` | React observer, MobX full checklist, MVVM boundaries | blocker |
+| `review-backend` | NestJS patterns, DTO validation, API design, DB patterns | blocker |
+| `review-style` | Naming, dead code, readability, DRY, cyclomatic complexity | major |
+| `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
+| `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
 
-- **Purpose**: Code style and architecture review — TypeScript strictness, MobX patterns, React structure
-- **Use When**: "Style review", "Architecture check", called by `job-orchestrator` review loop
-- **Key Features**: No `any` types, proper MobX observable/action patterns, naming conventions; follows `code-style-patterns.mdc`
-- **Output**: JSON findings object
+**Rules loaded by review skills:**
+- `core/review-agent-profile.mdc` — baseline review standards, verdict labels, output structure
+- `core/review-strict-profile.mdc` — strict persona constraints and checklist
 
-**`skills/code-mobx-store-review`**
+**Review domain routing:**
 
-- **Purpose**: Targeted MobX store review — member ordering, accessibility modifiers, action binding, bidirectional sync
-- **Use When**: Store files modified (`.store.ts`), called by `job-orchestrator` when MobX files detected
-- **Key Features**: Member ordering rules, no `public` keyword, `makeObservable(this)` in constructor, `runInAction` after `await`, bounce protection for bidirectional sync
-- **Output**: JSON findings object
+| Request | Dispatched reviewers |
+|---------|---------------------|
+| `review` / auto | logic + architecture + style + (frontend or backend from diff) |
+| `review --all` | all 8 reviewers |
+| `review --frontend` | logic + frontend + style |
+| `review --backend` | logic + backend + architecture |
+| `review --architecture` | architecture only |
+| `review --security` | security-code only |
+| `review --strict` | strict pass (after others or standalone) |
+| `review PR #N comments` | review-pr-feedback |
 
 ### Implementation & Orchestration Skills
 
@@ -383,12 +394,6 @@ Intelligent agents for complex analysis and review tasks:
 - **Use When**: "/pr", "Create PR", "Open pull request"
 - **Key Features**: Analyzes ALL branch commits; structured body (Summary/Changes/Test plan); auto-pushes if needed
 - **Args**: `--draft`, `--base <branch>`, custom title
-
-**`skills/code-review`**
-- **Purpose**: Comprehensive code review with 4 parallel agents (correctness, security, performance, style)
-- **Use When**: "/code-review", "Full review", "Review PR", "Comprehensive review"
-- **Key Features**: 4 agents run in parallel; unified severity report (CRITICAL/HIGH/MEDIUM/LOW); optional auto-fix for low-severity; can post to GitHub PR
-- **Args**: PR number, `--fix`
 
 **`skills/feature-dev`**
 - **Purpose**: 8-phase feature development — requirements+spec → design → prepare → tests-creator → implement → verify → review → deliver+report
@@ -596,7 +601,7 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 
 **Disambiguation:**
 - "Plan a new feature" → `gproject-orchestrator` (forward-looking spec, NOT autodoc)
-- "Review my code" → `code-review` (quality review, NOT autodoc)
+- "Review my code" → `review-orchestrator` (quality review, NOT autodoc)
 - "autodoc" with no project path → ask for path first, then run
 
 ---
@@ -630,12 +635,6 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 - **Key Features**: Classifies insights into project/global/personal CLAUDE.md; diff preview before applying; avoids duplication
 
 ### PR & Comments Skills
-
-**`skills/pr-review-comments`**
-
-- **Purpose**: Analyze PR review comments
-- **Use When**: "Analyze PR comments", "What did reviewers say?"
-- **Features**: Groups by author, suggests fixes, proposes rule updates
 
 **`skills/pr-issue-documenter`**
 
@@ -716,7 +715,7 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 ❌ **WRONG**: User says "Full review" → launch single review skill
 ✅ **CORRECT**: User says "Full review" → go to `job-orchestrator` directly (implies orchestration)
 
-❌ **WRONG**: User says "Analyze variables in pipelines" → Load code-style-review rule
+❌ **WRONG**: User says "Analyze variables in pipelines" → Load review-style rule
 ✅ **CORRECT**: User says "Analyze variables in pipelines" → ASK: orchestrator or direct? Then load chosen skill
 
 ❌ **WRONG**: Start analyzing current directory without asking for context
