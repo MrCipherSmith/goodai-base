@@ -248,6 +248,98 @@ function cmdStatus() {
   log(`\nPackage location: ${PACKAGE_DIR}\n`);
 }
 
+// ─── Greptile Setup ───────────────────────────────────────────────────────────
+
+async function cmdSetupGreptile() {
+  const { createInterface } = await import("readline");
+  const claudeJsonPath = path.join(HOME, ".claude.json");
+
+  log(`\ngoodai-base v${VERSION} — Greptile setup\n`);
+  log("Greptile adds codebase-aware AI review to the review domain.");
+  log("Free for open-source projects (MIT / Apache / GPL).\n");
+
+  // Step 1: Check existing key
+  const existingKey = process.env.GREPTILE_API_KEY;
+  let claudeJson = null;
+  let existingInClaude = false;
+
+  if (fs.existsSync(claudeJsonPath)) {
+    try {
+      claudeJson = JSON.parse(fs.readFileSync(claudeJsonPath, "utf8"));
+      const existing = claudeJson?.mcpServers?.greptile?.headers?.Authorization;
+      if (existing && existing !== "Bearer ") {
+        existingInClaude = true;
+      }
+    } catch {}
+  }
+
+  if (existingInClaude) {
+    ok("Greptile MCP already configured in ~/.claude.json");
+    if (existingKey) ok(`GREPTILE_API_KEY env var already set`);
+    log("\nGreptile is ready. Use 'review --greptile' or 'review --all' on a PR.\n");
+    return;
+  }
+
+  // Step 2: Get API key
+  if (existingKey) {
+    ok(`Found GREPTILE_API_KEY in environment`);
+  } else {
+    log("Step 1: Get your free API key at https://app.greptile.com/settings/api");
+    log("        (register → Settings → API Keys → New Key)\n");
+  }
+
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const question = (q) => new Promise(resolve => rl.question(q, resolve));
+
+  let apiKey = existingKey || "";
+  if (!apiKey) {
+    apiKey = (await question("Paste your Greptile API key: ")).trim();
+    if (!apiKey) {
+      rl.close();
+      warn("No key provided. Run 'goodai-base setup-greptile' again when ready.\n");
+      return;
+    }
+  }
+  rl.close();
+
+  // Step 3: Write to ~/.claude.json
+  if (!claudeJson) claudeJson = {};
+  if (!claudeJson.mcpServers) claudeJson.mcpServers = {};
+
+  claudeJson.mcpServers.greptile = {
+    type: "http",
+    url: "https://api.greptile.com/mcp",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  };
+
+  fs.writeFileSync(claudeJsonPath, JSON.stringify(claudeJson, null, 2), "utf8");
+  ok(`Greptile MCP → ~/.claude.json`);
+
+  // Step 4: Add env var to shell rc files
+  const rcFiles = [".zshrc", ".bashrc"].map(f => path.join(HOME, f)).filter(fs.existsSync);
+  const exportLine = `\nexport GREPTILE_API_KEY="${apiKey}"  # added by goodai-base`;
+
+  for (const rc of rcFiles) {
+    const content = fs.readFileSync(rc, "utf8");
+    if (!content.includes("GREPTILE_API_KEY")) {
+      fs.appendFileSync(rc, exportLine, "utf8");
+      ok(`GREPTILE_API_KEY → ${rc}`);
+    } else {
+      skip(`GREPTILE_API_KEY already in ${rc}`);
+    }
+  }
+
+  log(`
+Done. Restart Claude Code to activate Greptile MCP.
+
+After restart:
+  review --greptile          # review current PR with Greptile
+  review --all               # includes Greptile when PR is detected
+`);
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
@@ -280,6 +372,9 @@ switch (command) {
   case "status":
     cmdStatus();
     break;
+  case "setup-greptile":
+    await cmdSetupGreptile();
+    break;
   case "--version":
   case "-v":
     console.log(VERSION);
@@ -289,10 +384,11 @@ switch (command) {
 goodai-base v${VERSION}
 
 Usage:
-  npx goodai-base install                      Install to all detected tools
+  npx goodai-base install                        Install to all detected tools
   npx goodai-base install --tools claude,cursor  Install to specific tools
-  npx goodai-base sync                         Re-sync skills (after update)
-  npx goodai-base status                       Show install status
+  npx goodai-base sync                           Re-sync skills (after update)
+  npx goodai-base status                         Show install status
+  npx goodai-base setup-greptile                 Configure Greptile MCP (codebase-aware review)
 
 Tools: claude, cursor, codex, opencode, zed
 `);
