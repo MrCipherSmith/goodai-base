@@ -234,6 +234,29 @@ Always detect the test framework — `tests-creator` and `task-implementer` both
    example_test_file: <path to a representative test>
 ```
 
+### 2.6 Greptile Codebase Context (when available)
+
+Greptile indexes the full repository and stores codebase-level context. If Greptile MCP is available in the session, query it as an additional local source — it can surface cross-file patterns that a manual scan would miss.
+
+```
+1. Try fetching stored custom context:
+   mcp__greptile__get_custom_context({})
+   or
+   mcp__greptile__search_custom_context({ query: "<task_description>" })
+
+2. If Greptile context is returned:
+   - Extract: documented patterns, known exceptions, team conventions
+   - Note: "Source: Greptile codebase index"
+
+3. Check for relevant past review comments (signals about recurring issues):
+   mcp__greptile__search_greptile_comments({ query: "<focus_area>", limit: 5 })
+   - Extract recurring findings → add to "Known Issues / Watch Areas" section
+
+4. If Greptile MCP is not available or returns empty: skip silently, proceed normally.
+```
+
+Greptile context is additive — it supplements local context, never replaces it.
+
 **Output of Phase 2:**
 ```
 LOCAL_CONTEXT:
@@ -242,6 +265,7 @@ LOCAL_CONTEXT:
   applicable_rules:  [{rule, key_conventions: [string]}]
   codebase_patterns: [{area, patterns: [string], example_files: [path]}]
   test_framework:    {framework, import_style, file_pattern, file_location, mock_library, run_command, example_test_file}
+  greptile_context:  {available: bool, patterns: [string], known_issues: [string]}
 ```
 
 ---
