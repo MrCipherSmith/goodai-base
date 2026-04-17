@@ -35,7 +35,7 @@ By separating reviewers, each can apply deep, focused rules without diluting fin
 | `review-style` | Naming conventions, dead code, readability, import order, cyclomatic complexity |
 | `review-clean-code` | Clean Code principles (meaningful names, function size, comments, error handling, DRY) + SOLID at function/class level |
 | `review-highload` | Race conditions, connection pool exhaustion, cache invalidation, lock contention, queue backpressure, retry storms, idempotency, distributed invariants |
-| `review-greptile` | Codebase-aware review via Greptile MCP — cross-file impact, downstream breakage, project-wide pattern violations. Requires PR number. |
+| `review-greptile` | Codebase-aware review via Greptile MCP — cross-file impact, downstream breakage, project-wide pattern violations. Requires PR number. See [greptile-integration.md](greptile-integration.md) |
 | `review-strict` | Meta-pass: re-reads all findings, elevates weak severities, adds direct engineering commentary |
 | `review-pr-feedback` | Analyzes existing human or bot review comments on a GitHub PR; synthesizes actionable items |
 
@@ -169,6 +169,18 @@ blocker: N | major: N | minor: N | info: N
 ## Minor & Info
 ## Positive Notes
 ```
+
+---
+
+## Greptile Integration
+
+`review-greptile` and `context-collector` integrate with Greptile MCP for codebase-aware context. Setup requires a Greptile API key (free for open-source) and one CLI command:
+
+```bash
+npx goodai-base setup-greptile
+```
+
+Full setup and usage guide: [docs/greptile-integration.md](greptile-integration.md)
 
 ---
 

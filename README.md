@@ -34,7 +34,8 @@ Notable examples:
 - **`feature-analyzer`** — Deep cross-repository analysis of feature branches with architectural impact assessment
 - **`issue-analyzer`** — Decomposes a GitHub issue into atomic, implementation-ready tasks for parallel agent execution
 - **`task-implementer`** — Autonomous end-to-end implementation agent: reads the task, researches the codebase, writes code, verifies with lint/tests
-- **`review-orchestrator`** — Routes review requests to specialized subagents (logic, architecture, security, performance, frontend, backend, style, strict) and consolidates findings into one report with unified severity
+- **`review-orchestrator`** — Routes review requests to 12 specialized subagents (logic, architecture, security, performance, frontend, backend, style, clean-code, highload, greptile, strict) and consolidates findings into one report with unified severity. See [review domain docs](docs/review-domain.md)
+- **`review-greptile`** — Codebase-aware review via Greptile MCP: cross-file impact, downstream breakage, project-wide pattern violations. Free for open-source. See [Greptile integration docs](docs/greptile-integration.md)
 - **`feature-dev`** — Full 7-phase feature development: requirements → design → implement → test → review → fix → PR
 - **`hookify`** — Generates Claude Code / Cursor hook configs from natural language descriptions
 
