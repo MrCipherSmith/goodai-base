@@ -35,6 +35,7 @@ By separating reviewers, each can apply deep, focused rules without diluting fin
 | `review-style` | Naming conventions, dead code, readability, import order, cyclomatic complexity |
 | `review-clean-code` | Clean Code principles (meaningful names, function size, comments, error handling, DRY) + SOLID at function/class level |
 | `review-highload` | Race conditions, connection pool exhaustion, cache invalidation, lock contention, queue backpressure, retry storms, idempotency, distributed invariants |
+| `review-greptile` | Codebase-aware review via Greptile MCP — cross-file impact, downstream breakage, project-wide pattern violations. Requires PR number. |
 | `review-strict` | Meta-pass: re-reads all findings, elevates weak severities, adds direct engineering commentary |
 | `review-pr-feedback` | Analyzes existing human or bot review comments on a GitHub PR; synthesizes actionable items |
 
@@ -55,6 +56,7 @@ review --performance       # performance only
 review --style             # style only
 review --clean-code        # clean-code only
 review --highload          # highload only
+review --greptile          # codebase-aware (requires PR number)
 review --strict            # strict meta-pass (standalone or after others)
 review PR #N comments      # analyze existing PR comments
 ```
@@ -221,4 +223,4 @@ Each reviewer has its own Iron Laws. Universal laws across the entire domain:
 
 Planned future reviewers: `review-api` (REST/gRPC/GraphQL contracts), `review-tests` (test quality and coverage), `review-database` (schema design and migration safety), `review-accessibility` (a11y for frontend).
 
-## Skills count: 12 (1 orchestrator + 11 reviewers)
+## Skills count: 13 (1 orchestrator + 12 reviewers)

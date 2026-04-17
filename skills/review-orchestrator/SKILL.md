@@ -22,6 +22,7 @@ triggers:
   - "review --all"
   - "review --clean-code"
   - "review --highload"
+  - "review --greptile"
 metadata:
   author: "MrCipherSmith"
   version: "1.3.0"
@@ -148,7 +149,8 @@ When no flag is provided, infer reviewers from the collected file list:
 | `--style` | `review-style` |
 | `--clean-code` | `review-clean-code` |
 | `--highload` | `review-highload` |
-| `--all` | all reviewers above (including `review-clean-code` and `review-highload`) |
+| `--greptile` | `review-greptile` (codebase-aware; requires PR number) |
+| `--all` | all reviewers above (including `review-clean-code`, `review-highload`, and `review-greptile` when PR number is present) |
 | `--strict` | runs AFTER all others; adds a strict commentary pass on consolidated findings |
 | (auto) | detected from diff file extensions — see Auto-detection table |
 
@@ -191,6 +193,22 @@ FILE_CONTENTS: <full file contents>
 Each reviewer returns findings in the unified format defined in the Output Contract below.
 
 **Important for path mode:** instruct each reviewer to check the **entire file**, not just changes. The scope report should say "Path: `<TARGET_PATH>`" instead of a branch/merge-base.
+
+### Greptile Reviewer
+
+`review-greptile` runs in parallel with the other reviewers **when a PR number is available** (diff mode with a PR). It is excluded in path mode (no PR) unless `--greptile` is explicitly specified.
+
+When dispatching `review-greptile`, pass additionally:
+
+```
+PR_NUMBER:    <pr number>
+REPO:         <owner/repo>
+REMOTE:       github | gitlab
+```
+
+Greptile findings use `G-` prefixed IDs and are merged into the consolidated report under a dedicated section **"## Greptile (Codebase-Aware Findings)"** placed before the Blockers section. If Greptile identified cross-file impact not caught by other reviewers, those appear as additional blockers/majors.
+
+**Auto-include Greptile when:** `--all` flag is used AND a PR number is resolvable from the current branch (`gh pr view` succeeds).
 
 ---
 
