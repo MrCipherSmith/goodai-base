@@ -4,6 +4,26 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.12.0] — Greptile integration + npm package
+
+> Released: 2026-04-17
+
+### Added
+
+- **`skills/review-greptile`** — New codebase-aware reviewer via Greptile MCP. Unlike diff-only reviewers, Greptile indexes the entire repository and detects cross-file impact, downstream breakage, and project-wide pattern violations. Workflow: trigger review → poll for completion → normalize findings to G-NNN format → check custom context for exceptions → emit report. Requires PR number. Free for open-source (MIT/Apache/GPL).
+- **`docs/greptile-integration.md`** — Full integration reference: capability comparison table, setup (CLI and manual), pricing, usage flags, internal workflow, finding format, context-collector integration, troubleshooting table.
+- **`package.json` + `bin/cli.js`** — npm package (`goodai-base`) with Node.js CLI. Commands: `install` (auto-detects tools, copies skills, injects routing blocks), `sync` (re-sync skills after update), `status` (show install state per tool), `setup-greptile` (interactive Greptile API key setup — writes MCP config to `~/.claude.json`, adds env var to shell rc).
+- **`.npmignore`** — Excludes dev files (`scripts/`, `jobs/`, `hooks/`, `setup.ts`) from npm package.
+
+### Changed
+
+- **`skills/review-orchestrator` v1.4.0** — Added `--greptile` flag. `--all` auto-includes Greptile when a PR is resolvable. Greptile runs in parallel with other reviewers. Consolidated report includes a dedicated "Greptile (Codebase-Aware Findings)" section.
+- **`skills/context-collector` v1.2.0** — Added Phase 2.6: queries `mcp__greptile__search_custom_context` and `mcp__greptile__search_greptile_comments` during context collection. Greptile context is additive and silently skipped if MCP unavailable.
+- **`docs/review-domain.md`** — Added Greptile integration section with setup command and link to full doc. Updated reviewer count to 13 (1 orchestrator + 12 reviewers).
+- **`README.md`** — Added `review-greptile` and updated `review-orchestrator` as notable examples with doc links. Skill count: 49.
+
+---
+
 ## [1.11.0] — review-highload + path mode for review
 
 > Released: 2026-04-16
