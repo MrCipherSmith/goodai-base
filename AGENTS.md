@@ -16,8 +16,9 @@ It defines global behavior and tells the agent how to select the required rule f
 | ---------------------------------------------------------- | ---------------------------------- | ---------------------------------------------- |
 | "Implement issue...", "Issue to PR..."                     | **ASK: orchestrator or direct?**   | "Implement issue #4141", "Auto-implement"      |
 | "Analyze...", "Study...", "Investigate..."                 | **ASK: orchestrator or direct?**   | "Analyze branch", "Study pipeline changes"     |
-| "Review code...", "Check style..."                         | **ASK: orchestrator or direct?**   | "Review my code", "Check architecture"         |
-| "Full review", "Full implementation", "Orchestrate..."     | **Job Orchestrator directly**      | "Полное ревью", "Run pipeline"                 |
+| "Review code...", "Check style...", "Review my changes"    | **ASK: orchestrator or direct?**   | "Review my code", "Check architecture"         |
+| "Full review", "Полное ревью", "Review --all", "Review everything" | **`review-orchestrator` directly** | "Full code review", "Полное ревью кода", "review --all" |
+| "Full pipeline", "Issue to PR", "Implement + review"       | **Job Orchestrator directly**      | "Полный пайплайн", "Issue #N to PR"            |
 | Explicit skill name (e.g., "Run feature-analyzer")         | **Invoke named skill directly**    | "Use feature-analyzer", "Run feature-analyzer" |
 | "Add PR description", "Document PR", "Create issue for PR" | **`pr-issue-documenter` directly** | "Describe PR changes", "Update PR and issue"   |
 | "Write PRD", "Plan project", "Create spec", "gproject"     | **ASK: quick PRD or full pipeline?** | `prd-creator` (fast) vs `gproject-orchestrator` (full) |
@@ -86,7 +87,11 @@ Before dispatching to a specific skill, check if the user **explicitly named** a
 IF user explicitly named a skill (e.g., "run review-logic", "use feature-analyzer"):
   → Go directly to Step 2A with that skill. SKIP orchestrator question.
 
-ELSE IF request clearly implies orchestration ("full review", "полное ревью", "issue to PR", "orchestrate"):
+ELSE IF request is "full review" / "полное ревью" / "review --all" / "review everything":
+  → Go directly to review-orchestrator with --all flag. SKIP question.
+  (This is a code review, not an implementation pipeline.)
+
+ELSE IF request clearly implies implementation orchestration ("issue to PR", "implement issue", "full pipeline", "orchestrate implementation"):
   → Go directly to job-orchestrator. SKIP question.
 
 ELSE (user did NOT name a specific skill, e.g., "review my code", "analyze branch"):
@@ -132,7 +137,8 @@ SCAN Skills Catalog:
 | "Analyze variables in pipelines"     | **ASK:** `job-orchestrator` or `feature-analyzer`                    | User didn't name skill — ask first   |
 | "Decompose issue into tasks"         | **ASK:** `job-orchestrator` or `issue-analyzer`                      | User didn't name skill — ask first   |
 | "Review my code changes"             | **ASK:** `job-orchestrator` or `review-orchestrator`                 | User didn't name skill — ask first   |
-| "Full review", "Полное ревью"        | `job-orchestrator`                                                   | Implies orchestration — go directly  |
+| "Full review", "Полное ревью"        | `review-orchestrator --all`                                          | Full code review = all specialized reviewers, NOT job pipeline |
+| "Review --frontend", "Review --all"  | `review-orchestrator` with flag                                      | Explicit review scope — direct       |
 | "Analyze PR comments"                | `review-pr-feedback`                                                 | Specialized domain skill — direct    |
 | "Add PR description", "Document PR"  | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 | "Create issue for PR changes"        | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
@@ -236,10 +242,17 @@ Intelligent agents for complex analysis and review tasks:
 
 > **Sub-domain purpose**: Structured code review pipeline with specialized reviewers per concern. `review-orchestrator` routes requests to the right set of subagents and consolidates findings. All reviewers use a unified severity system (blocker/major/minor/info) and STATUS protocol.
 
-**`skills/review-orchestrator`** ⭐ ENTRY POINT
+> ⚠️ **DISAMBIGUATION — review vs. job-orchestrator:**
+> - "review", "review my code", "full review", "полное ревью", "review --all" → **`review-orchestrator`** (code quality review domain)
+> - "implement + review + PR", "issue to PR", "full pipeline" → **`job-orchestrator`** (implementation pipeline that includes a review step)
+> When in doubt about whether user wants a code review or a full implementation pipeline — ASK.
+
+**`skills/review-orchestrator`** ⭐ ENTRY POINT FOR ALL REVIEW REQUESTS
 
 - **Purpose**: Entry point — routes review request to specialized reviewers, dispatches in parallel, consolidates unified report
-- **Use When**: "review", "code review", "review PR", "review --frontend", "review --architecture", any review request
+- **Use When**: "review", "code review", "review PR", "full review", "полное ревью", "review --frontend", "review --all", any code review request
+- **Auto-detects scope** from diff file extensions when no flag is given
+- **Path mode**: "review the UserStore", "review src/pipelines/" — reviews full file contents, not just diff
 - **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--strict` · `--all` · (auto-detect from diff)
 - **Output**: Unified report — `APPROVE | APPROVE_WITH_SUGGESTIONS | REQUEST_CHANGES` + findings by severity
 
