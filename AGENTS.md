@@ -104,7 +104,7 @@ ELSE (user did NOT name a specific skill, e.g., "review my code", "analyze branc
 ```
 
 **Orchestratable intents:** `implement`, `analyze`, `review`
-**Non-orchestratable:** `review-pr-feedback`, `pr-issue-documenter` (specialized domain skills — always direct)
+**Non-orchestratable:** `iago`, `review-pr-feedback`, `pr-issue-documenter` (specialized domain skills — always direct)
 
 ### Step 2A: If Using Skills (Analysis Tasks)
 
@@ -140,6 +140,7 @@ SCAN Skills Catalog:
 | "Full review", "Полное ревью"        | `review-orchestrator --all`                                          | Full code review = all specialized reviewers, NOT job pipeline |
 | "Review --frontend", "Review --all"  | `review-orchestrator` with flag                                      | Explicit review scope — direct       |
 | "Analyze PR comments"                | `review-pr-feedback`                                                 | Specialized domain skill — direct    |
+| "iago", "/iago", "add PR diagram"    | `iago`                                                               | Specialized visualization skill — direct |
 | "Add PR description", "Document PR"  | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 | "Create issue for PR changes"        | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 
@@ -670,6 +671,11 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 - **Key Features**: Classifies insights into project/global/personal CLAUDE.md; diff preview before applying; avoids duplication
 
 ### PR & Comments Skills
+
+**`skills/iago`**
+- **Purpose**: Generate or update an idempotent Mermaid diagram block for PR review context
+- **Use When**: "iago", "/iago", "/squawk", "generate PR diagram", "add Mermaid diagram to PR"
+- **Key Features**: Reads PR diff, chooses flow/sequence/class/ER diagram, outputs locally by default, and publishes with `gh` CLI only when explicitly requested
 
 **`skills/pr-issue-documenter`**
 
