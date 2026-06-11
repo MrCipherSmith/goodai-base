@@ -97,7 +97,7 @@ ELSE (user did NOT name a specific skill, e.g., "review my code", "analyze branc
 ```
 
 **Orchestratable intents:** `implement`, `analyze`, `review`
-**Non-orchestratable:** `pr-review-comments`, `pr-issue-documenter` (specialized domain skills — always direct)
+**Non-orchestratable:** `iago`, `pr-review-comments`, `pr-issue-documenter` (specialized domain skills — always direct)
 
 ### Step 2A: If Using Skills (Analysis Tasks)
 
@@ -295,6 +295,11 @@ Intelligent agents for complex analysis and review tasks:
 - **Output**: JSON result with status, files_modified, files_created, commits, lint_result, type_check_result, test_result, acceptance_criteria_met
 
 ### PR & Comments Skills
+
+**`skills/iago`**
+- **Purpose**: Generate or update an idempotent Mermaid diagram block for PR review context
+- **Use When**: "iago", "/iago", "/squawk", "generate PR diagram", "add Mermaid diagram to PR"
+- **Key Features**: Reads PR diff, chooses flow/sequence/class/ER diagram, outputs locally by default, and publishes with `gh` CLI only when explicitly requested
 
 **`skills/pr-review-comments`**
 - **Purpose**: Analyze PR review comments
