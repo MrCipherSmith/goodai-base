@@ -104,7 +104,7 @@ ELSE (user did NOT name a specific skill, e.g., "review my code", "analyze branc
 ```
 
 **Orchestratable intents:** `implement`, `analyze`, `review`
-**Non-orchestratable:** `review-pr-feedback`, `pr-issue-documenter` (specialized domain skills — always direct)
+**Non-orchestratable:** `iago`, `review-pr-feedback`, `pr-issue-documenter` (specialized domain skills — always direct)
 
 ### Step 2A: If Using Skills (Analysis Tasks)
 
@@ -140,6 +140,7 @@ SCAN Skills Catalog:
 | "Full review", "Полное ревью"        | `review-orchestrator --all`                                          | Full code review = all specialized reviewers, NOT job pipeline |
 | "Review --frontend", "Review --all"  | `review-orchestrator` with flag                                      | Explicit review scope — direct       |
 | "Analyze PR comments"                | `review-pr-feedback`                                                 | Specialized domain skill — direct    |
+| "iago", "/iago", "add PR diagram"    | `iago`                                                               | Specialized visualization skill — direct |
 | "Add PR description", "Document PR"  | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 | "Create issue for PR changes"        | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 
@@ -270,6 +271,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review-clean-code` | Clean Code principles (names, functions, comments, error handling) + SOLID at code level | major |
 | `review-highload` | Race conditions, connection pools, caching, DB lock contention, queues, retries, idempotency, distributed invariants | blocker |
 | `review-greptile` | Codebase-aware review via Greptile MCP — cross-file impact, downstream breakage, project-wide pattern violations. Requires PR number. | blocker |
+| `iago` | Generates or updates an idempotent Mermaid diagram block for PR review context. Uses `gh` CLI for publishing when explicitly requested. | — |
 | `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
 | `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
 
@@ -290,6 +292,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review --clean-code` | clean-code only |
 | `review --highload` | highload only |
 | `review --greptile` | greptile only (requires PR number) |
+| `iago` / `/iago` / `/squawk` | iago only (Mermaid PR diagram) |
 | `review --strict` | strict pass (after others or standalone) |
 | `review PR #N comments` | review-pr-feedback |
 
@@ -654,6 +657,11 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 - **Key Features**: Classifies insights into project/global/personal CLAUDE.md; diff preview before applying; avoids duplication
 
 ### PR & Comments Skills
+
+**`skills/iago`**
+- **Purpose**: Generate or update an idempotent Mermaid diagram block for PR review context
+- **Use When**: "iago", "/iago", "/squawk", "generate PR diagram", "add Mermaid diagram to PR"
+- **Key Features**: Reads PR diff, chooses flow/sequence/class/ER diagram, outputs locally by default, and publishes with `gh` CLI only when explicitly requested
 
 **`skills/pr-issue-documenter`**
 
