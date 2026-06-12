@@ -225,3 +225,10 @@ Read the context doc before reviewing. It may contain known exceptions or intent
 | "I'll skip polling and just return pending" | Always poll at least 3 times before giving up — async reviews take time |
 | "The custom context says this is fine, so I'll suppress the finding entirely" | Document the exception as `info`, don't silently drop the finding |
 | "Greptile's severity maps directly to domain severity" | Always re-evaluate — Greptile's "warning" may be a `blocker` given the codebase context |
+
+
+## Orchestrated Review Contract
+
+When dispatched by `review-orchestrator`, follow the provided `reviewer-input.schema.json` payload. Return a `REVIEW_RESULT` object compatible with `skills/review-orchestrator/reviewer-finding.schema.json`, then a concise markdown summary. Keep findings evidence-based, include concrete `suggested_fix` for every blocker/major, and return `NEEDS_CONTEXT` instead of guessing when required context is missing.
+
+---

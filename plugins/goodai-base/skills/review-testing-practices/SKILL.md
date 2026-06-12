@@ -85,6 +85,12 @@ If the repository has local test documentation, cite the relevant convention in 
 
 ---
 
+## Orchestrated Review Contract
+
+When dispatched by `review-orchestrator`, follow the provided `reviewer-input.schema.json` payload. Return a `REVIEW_RESULT` object compatible with `skills/review-orchestrator/reviewer-finding.schema.json`, then a concise markdown summary. Keep findings evidence-based, include concrete `suggested_fix` for every blocker/major, and return `NEEDS_CONTEXT` instead of guessing when required context is missing.
+
+---
+
 ## Finding Format
 
 ```markdown

@@ -563,9 +563,9 @@ git -C <project_dir> fetch origin <base_branch>
 git -C <project_dir> worktree add ../<branch-slug> -b feature/<branch-slug> origin/<base_branch>
 
 # Example:
-# Project dir: /Users/user/Presight/Vantage/<PROJECT>
+# Project dir: /Users/user/projects/<PROJECT>
 # git -C ... worktree add ../pipeline-validation -b feature/pipeline-validation origin/develop-2
-# Result worktree: /Users/user/Presight/Vantage/pipeline-validation
+# Result worktree: /Users/user/projects/pipeline-validation
 # Result branch:   feature/pipeline-validation
 
 # Auto-detect package manager and install dependencies
@@ -867,6 +867,14 @@ If `review-orchestrator` exists in the skill catalog, dispatch it with the selec
 instead of manually launching individual reviewers. Pass selected convention reviewer flags:
 `--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`,
 and/or `--flow-graph`.
+
+Pass review orchestration controls:
+```
+context_mode: <review_context_mode automation setting; default "light", ask "full" for high-risk PRs>
+token_budget: <review_token_budget automation setting or computed scope budget>
+model_strategy: <review_model_strategy automation setting; default "current">
+output: unified report with findings, review_context, token_policy, and model metadata
+```
 
 **Collect and merge findings:**
 ```

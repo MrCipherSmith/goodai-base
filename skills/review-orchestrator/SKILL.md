@@ -7,7 +7,7 @@ description: |
   "review --strict", "review --project-conventions", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.4.0"
+version: "1.5.0"
 triggers:
   - "review"
   - "code review"
@@ -30,7 +30,7 @@ triggers:
   - "review --flow-graph"
 metadata:
   author: "MrCipherSmith"
-  version: "1.4.0"
+  version: "1.5.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -48,15 +48,17 @@ unified report sorted by severity. It does not perform any review logic itself.
 
 ```
 Review Orchestrator Progress:
-- [ ] Step 1: Read Job Context (if provided)
+- [ ] Step 1: Build Review Context Pack (PR metadata, scope, rules, context_doc summary)
 - [ ] Step 2: Detect review mode (diff mode vs. path mode)
-- [ ] Step 3: Collect scope — git diff OR file list from path
+- [ ] Step 3: Collect bounded scope - git diff OR file list from path
 - [ ] Step 4: Parse flags / auto-detect domain from scope
 - [ ] Step 5: Ask user to confirm optional convention reviewers
-- [ ] Step 6: Stage 1 gate — spec compliance check (if issue/task provided)
-- [ ] Step 7: Dispatch selected reviewers in PARALLEL
-- [ ] Step 8: Collect and consolidate all findings
-- [ ] Step 9: Sort by severity, deduplicate, emit unified report
+- [ ] Step 6: Plan sub-agent dispatch, token budgets, and model strategy
+- [ ] Step 7: Stage 1 gate - spec compliance check (if issue/task provided)
+- [ ] Step 8: Dispatch selected reviewers in PARALLEL with reviewer-input schema
+- [ ] Step 9: Collect reviewer-finding schema results and handle NEEDS_CONTEXT
+- [ ] Step 10: Run strict synthesis when blockers/majors exist or --strict is set
+- [ ] Step 11: Sort by severity, deduplicate, emit unified report
 ```
 
 ---
@@ -70,6 +72,89 @@ Review Orchestrator Progress:
 | `commit_range` | string | no | Explicit commit hash or range (e.g., `abc123..HEAD`). Overrides merge-base detection. Ignored in path mode. |
 | `issue_url` | string | no | GitHub issue or task URL. If provided, Stage 1 gate checks spec compliance before dispatching reviewers. |
 | `context_doc` | string | no | Path to job context document (e.g., `~/goodai-base/jobs/<job>/ai/context.md`). |
+| `context_mode` | string | no | `none`, `light`, or `full`. Default: `light` for PR review, `none` for small path reviews. `full` may call `context-collector` before dispatch. |
+| `token_budget` | object | no | Optional budget controls: `{total, per_reviewer, diff_max_chars, file_max_chars}`. |
+| `model_strategy` | string | no | `current`, `ask`, or `adaptive`. Default: `current`; do not switch models unless user or automation allows it. |
+
+---
+
+## Review Context Pack
+
+Before routing reviewers, build a compact `review_context` object. This is the shared source of truth for all sub-agents and must follow `skills/review-orchestrator/review-context.schema.json`.
+
+Required content:
+- Request: raw user request, flags, review mode, explicit paths or commit range.
+- Git/PR metadata: repo, branch, base, head, merge-base, PR number/URL when available.
+- Scope summary: changed files grouped by domain, high-risk files, generated/ignored files.
+- Requirements: issue URL, linked task docs, acceptance criteria extracted from `context_doc` when available.
+- Rules: matched repository rules and convention docs by path.
+- Decisions: why each reviewer was selected or skipped.
+- Token policy: effective budget, truncation decisions, files summarized instead of fully inlined.
+
+Context modes:
+- `none`: no additional context collection; use only diff/path and local rules.
+- `light`: default for PR review. Read existing `context_doc`, local `AGENTS.md`/`CLAUDE.md`, and matching rule files. Do not browse external docs.
+- `full`: for large/high-risk PRs or user request. Invoke `context-collector` first, then pass the resulting context path and summary to reviewers.
+
+High-risk triggers for `full` recommendation:
+- Auth, permissions, API contracts, migrations, shared core, state management, graph/flow, security, performance-critical paths.
+- More than 20 changed source files or more than 2,000 changed lines.
+- Missing or ambiguous linked requirements.
+
+If `full` context would be useful but was not explicitly requested, ask once:
+
+```text
+This PR touches high-risk areas. Build full review context before dispatching reviewers?
+
+  A) Yes - collect full context first (recommended)
+  B) No - use light context and continue
+
+> pick a letter (default: A)
+```
+
+---
+
+## Token and Context Budget Management
+
+The orchestrator owns token budget. Sub-reviewers should receive only the context needed for their domain.
+
+Budget rules:
+- Compute a scope digest before dispatch: file list, diff stats, module map, and top risks.
+- Send full diffs only for files relevant to each reviewer.
+- For large files, send changed hunks plus nearby symbols first; include full file only when path mode or the reviewer requires whole-file context.
+- Never send generated files, lockfiles, snapshots, build output, or vendored code unless the reviewer is specifically about that file type.
+- Cap each reviewer prompt with `per_reviewer` budget when provided; otherwise use the smallest prompt that preserves evidence.
+- Record omitted files and truncation in `review_context.token_policy.omissions`.
+- If a reviewer returns `NEEDS_CONTEXT`, provide only the missing targeted context, not the entire repository.
+
+Default budget guidance:
+
+| Review size | Detection | Context mode | Dispatch style |
+|---|---|---|---|
+| small | <= 5 files and <= 300 changed lines | `light` | full relevant diff to selected reviewers |
+| medium | <= 20 files or <= 2,000 changed lines | `light` | per-domain filtered diff |
+| large | > 20 files or > 2,000 changed lines | ask `full` | staged waves by domain |
+| high-risk | auth/API/core/security/data migrations | ask `full` | include strict synthesis |
+
+---
+
+## Model Strategy
+
+Default: keep the current model for all reviewers.
+
+If the platform supports assigning models to sub-agents and the user/automation allows it, the orchestrator may use `model_strategy: adaptive`:
+
+| Complexity | Suggested model class | Reviewers |
+|---|---|---|
+| simple | cheaper/faster coding model | `review-style`, `review-clean-code`, docs-only convention checks |
+| normal | current/default model | `review-frontend`, `review-backend`, `review-testing-practices`, convention reviewers |
+| complex | strongest available coding/reasoning model | `review-logic`, `review-architecture`, `review-security-code`, `review-highload`, `review-greptile`, strict synthesis |
+
+Rules:
+- Do not silently change model class when `model_strategy` is `current`.
+- With `model_strategy: ask`, present the model plan once before dispatch.
+- With `model_strategy: adaptive`, record chosen model class per reviewer in the final report metadata.
+- If model assignment is unsupported, record `model_strategy: current-session`.
 
 ---
 
@@ -226,24 +311,36 @@ local frontend conventions reviewer.
 
 ## Dispatching Reviewers
 
-Dispatch all selected reviewers **in parallel**. Pass to each sub-reviewer:
+Dispatch selected reviewers in parallel when independent. Use waves when token budget is tight or when one reviewer needs another result:
 
+1. Wave A - core correctness/risk reviewers: logic, architecture, security/highload when selected.
+2. Wave B - domain reviewers: frontend/backend/testing/convention reviewers filtered to relevant files.
+3. Wave C - synthesis: strict pass when blockers/majors exist, `--strict` is set, or PR is high-risk.
+
+Pass each sub-reviewer a payload matching `skills/review-orchestrator/reviewer-input.schema.json`:
+
+```yaml
+review_context: <bounded context pack>
+reviewer: <skill-name>
+scope_mode: diff | path
+context_doc: <path or empty>
+issue_url: <url or empty>
+model_class: simple | normal | complex | current-session
+budget:
+  max_prompt_tokens: <number or null>
+  max_findings: <number>
+
+# If scope_mode = diff:
+branch: <branch>
+base_sha: <base sha>
+diff: <filtered diff relevant to this reviewer>
+
+# If scope_mode = path:
+target_path: <resolved path or file list>
+file_contents: <bounded file contents relevant to this reviewer>
 ```
-SCOPE_MODE:    diff | path
-CONTEXT_DOC:   <path or empty>
-ISSUE_URL:     <url or empty>
 
-# If SCOPE_MODE = diff:
-BRANCH:        <branch>
-BASE_SHA:      <base sha>
-DIFF:          <git diff output>
-
-# If SCOPE_MODE = path:
-TARGET_PATH:   <resolved path or file list>
-FILE_CONTENTS: <full file contents>
-```
-
-Each reviewer returns findings in the unified format defined in the Output Contract below.
+Each reviewer must return a `REVIEW_RESULT` object matching `skills/review-orchestrator/reviewer-finding.schema.json`, followed by a concise markdown summary. The orchestrator must reject or normalize free-form reports before consolidation.
 
 **Important for path mode:** instruct each reviewer to check the **entire file**, not just changes. The scope report should say "Path: `<TARGET_PATH>`" instead of a branch/merge-base.
 
@@ -282,6 +379,19 @@ Greptile findings use `G-` prefixed IDs and are merged into the consolidated rep
 | Test / e2e conventions | NO | `review-testing-practices` |
 | Shared core boundary rules | NO | `review-core-boundaries` |
 | Shared flow/graph abstraction contracts | NO | `review-flow-graph` |
+
+---
+
+## Sub-Agent Report Quality Gate
+
+Before consolidation, validate every reviewer result:
+- Required status: `DONE`, `DONE_WITH_CONCERNS`, `NEEDS_CONTEXT`, or `BLOCKED`.
+- Required finding fields: id, severity, file, line (nullable only for repo-wide findings), problem, impact, suggested_fix, evidence, confidence, reviewer.
+- Every blocker must include evidence and a concrete suggested fix.
+- Findings without evidence are downgraded to `info` or returned to the reviewer for clarification.
+- Duplicate findings are merged by `dedupe_key` or by `(file, line, problem)`.
+- `NEEDS_CONTEXT` triggers one targeted context refill. If still unresolved, keep it as an explicit open question, not as a blocker.
+- If a reviewer exceeds `max_findings`, keep blockers/majors first and summarize lower severity findings.
 
 ---
 
@@ -334,6 +444,9 @@ STATUS: DONE | DONE_WITH_CONCERNS
 - Scope mode: `<default-with-uncommitted | explicit-hash-range>`
 - Reviewers dispatched: <comma-separated list>
 - Changed files: <count>
+- Context mode: `<none | light | full>`
+- Model strategy: `<current | ask | adaptive | current-session>`
+- Token budget: `<used/limit if known; omissions count>`
 
 ## Stats
 - blocker: N
