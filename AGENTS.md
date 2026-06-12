@@ -253,7 +253,8 @@ Intelligent agents for complex analysis and review tasks:
 - **Use When**: "review", "code review", "review PR", "full review", "полное ревью", "review --frontend", "review --all", any code review request
 - **Auto-detects scope** from diff file extensions when no flag is given
 - **Path mode**: "review the UserStore", "review src/pipelines/" — reviews full file contents, not just diff
-- **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--strict` · `--all` · (auto-detect from diff)
+- **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--project-conventions` · `--frontend-conventions` · `--testing-practices` · `--core-boundaries` · `--flow-graph` · `--strict` · `--all` · (auto-detect from diff)
+- **Convention reviewer prompt**: when local convention reviewers are auto-detected and not explicitly requested, ask whether to include all, choose individually, or skip them
 - **Output**: Unified report — `APPROVE | APPROVE_WITH_SUGGESTIONS | REQUEST_CHANGES` + findings by severity
 
 **Subagents (dispatched by orchestrator — can also run standalone):**
@@ -270,6 +271,11 @@ Intelligent agents for complex analysis and review tasks:
 | `review-clean-code` | Clean Code principles (names, functions, comments, error handling) + SOLID at code level | major |
 | `review-highload` | Race conditions, connection pools, caching, DB lock contention, queues, retries, idempotency, distributed invariants | blocker |
 | `review-greptile` | Codebase-aware review via Greptile MCP — cross-file impact, downstream breakage, project-wide pattern violations. Requires PR number. | blocker |
+| `review-frontend-conventions` | Repository-local frontend conventions: React/MobX/i18n/storage/errors/storybook/tooling | blocker |
+| `review-testing-practices` | Repository-local unit/integration/MSW/Storybook/e2e testing discipline | blocker |
+| `review-core-boundaries` | Shared core/infrastructure boundaries, dependency direction, and stability rules | major |
+| `review-flow-graph` | Shared ReactFlow/graph abstraction contracts, lifecycle, and large-graph performance | major |
+| `iago` | Generates or updates an idempotent Mermaid diagram block for PR review context. Uses `gh` CLI for publishing when explicitly requested. | — |
 | `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
 | `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
 
@@ -281,8 +287,8 @@ Intelligent agents for complex analysis and review tasks:
 
 | Request | Dispatched reviewers |
 |---------|---------------------|
-| `review` / auto | logic + architecture + style + (frontend or backend from diff) |
-| `review --all` | all 9 reviewers |
+| `review` / auto | logic + architecture + style + (frontend or backend from diff) + matching convention reviewers when local convention docs are detected |
+| `review --all` | all generic reviewers + project convention reviewers when local convention docs exist |
 | `review --frontend` | logic + frontend + style |
 | `review --backend` | logic + backend + architecture |
 | `review --architecture` | architecture only |
@@ -290,8 +296,18 @@ Intelligent agents for complex analysis and review tasks:
 | `review --clean-code` | clean-code only |
 | `review --highload` | highload only |
 | `review --greptile` | greptile only (requires PR number) |
+| `review --project-conventions` | all generic project-convention reviewers |
+| `review --frontend-conventions` | local frontend conventions only |
+| `review --testing-practices` | local testing/e2e conventions only |
+| `review --core-boundaries` | shared core boundary review only |
+| `review --flow-graph` | shared flow/graph abstraction review only |
+| `iago` / `/iago` / `/squawk` | iago only (Mermaid PR diagram) |
 | `review --strict` | strict pass (after others or standalone) |
 | `review PR #N comments` | review-pr-feedback |
+
+When `job-orchestrator` reaches its review phase, it must also ask which optional convention
+reviewers to include (`all`, `choose individually`, or `skip`) unless `convention_reviewers` is
+already set in automation settings.
 
 ### Implementation & Orchestration Skills
 
