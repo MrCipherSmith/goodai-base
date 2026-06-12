@@ -795,8 +795,29 @@ How should I review the implementation?
 > pick a letter (default: A)
 ```
 
+Then ask which optional convention reviewers to include when local convention docs or matching
+paths are present:
+
+```
+Which project-convention reviewers should I include?
+
+  A) Include all detected convention reviewers (recommended)
+  B) Choose individually
+  C) Skip convention reviewers
+
+Detected reviewers:
+  - review-frontend-conventions: frontend files / stories / local frontend guide
+  - review-testing-practices: tests, stories, MSW, or e2e files
+  - review-core-boundaries: shared core/infrastructure files
+  - review-flow-graph: shared graph/flow abstraction files
+```
+
+Only show detected reviewers. If the user chooses B, ask for the exact skill names to include or
+exclude, then persist the choice in job state as `convention_reviewers`.
+
 **Auto-select** (skip this question) when:
 - `review_mode` is explicitly set in automation settings → use that
+- `convention_reviewers` is explicitly set in automation settings → use that for optional convention reviewers
 - User already chose at Post-Implementation Checkpoint (2.5.1 option A) → use default (A)
 - Time pressure (total_job_timeout close) → use A (fastest)
 
@@ -824,6 +845,10 @@ Determine and **dispatch all reviewers simultaneously** (not sequentially):
 | `code-boss-review` | Always | Parallel |
 | `code-style-review` | Always | Parallel |
 | `code-mobx-store-review` | Only if `*.store.ts` modified | Parallel |
+| `review-frontend-conventions` | If selected and frontend files/local frontend docs match | Parallel |
+| `review-testing-practices` | If selected and tests/stories/e2e files match | Parallel |
+| `review-core-boundaries` | If selected and shared core files match | Parallel |
+| `review-flow-graph` | If selected and shared graph/flow files match | Parallel |
 
 ```
 # Launch ALL applicable reviewers in a SINGLE turn (parallel):
@@ -831,9 +856,17 @@ Agent 1: code-ai-review (correctness, security)
 Agent 2: code-boss-review (architecture, logic)
 Agent 3: code-style-review (naming, patterns)
 Agent 4: code-mobx-store-review (if applicable)
+Agent 5+: selected convention reviewers (if applicable)
 
 # Wait for all to complete, then merge results
 ```
+
+**Review-orchestrator mode (preferred when available):**
+
+If `review-orchestrator` exists in the skill catalog, dispatch it with the selected review flags
+instead of manually launching individual reviewers. Pass selected convention reviewer flags:
+`--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`,
+and/or `--flow-graph`.
 
 **Collect and merge findings:**
 ```
@@ -1373,6 +1406,7 @@ The subagent must not fetch orchestrator state independently. If the subagent ne
 | `review_mode` | `"code-review"` | `"code-review"` / `"individual"` | Use 4-agent parallel or individual reviewers |
 | `reviewers` | `["code-ai-review", "code-boss-review", "code-style-review"]` | skill names | Individual reviewers (when review_mode=individual) |
 | `conditional_reviewers` | `{"code-mobx-store-review": "*.store.ts"}` | skill→pattern | Conditional reviewers |
+| `convention_reviewers` | `"ask"` | `"ask"` / `"all"` / `"none"` / skill names | Optional convention reviewers to include in review |
 | `run_final_checks` | `true` | true/false | Run lint/type-check/test |
 | `run_interview` | `true` | true/false | Run interview skill in Phase 0 |
 | `dry_run` | `false` | true/false | Plan-only mode: full Phase 0+1, no agent dispatch or git ops |

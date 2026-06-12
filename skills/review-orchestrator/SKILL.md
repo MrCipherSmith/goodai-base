@@ -4,10 +4,10 @@ description: |
   Use when: a code review is requested and the user does not explicitly name a specialized reviewer.
   Handles "review", "code review", "review PR", "review --frontend", "review --backend",
   "review --architecture", "review --security", "review --performance", "review --style",
-  "review --strict", "review --all". Routes to specialized reviewers in parallel and
+  "review --strict", "review --project-conventions", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.3.0"
+version: "1.4.0"
 triggers:
   - "review"
   - "code review"
@@ -23,9 +23,14 @@ triggers:
   - "review --clean-code"
   - "review --highload"
   - "review --greptile"
+  - "review --project-conventions"
+  - "review --frontend-conventions"
+  - "review --testing-practices"
+  - "review --core-boundaries"
+  - "review --flow-graph"
 metadata:
   author: "MrCipherSmith"
-  version: "1.3.0"
+  version: "1.4.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -47,10 +52,11 @@ Review Orchestrator Progress:
 - [ ] Step 2: Detect review mode (diff mode vs. path mode)
 - [ ] Step 3: Collect scope — git diff OR file list from path
 - [ ] Step 4: Parse flags / auto-detect domain from scope
-- [ ] Step 5: Stage 1 gate — spec compliance check (if issue/task provided)
-- [ ] Step 6: Dispatch selected reviewers in PARALLEL
-- [ ] Step 7: Collect and consolidate all findings
-- [ ] Step 8: Sort by severity, deduplicate, emit unified report
+- [ ] Step 5: Ask user to confirm optional convention reviewers
+- [ ] Step 6: Stage 1 gate — spec compliance check (if issue/task provided)
+- [ ] Step 7: Dispatch selected reviewers in PARALLEL
+- [ ] Step 8: Collect and consolidate all findings
+- [ ] Step 9: Sort by severity, deduplicate, emit unified report
 ```
 
 ---
@@ -59,7 +65,7 @@ Review Orchestrator Progress:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--highload`, `--strict`, `--all` |
+| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--highload`, `--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`, `--flow-graph`, `--strict`, `--all` |
 | `path` | string | no | File or directory path to review (e.g., `src/stores/`, `src/components/UserCard.tsx`). Activates **path mode** — reviews the files at this path directly, not a git diff. |
 | `commit_range` | string | no | Explicit commit hash or range (e.g., `abc123..HEAD`). Overrides merge-base detection. Ignored in path mode. |
 | `issue_url` | string | no | GitHub issue or task URL. If provided, Stage 1 gate checks spec compliance before dispatching reviewers. |
@@ -135,6 +141,46 @@ When no flag is provided, infer reviewers from the collected file list:
 | `*.test.*`, `*.spec.*` | any | append `review-logic` (spec compliance focus) |
 | No recognizable extension pattern | fallback | `review-logic` + `review-architecture` |
 
+### Project Convention Auto-Detection
+
+If the repository has local convention docs such as `CLAUDE.md`, `AGENTS.md`,
+`.junie/guidelines.md`, or module-level `CLAUDE.md` files, append these reviewers by path:
+
+| File pattern | Reviewers appended |
+|---|---|
+| `src/**/*.ts`, `src/**/*.tsx`, `*.stories.tsx` | `review-frontend-conventions` |
+| `**/*.test.*`, `**/*.spec.*`, `**/*.integration.test.*`, `**/*.msw.ts`, `src/test/**`, `test/**`, `e2e/**` | `review-testing-practices` |
+| `src/core/**`, `core/**`, `shared/**`, `foundation/**` | `review-core-boundaries` |
+| `src/core/flow/**`, `src/graph/**`, `src/shared/flow/**` | `review-flow-graph` |
+
+These convention reviewers are additive: keep the generic reviewers selected by normal detection,
+then add the matching convention pass. Deduplicate reviewer names before dispatch.
+
+### Convention Reviewer Confirmation
+
+When convention reviewers are auto-detected and the user did not explicitly pass
+`--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`,
+`--flow-graph`, or `--all`, ask before dispatch:
+
+```text
+I found local convention reviewers that match this review scope:
+
+  A) Include all detected convention reviewers (recommended)
+  B) Choose individually
+  C) Skip convention reviewers for this run
+
+Detected:
+  - review-frontend-conventions: <why detected, or omit if not detected>
+  - review-testing-practices: <why detected, or omit if not detected>
+  - review-core-boundaries: <why detected, or omit if not detected>
+  - review-flow-graph: <why detected, or omit if not detected>
+```
+
+If the user chooses B, list only detected reviewers and ask for names to include/exclude.
+If the user does not answer and the review is part of an automated `job-orchestrator` pipeline,
+use the job setting `convention_reviewers` (default: `"ask"`; if still unresolved, include all
+detected reviewers and record that choice in the review scope).
+
 ---
 
 ## Routing Table
@@ -150,12 +196,19 @@ When no flag is provided, infer reviewers from the collected file list:
 | `--clean-code` | `review-clean-code` |
 | `--highload` | `review-highload` |
 | `--greptile` | `review-greptile` (codebase-aware; requires PR number) |
-| `--all` | all reviewers above (including `review-clean-code`, `review-highload`, and `review-greptile` when PR number is present) |
+| `--project-conventions` | all generic convention reviewers: `review-frontend-conventions` + `review-testing-practices` + `review-core-boundaries` + `review-flow-graph` |
+| `--frontend-conventions` | `review-frontend-conventions` |
+| `--testing-practices` | `review-testing-practices` |
+| `--core-boundaries` | `review-core-boundaries` |
+| `--flow-graph` | `review-flow-graph` |
+| `--all` | all reviewers above (including `review-clean-code`, `review-highload`, project convention reviewers when local convention docs exist, and `review-greptile` when PR number is present) |
 | `--strict` | runs AFTER all others; adds a strict commentary pass on consolidated findings |
 | (auto) | detected from diff file extensions — see Auto-detection table |
 
 Multiple flags may be combined. Example: `review --backend --security` dispatches
 `review-logic` + `review-backend` + `review-architecture` + `review-security-code`.
+Example: `review --frontend --frontend-conventions` dispatches the generic frontend set plus the
+local frontend conventions reviewer.
 
 ---
 
@@ -225,6 +278,10 @@ Greptile findings use `G-` prefixed IDs and are merged into the consolidated rep
 | Style / naming / import order | NO | `review-style` |
 | Clean Code principles + SOLID at code level | NO | `review-clean-code` |
 | Concurrency, resource pools, caching, queues, idempotency | NO | `review-highload` |
+| Frontend repository conventions | NO | `review-frontend-conventions` |
+| Test / e2e conventions | NO | `review-testing-practices` |
+| Shared core boundary rules | NO | `review-core-boundaries` |
+| Shared flow/graph abstraction contracts | NO | `review-flow-graph` |
 
 ---
 
