@@ -1,0 +1,37 @@
+{
+  "name": "goodai-review",
+  "version": "1.12.0",
+  "description": "Code review orchestrator and specialized review skills.",
+  "author": {
+    "name": "MrCipherSmith",
+    "url": "https://github.com/MrCipherSmith"
+  },
+  "homepage": "https://github.com/MrCipherSmith/goodai-base",
+  "repository": "https://github.com/MrCipherSmith/goodai-base",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "skills",
+    "ai-agent",
+    "goodai-base"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "goodai Review",
+    "shortDescription": "Code review orchestrator and specialized review skills.",
+    "longDescription": "Code review orchestrator and specialized review skills. Generated from the canonical goodai-base skills and rules.",
+    "developerName": "MrCipherSmith",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Review"
+    ],
+    "websiteURL": "https://github.com/MrCipherSmith/goodai-base",
+    "defaultPrompt": [
+      "Review my current branch.",
+      "Run a frontend-focused review.",
+      "Run a strict architecture review."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://goodai-base/schemas/skill-overrides",
+  "title": "Skill Overrides Manifest",
+  "description": "Per-project overrides for the goodai-base skill evaluator hook. Place at .claude/skill-overrides.json in your project repo.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "disabled": {
+      "type": "array",
+      "description": "List of skill names to suppress from suggestions in this project. Use the skill's name field from skill-registry.json.",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "^[a-z][a-z0-9-]*$",
+        "examples": ["feature-analyzer", "brainstorm"]
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "local_skills": {
+      "type": "array",
+      "description": "Project-specific skills not in goodai-base. Each entry points to a local SKILL.md file that defines the skill's triggers and description.",
+      "items": {
+        "type": "object",
+        "required": ["name", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique skill identifier (kebab-case). Must not conflict with goodai-base skill names.",
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9-]*$",
+            "examples": ["db-seed", "deploy-staging"]
+          },
+          "path": {
+            "type": "string",
+            "description": "Path to the SKILL.md file. Can be relative to the project root or absolute.",
+            "minLength": 1,
+            "examples": [".claude/skills/db-seed/SKILL.md", "/absolute/path/SKILL.md"]
+          }
+        }
+      },
+      "default": []
+    },
+    "extra_context": {
+      "type": "string",
+      "description": "Optional plain-text context string prepended to every skill suggestion block. Use this to add project-specific instructions or reminders that should appear alongside skill suggestions.",
+      "default": "",
+      "examples": [
+        "This project uses bun instead of npm. Prefer bun commands.",
+        "Always check JIRA ticket before implementing."
+      ]
+    }
+  },
+  "examples": [
+    {
+      "disabled": ["brainstorm"],
+      "local_skills": [
+        {
+          "name": "db-seed",
+          "path": ".claude/skills/db-seed/SKILL.md"
+        }
+      ],
+      "extra_context": "This is a NestJS backend project. Check src/modules/ for module structure before implementing."
+    }
+  ]
+}

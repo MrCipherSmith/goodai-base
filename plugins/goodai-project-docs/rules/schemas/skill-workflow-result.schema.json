@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goodai-base.local/schemas/skill-workflow-result.schema.json",
+  "title": "Skill Workflow Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "workflow",
+    "status",
+    "decision",
+    "summary",
+    "missing_inputs",
+    "artifacts",
+    "errors",
+    "timestamp_utc"
+  ],
+  "properties": {
+    "contract_version": {
+      "description": "Schema contract version, semantic versioning.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "workflow": {
+      "description": "Identifier of the skill workflow that produced this result.",
+      "type": "string",
+      "enum": [
+        "skill-create",
+        "skill-update",
+        "skill-sync",
+        "skill-validate"
+      ]
+    },
+    "status": {
+      "description": "Overall execution status of the skill workflow.",
+      "type": "string",
+      "enum": [
+        "needs_input",
+        "ready_for_implementation",
+        "implemented",
+        "blocked",
+        "failed"
+      ]
+    },
+    "decision": {
+      "description": "Next recommended action the orchestrator or user should take.",
+      "type": "string",
+      "enum": [
+        "ask_clarification",
+        "proceed_to_implementation",
+        "proceed_to_sync",
+        "stop"
+      ]
+    },
+    "summary": {
+      "description": "Human-readable summary of what the skill did and its outcome.",
+      "type": "string",
+      "minLength": 1
+    },
+    "missing_inputs": {
+      "description": "List of required inputs that were absent and blocked execution.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "kind",
+          "exists"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["analysis", "plan", "report", "review", "context", "implementation-report", "final-report", "tasks-feature", "gherkin-feature", "code-diff", "custom"],
+            "description": "Type of artifact produced"
+          },
+          "exists": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "title",
+          "detail"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["validation-error", "missing-input", "execution-error", "timeout", "dependency-error", "unknown"],
+            "description": "Error category (URI-style, RFC 7807)"
+          },
+          "title": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "timestamp_utc": {
+      "description": "ISO 8601 UTC timestamp of when the skill workflow completed.",
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

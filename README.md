@@ -10,7 +10,7 @@ Works with Claude Code, Cursor, Codex, Zed, and OpenCode.
 
 ## What's inside
 
-### 49 Skills
+### 54 Skills
 
 Structured, multi-step agent workflows across 10 categories:
 
@@ -39,7 +39,7 @@ Notable examples:
 - **`feature-dev`** — Full 7-phase feature development: requirements → design → implement → test → review → fix → PR
 - **`hookify`** — Generates Claude Code / Cursor hook configs from natural language descriptions
 
-### 17 Rules
+### 29 Rules
 
 Reference standards loaded on demand, not always-on:
 
@@ -107,6 +107,20 @@ Skills and `AGENTS.md` are synced to each tool's directory. Global config (routi
 | Zed | `~/.config/zed/skills/` | `~/.config/zed/AGENTS.md` (auto-synced) |
 | OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/AGENTS.md` (auto-synced) |
 
+### Codex plugins
+
+Codex users can also install opt-in plugin bundles instead of syncing every
+skill globally. The generated marketplace exposes:
+
+- `goodai-base` — all skills and rules in one plugin
+- `goodai-core` — everyday workflow, git, audit, deployment, and utility skills
+- `goodai-review` — review orchestrator and specialized reviewers
+- `goodai-orchestration` — issue analysis, implementation, and verification
+- `goodai-project-docs` — PRD, gproject, and autodoc workflows
+
+See [Codex Plugin Distribution](docs/codex-plugins.md) for generation,
+verification, and marketplace details.
+
 ---
 
 ## How it works
@@ -153,8 +167,10 @@ The single always-on file that acts as a routing table. It tells the agent:
 ├── AGENTS.mdc             # Same with YAML frontmatter (for Cursor alwaysApply)
 ├── rules/
 │   └── core/              # Coding standards, git rules, review profiles (.mdc)
-├── skills/                # Skill definitions (30 skills, multi-platform)
+├── skills/                # Skill definitions (54 skills, multi-platform)
 │   └── shared/            # Shared prompts reused across skills
+├── plugins/               # Generated Codex plugin bundles
+├── .agents/plugins/       # Codex marketplace metadata
 ├── scripts/               # Sync, generation, and validation utilities
 ├── docs/                  # Auto-generated catalogs (skill-catalog.md, rules-catalog.md)
 └── jobs/                  # Per-session job documentation (gitignored)

@@ -1,0 +1,68 @@
+{
+  "name": "goodai-base",
+  "interface": {
+    "displayName": "goodai-base"
+  },
+  "plugins": [
+    {
+      "name": "goodai-base",
+      "source": {
+        "source": "local",
+        "path": "./plugins/goodai-base"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "goodai-core",
+      "source": {
+        "source": "local",
+        "path": "./plugins/goodai-core"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "goodai-review",
+      "source": {
+        "source": "local",
+        "path": "./plugins/goodai-review"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "goodai-orchestration",
+      "source": {
+        "source": "local",
+        "path": "./plugins/goodai-orchestration"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "goodai-project-docs",
+      "source": {
+        "source": "local",
+        "path": "./plugins/goodai-project-docs"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
