@@ -1,0 +1,38 @@
+{
+  "name": "goodai-orchestration",
+  "version": "1.12.0",
+  "description": "Issue analysis, context collection, implementation, and verification workflows.",
+  "author": {
+    "name": "MrCipherSmith",
+    "url": "https://github.com/MrCipherSmith"
+  },
+  "homepage": "https://github.com/MrCipherSmith/goodai-base",
+  "repository": "https://github.com/MrCipherSmith/goodai-base",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "skills",
+    "ai-agent",
+    "goodai-base"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "goodai Orchestration",
+    "shortDescription": "Issue analysis, context collection, implementation, and verification workflows.",
+    "longDescription": "Issue analysis, context collection, implementation, and verification workflows. Generated from the canonical goodai-base skills and rules.",
+    "developerName": "MrCipherSmith",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write",
+      "Review"
+    ],
+    "websiteURL": "https://github.com/MrCipherSmith/goodai-base",
+    "defaultPrompt": [
+      "Implement this issue end to end.",
+      "Analyze this branch for implementation impact.",
+      "Run verification for my changes."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

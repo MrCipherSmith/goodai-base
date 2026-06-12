@@ -1,0 +1,37 @@
+{
+  "name": "goodai-core",
+  "version": "1.12.0",
+  "description": "Everyday workflow, git, audit, deployment, and utility skills.",
+  "author": {
+    "name": "MrCipherSmith",
+    "url": "https://github.com/MrCipherSmith"
+  },
+  "homepage": "https://github.com/MrCipherSmith/goodai-base",
+  "repository": "https://github.com/MrCipherSmith/goodai-base",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "skills",
+    "ai-agent",
+    "goodai-base"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "goodai Core",
+    "shortDescription": "Everyday workflow, git, audit, deployment, and utility skills.",
+    "longDescription": "Everyday workflow, git, audit, deployment, and utility skills. Generated from the canonical goodai-base skills and rules.",
+    "developerName": "MrCipherSmith",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/MrCipherSmith/goodai-base",
+    "defaultPrompt": [
+      "Commit my current changes.",
+      "Create a pull request for this branch.",
+      "Run a security or performance audit."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

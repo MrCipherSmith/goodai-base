@@ -1,0 +1,38 @@
+{
+  "name": "goodai-base",
+  "version": "1.12.0",
+  "description": "All goodai-base skills and rules in one Codex plugin.",
+  "author": {
+    "name": "MrCipherSmith",
+    "url": "https://github.com/MrCipherSmith"
+  },
+  "homepage": "https://github.com/MrCipherSmith/goodai-base",
+  "repository": "https://github.com/MrCipherSmith/goodai-base",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "skills",
+    "ai-agent",
+    "goodai-base"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "goodai-base",
+    "shortDescription": "All goodai-base skills and rules in one Codex plugin.",
+    "longDescription": "All goodai-base skills and rules in one Codex plugin. Generated from the canonical goodai-base skills and rules.",
+    "developerName": "MrCipherSmith",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write",
+      "Review"
+    ],
+    "websiteURL": "https://github.com/MrCipherSmith/goodai-base",
+    "defaultPrompt": [
+      "Use goodai-base to choose the right workflow.",
+      "Review my current branch with goodai-base.",
+      "Plan and implement this issue end to end."
+    ],
+    "brandColor": "#2563EB"
+  }
+}
