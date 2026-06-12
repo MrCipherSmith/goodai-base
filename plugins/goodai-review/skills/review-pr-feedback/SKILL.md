@@ -317,3 +317,10 @@ If provided and the file exists, read it before fetching PR comments. If absent,
 | "I'll skip the 'praise' comments — they're not actionable" | Positive patterns help developers understand what to repeat |
 | "Confidence High for an ambiguous comment" | Low confidence is honest; false confidence leads to wrong fixes |
 | "The diff_hunk gives enough context — I don't need to read the context doc" | Context doc explains intentional patterns that look wrong in isolation |
+
+
+## Orchestrated Review Contract
+
+When dispatched by `review-orchestrator`, follow the provided `reviewer-input.schema.json` payload. Return a `REVIEW_RESULT` object compatible with `skills/review-orchestrator/reviewer-finding.schema.json`, then a concise markdown summary. Keep findings evidence-based, include concrete `suggested_fix` for every blocker/major, and return `NEEDS_CONTEXT` instead of guessing when required context is missing.
+
+---

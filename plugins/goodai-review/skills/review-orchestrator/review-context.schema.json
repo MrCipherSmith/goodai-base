@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "review-context",
+  "title": "Review Context Pack",
+  "type": "object",
+  "required": [
+    "request",
+    "scope",
+    "routing",
+    "token_policy"
+  ],
+  "properties": {
+    "request": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "git": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "pr": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "scope": {
+      "type": "object",
+      "required": [
+        "mode",
+        "files"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "diff",
+            "path"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "changed_lines": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "risk_areas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "routing": {
+      "type": "object",
+      "required": [
+        "selected_reviewers"
+      ],
+      "properties": {
+        "selected_reviewers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skipped_reviewers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reasons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "token_policy": {
+      "type": "object",
+      "required": [
+        "context_mode",
+        "omissions"
+      ],
+      "properties": {
+        "context_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "light",
+            "full"
+          ]
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
