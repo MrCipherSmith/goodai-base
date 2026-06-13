@@ -2,7 +2,7 @@
 
 _Auto-generated from `skills/*/SKILL.md`. Do not edit manually._
 
-Total: 54 skills
+Total: 62 skills
 
 | Name | Description | Version | Category |
 | ---- | ----------- | ------- | -------- |
@@ -15,6 +15,10 @@ Total: 54 skills
 | `brainstorm` | Use when exploring architecture decisions, tech choices, feature ideas, or any open-ended problem... | 1.0.0 | ideation |
 | `changelog` | Use when generating a changelog, release notes, or summarizing what changed between tags, version... | 1.0.0 | workflow |
 | `claude-md-management` | Use when saving session learnings, coding patterns, conventions, or commands discovered during wo... | 1.0.0 | configuration |
+| `code-ai-review` | Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current ... | 1.0.0 | review |
+| `code-b091-review` | Performs strict b091-style code review following code-review-b091-profile.mdc. Reviews current br... | 1.0.0 | review |
+| `code-mobx-store-review` | Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInA... | 1.1.0 | review |
+| `code-style-review` | Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch... | 1.0.0 | review |
 | `code-verifier` | Use when running a full quality gate after implementation — lint, type-check, tests, and import v... | 1.0.0 | verification |
 | `commit` | Use when committing code changes and a well-structured conventional commit message is needed, wit... | 1.0.0 | workflow |
 | `context-collector` | Use when a job needs a unified context document — gathering docs, libraries, and references for s... | 1.1.0 | context |
@@ -49,14 +53,20 @@ mi... | 1.0.0 | review |
 database ... | 1.0.0 | review |
 | `review-clean-code` | Use when: reviewing code against Clean Code principles (Uncle Bob) and SOLID at the
 function/clas... | 1.0.0 | review |
+| `review-core-boundaries` | Use when reviewing shared core/infrastructure module changes for dependency
+direction, feature-bo... | 1.0.0 | review |
+| `review-flow-graph` | Use when reviewing generic ReactFlow or graph-surface abstraction changes:
+public graph surface, ... | 1.0.0 | review |
 | `review-frontend` | Use when a frontend review is requested, checking React component patterns, MobX state management... | 1.1.0 | review |
+| `review-frontend-conventions` | Use when reviewing frontend code against repository-local conventions commonly
+captured in CLAUDE... | 1.0.0 | review |
 | `review-greptile` | Use when: a PR needs codebase-aware review using Greptile — an AI reviewer with full
 repository i... | 1.0.0 | review |
 | `review-highload` | Use when: reviewing code that will run under high concurrency or high traffic —
 race conditions, ... | 1.0.0 | review |
 | `review-logic` | Use when: reviewing code for logic correctness, algorithmic bugs, missing error handling,
 async/a... | 1.0.0 | review |
-| `review-orchestrator` | Use when: a code review is requested and the user does not explicitly name a specialized reviewer... | 1.3.0 | review |
+| `review-orchestrator` | Use when: a code review is requested and the user does not explicitly name a specialized reviewer... | 1.5.0 | review |
 | `review-performance` | Use when a performance review is requested, checking for N+1 queries, unnecessary re-renders, mem... | 1.0.0 | review |
 | `review-pr-feedback` | Use when: a developer has received PR review comments and wants to understand them,
 act on them, ... | 1.0.0 | review |
@@ -65,6 +75,8 @@ act on them, ... | 1.0.0 | review |
 fi... | 1.0.0 | review |
 | `review-style` | Use when: reviewing code for style, naming conventions, readability, and DRY violations —
 without... | 1.0.0 | review |
+| `review-testing-practices` | Use when reviewing unit, integration, Storybook, component, or e2e tests
+against repository-local... | 1.0.0 | review |
 | `security-audit` | Use when checking for dependency vulnerabilities, accidentally committed secrets, or security iss... | 1.0.0 | quality |
 | `task-implementer` | Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing auton... | 1.2.0 | implementation |
 | `test-gen` | Use when unit or integration tests need to be written for a specific file or module. | 1.0.0 | testing |

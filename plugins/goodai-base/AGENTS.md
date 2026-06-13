@@ -193,6 +193,8 @@ Reference guidelines for coding standards and workflows:
 
 - `core/review-agent-profile.mdc`: Baseline review standards, verdict labels, output structure.
 - `core/review-strict-profile.mdc`: Strict review persona constraints and checklist.
+- `core/code-review-ai-assistant.mdc`: Baseline AI code review standards for strict correctness, architecture, safety, and maintainability reviews.
+- `core/code-review-b091-profile.mdc`: b091-style direct, architecture-first review profile.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
 - `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
 - `core/tdd-workflow.mdc`: Red-green-refactor cycle, test-first mandate, no-done-without-green invariant. Loaded with `task-implementer` and `tests-creator`.
@@ -254,8 +256,9 @@ Intelligent agents for complex analysis and review tasks:
 - **Use When**: "review", "code review", "review PR", "full review", "полное ревью", "review --frontend", "review --all", any code review request
 - **Auto-detects scope** from diff file extensions when no flag is given
 - **Path mode**: "review the UserStore", "review src/pipelines/" — reviews full file contents, not just diff
-- **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--project-conventions` · `--frontend-conventions` · `--testing-practices` · `--core-boundaries` · `--flow-graph` · `--strict` · `--all` · (auto-detect from diff)
+- **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--project-conventions` · `--frontend-conventions` · `--testing-practices` · `--core-boundaries` · `--flow-graph` · `--legacy-profiles` · `--code-ai` · `--b091` · `--code-style` · `--mobx-store` · `--strict` · `--all` · (auto-detect from diff)
 - **Convention reviewer prompt**: when local convention reviewers are auto-detected and not explicitly requested, ask whether to include all, choose individually, or skip them
+- **Legacy/profile reviewer prompt**: when profile reviewers are available and not explicitly requested, ask whether to include all applicable, choose individually, or skip them
 - **Output**: Unified report — `APPROVE | APPROVE_WITH_SUGGESTIONS | REQUEST_CHANGES` + findings by severity
 
 **Subagents (dispatched by orchestrator — can also run standalone):**
@@ -279,17 +282,23 @@ Intelligent agents for complex analysis and review tasks:
 | `iago` | Generates or updates an idempotent Mermaid diagram block for PR review context. Uses `gh` CLI for publishing when explicitly requested. | — |
 | `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
 | `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
+| `code-ai-review` | Optional strict AI review profile for correctness, safety, and maintainability | blocker |
+| `code-b091-review` | Optional b091-style strict logic and architecture review profile | blocker |
+| `code-style-review` | Optional legacy style/architecture profile | major |
+| `code-mobx-store-review` | Optional MobX store/state profile, suggested for store files | major |
 
 **Rules loaded by review skills:**
 - `core/review-agent-profile.mdc` — baseline review standards, verdict labels, output structure
 - `core/review-strict-profile.mdc` — strict persona constraints and checklist
+- `core/code-review-ai-assistant.mdc` — strict AI review baseline used by `code-ai-review`
+- `core/code-review-b091-profile.mdc` — b091-style profile used by `code-b091-review`
 
 **Review domain routing:**
 
 | Request | Dispatched reviewers |
 |---------|---------------------|
 | `review` / auto | logic + architecture + style + (frontend or backend from diff) + matching convention reviewers when local convention docs are detected |
-| `review --all` | all generic reviewers + project convention reviewers when local convention docs exist |
+| `review --all` | all generic reviewers + applicable legacy/profile reviewers + project convention reviewers when local convention docs exist |
 | `review --frontend` | logic + frontend + style |
 | `review --backend` | logic + backend + architecture |
 | `review --architecture` | architecture only |
@@ -302,6 +311,11 @@ Intelligent agents for complex analysis and review tasks:
 | `review --testing-practices` | local testing/e2e conventions only |
 | `review --core-boundaries` | shared core boundary review only |
 | `review --flow-graph` | shared flow/graph abstraction review only |
+| `review --legacy-profiles` | code-ai + b091 + code-style + MobX profile when store files are present |
+| `review --code-ai` | code-ai-review only |
+| `review --b091` | code-b091-review only |
+| `review --code-style` | code-style-review only |
+| `review --mobx-store` | code-mobx-store-review only |
 | `iago` / `/iago` / `/squawk` | iago only (Mermaid PR diagram) |
 | `review --strict` | strict pass (after others or standalone) |
 | `review PR #N comments` | review-pr-feedback |

@@ -4,7 +4,7 @@ description: |
   Use when: a code review is requested and the user does not explicitly name a specialized reviewer.
   Handles "review", "code review", "review PR", "review --frontend", "review --backend",
   "review --architecture", "review --security", "review --performance", "review --style",
-  "review --strict", "review --project-conventions", "review --all". Routes to specialized reviewers in parallel and
+  "review --strict", "review --project-conventions", "review --legacy-profiles", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
 version: "1.5.0"
@@ -28,6 +28,11 @@ triggers:
   - "review --testing-practices"
   - "review --core-boundaries"
   - "review --flow-graph"
+  - "review --legacy-profiles"
+  - "review --code-ai"
+  - "review --b091"
+  - "review --code-style"
+  - "review --mobx-store"
 metadata:
   author: "MrCipherSmith"
   version: "1.5.0"
@@ -52,7 +57,7 @@ Review Orchestrator Progress:
 - [ ] Step 2: Detect review mode (diff mode vs. path mode)
 - [ ] Step 3: Collect bounded scope - git diff OR file list from path
 - [ ] Step 4: Parse flags / auto-detect domain from scope
-- [ ] Step 5: Ask user to confirm optional convention reviewers
+- [ ] Step 5: Ask user to confirm optional convention and legacy/profile reviewers
 - [ ] Step 6: Plan sub-agent dispatch, token budgets, and model strategy
 - [ ] Step 7: Stage 1 gate - spec compliance check (if issue/task provided)
 - [ ] Step 8: Dispatch selected reviewers in PARALLEL with reviewer-input schema
@@ -67,7 +72,7 @@ Review Orchestrator Progress:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--highload`, `--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`, `--flow-graph`, `--strict`, `--all` |
+| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--highload`, `--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`, `--flow-graph`, `--legacy-profiles`, `--code-ai`, `--b091`, `--code-style`, `--mobx-store`, `--strict`, `--all` |
 | `path` | string | no | File or directory path to review (e.g., `src/stores/`, `src/components/UserCard.tsx`). Activates **path mode** — reviews the files at this path directly, not a git diff. |
 | `commit_range` | string | no | Explicit commit hash or range (e.g., `abc123..HEAD`). Overrides merge-base detection. Ignored in path mode. |
 | `issue_url` | string | no | GitHub issue or task URL. If provided, Stage 1 gate checks spec compliance before dispatching reviewers. |
@@ -90,6 +95,7 @@ Required content:
 - Rules: matched repository rules and convention docs by path.
 - Decisions: why each reviewer was selected or skipped.
 - Token policy: effective budget, truncation decisions, files summarized instead of fully inlined.
+- Legacy/profile reviewer availability and selection state.
 
 Context modes:
 - `none`: no additional context collection; use only diff/path and local rules.
@@ -146,7 +152,7 @@ If the platform supports assigning models to sub-agents and the user/automation 
 
 | Complexity | Suggested model class | Reviewers |
 |---|---|---|
-| simple | cheaper/faster coding model | `review-style`, `review-clean-code`, docs-only convention checks |
+| simple | cheaper/faster coding model | `review-style`, `review-clean-code`, docs-only convention checks, legacy/profile checks |
 | normal | current/default model | `review-frontend`, `review-backend`, `review-testing-practices`, convention reviewers |
 | complex | strongest available coding/reasoning model | `review-logic`, `review-architecture`, `review-security-code`, `review-highload`, `review-greptile`, strict synthesis |
 
@@ -268,6 +274,55 @@ detected reviewers and record that choice in the review scope).
 
 ---
 
+## Legacy/Profile Reviewer Auto-Detection
+
+Legacy/profile reviewers are specialized review profiles that predate the review-domain `review-*` naming. They are still valid and must be shown separately from generic and convention reviewers so the user can opt in deliberately.
+
+| Trigger | Reviewers appended |
+|---|---|
+| `--legacy-profiles` | `code-ai-review` + `code-b091-review` + `code-style-review` + `code-mobx-store-review` when MobX/store files are present |
+| `--code-ai` | `code-ai-review` |
+| `--b091` | `code-b091-review` |
+| `--code-style` | `code-style-review` |
+| `--mobx-store` | `code-mobx-store-review` |
+| `*.store.ts`, `makeObservable`, `observable`, `computed`, `action.bound` | suggest `code-mobx-store-review` as optional profile reviewer |
+
+When any legacy/profile reviewer is available and the user did not explicitly pass its flag, ask after convention prompts:
+
+```text
+This question controls only optional legacy/profile reviewers. Generic and convention reviewer choices listed above are unchanged.
+
+Include legacy/profile reviewers?
+
+  A) Include all applicable profile reviewers
+  B) Choose individually
+  C) Skip legacy/profile reviewers (recommended unless you need these profiles)
+
+Available:
+  - code-ai-review: strict AI review profile
+  - code-b091-review: b091-style strict logic profile
+  - code-style-review: legacy style/architecture profile
+  - code-mobx-store-review: MobX store/state profile (only if MobX/store files are present)
+```
+
+If the user chooses B, list only applicable reviewers and ask for exact names. If the review is part of `job-orchestrator`, use `reviewers` and `conditional_reviewers` automation settings when provided.
+
+Review Plan Preview must include an `Optional legacy/profile reviewers` group and a `Skipped reviewers` group with reasons such as:
+
+```text
+Optional legacy/profile reviewers:
+  - code-ai-review: available via --code-ai or --legacy-profiles
+  - code-b091-review: available via --b091 or --legacy-profiles
+  - code-style-review: available via --code-style or --legacy-profiles
+  - code-mobx-store-review: auto-suggest when *.store.ts or MobX patterns are present; available via --mobx-store or --legacy-profiles
+
+Skipped reviewers:
+  - code-ai-review: profile reviewer, not selected unless --code-ai/--legacy-profiles
+  - code-b091-review: profile reviewer, not selected unless --b091/--legacy-profiles
+  - code-style-review: legacy style profile, not selected unless --code-style/--legacy-profiles
+  - code-mobx-store-review: not selected unless --mobx-store/--legacy-profiles or MobX store files are detected
+```
+
 ## Routing Table
 
 | Flag | Reviewers dispatched |
@@ -286,7 +341,7 @@ detected reviewers and record that choice in the review scope).
 | `--testing-practices` | `review-testing-practices` |
 | `--core-boundaries` | `review-core-boundaries` |
 | `--flow-graph` | `review-flow-graph` |
-| `--all` | all reviewers above (including `review-clean-code`, `review-highload`, project convention reviewers when local convention docs exist, and `review-greptile` when PR number is present) |
+| `--all` | all reviewers above (including `review-clean-code`, `review-highload`, applicable legacy/profile reviewers, project convention reviewers when local convention docs exist, and `review-greptile` when PR number is present) |
 | `--strict` | runs AFTER all others; adds a strict commentary pass on consolidated findings |
 | (auto) | detected from diff file extensions — see Auto-detection table |
 
@@ -316,6 +371,19 @@ Dispatch selected reviewers in parallel when independent. Use waves when token b
 1. Wave A - core correctness/risk reviewers: logic, architecture, security/highload when selected.
 2. Wave B - domain reviewers: frontend/backend/testing/convention reviewers filtered to relevant files.
 3. Wave C - synthesis: strict pass when blockers/majors exist, `--strict` is set, or PR is high-risk.
+
+### Agent Runtime Compatibility
+
+Before dispatching a reviewer through a platform-native sub-agent mechanism, verify that the exact reviewer name is available as an agent type in the current runtime.
+
+Runtime rules:
+- If the exact reviewer agent type exists, dispatch that reviewer directly.
+- If the exact reviewer agent type does not exist but `skills/<reviewer>/SKILL.md` exists, dispatch `general-purpose` and include the reviewer name, skill path, bounded review context, and required `REVIEW_RESULT` schema in the prompt.
+- If neither the agent type nor the skill file exists, do not silently substitute another reviewer. Mark that reviewer as `BLOCKED`, include the missing agent/skill name, and continue only with independent reviewers.
+- Record the chosen runtime per reviewer in `review_context.review_plan.dispatch_plan`.
+- The user-facing progress line must be explicit: "Running `<reviewer>` via `general-purpose` fallback because native agent type is unavailable."
+
+Do not use vague fallback messages such as "running through available agent types" without naming which reviewers used fallback and why.
 
 Pass each sub-reviewer a payload matching `skills/review-orchestrator/reviewer-input.schema.json`:
 
@@ -379,6 +447,7 @@ Greptile findings use `G-` prefixed IDs and are merged into the consolidated rep
 | Test / e2e conventions | NO | `review-testing-practices` |
 | Shared core boundary rules | NO | `review-core-boundaries` |
 | Shared flow/graph abstraction contracts | NO | `review-flow-graph` |
+| Legacy/profile review profiles | NO | `code-ai-review`, `code-b091-review`, `code-style-review`, `code-mobx-store-review` |
 
 ---
 

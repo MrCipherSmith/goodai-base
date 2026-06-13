@@ -167,6 +167,7 @@ Reference guidelines for coding standards and workflows:
 
 **Review & Testing:**
 - `core/code-review-ai-assistant.mdc`: Default AI code review baseline.
+- `core/code-review-b091-profile.mdc`: b091-style direct, architecture-first review profile.
 - `core/code-review-boss-profile.mdc`: boss-style review profile and tone constraints.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
 - `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
@@ -216,6 +217,13 @@ Intelligent agents for complex analysis and review tasks:
 - **Key Features**: Focuses on P0 (correctness/security), P1 (architecture), P2 (style); follows `code-review-ai-assistant.mdc`; outputs structured findings with severity/file/line/suggestion
 - **Output**: JSON findings object (blocker/major/minor severities)
 - **Invoked by**: `job-orchestrator` review loop, or directly
+
+**`skills/code-b091-review`**
+- **Purpose**: b091-style strict review — direct architecture-first feedback, logic correctness, no duct-tape fixes
+- **Use When**: "b091 review", "Review as b091", "strict b091 validation"
+- **Key Features**: Follows `code-review-b091-profile.mdc`; focuses on layer correctness, single source of truth, unsafe casts, typed tests, and concrete fixes
+- **Output**: Structured findings with severity/file/line/suggestion
+- **Invoked by**: `review-orchestrator` with `--b091` / `--legacy-profiles`, or directly
 
 **`skills/code-boss-review`**
 - **Purpose**: Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code

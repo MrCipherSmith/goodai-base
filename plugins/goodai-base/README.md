@@ -20,6 +20,10 @@ cd scripts && bun run generate-codex-plugins
 - `brainstorm`
 - `changelog`
 - `claude-md-management`
+- `code-ai-review`
+- `code-b091-review`
+- `code-mobx-store-review`
+- `code-style-review`
 - `code-verifier`
 - `commit`
 - `context-collector`

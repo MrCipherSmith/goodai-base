@@ -2,7 +2,7 @@
 
 _Auto-generated from `rules/core/*.mdc`. Do not edit manually._
 
-Total: 26 rules
+Total: 29 rules
 
 | Rule | Description | Area | Always Applied |
 | ---- | ----------- | ---- | -------------- |
@@ -10,7 +10,7 @@ Total: 26 rules
 | `async-patterns` | Async patterns: Promise.all for parallelism, no unhandled rejections, mandatory timeouts for exte... | General | No |
 | `clean-architecture` | Clean Architecture layer rules: dependency direction, layer isolation, no cross-layer leakage. Us... | General | No |
 | `code-review-ai-assistant` | Baseline AI code review standards for correctness, architecture, safety, and maintainability. | Code Review | No |
-| `code-review-boss-profile` | boss-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
+| `code-review-b091-profile` | b091-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
 | `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
 | `commit-message-formatting` | Conventional commit formatting rules. | Git | No |
 | `database-patterns` | Database access patterns: no N+1 queries, indexes before deploy, backward-compatible migrations, ... | General | No |
@@ -18,6 +18,7 @@ Total: 26 rules
 | `error-handling` | Error handling standards: Result pattern, explicit typed errors, no silent failures, no throw-eve... | General | No |
 | `frontend-assistant` | Frontend delivery guidelines for TypeScript, React, MobX, Ant Design, and Tailwind CSS. | Frontend | No |
 | `git-rules` | Git safety rules for protected paths and controlled apply-changes flow. | Git | No |
+| `gproject-contracts` | Dispatch and return contracts for gproject subagents. Extends subagent-context-construction.md wi... | General | No |
 | `implementation-doc-mandate` | Documentation mandate for all implementing agents: spec document at start, change report at end. ... | Planning | No |
 | `implementation-plans` | Rules for creating implementation plans in date-stamped requirement folders. | Planning | No |
 | `jobs-documentation` | Job documentation structure and conventions for <PROJECT_DIR>/jobs (default) or $GOODAI_JOBS_ROOT... | Documentation | No |
@@ -26,6 +27,8 @@ Total: 26 rules
 | `nestjs-dto` | NestJS DTO standards for Swagger decorators, validation, and typing. | Backend / NestJS | No |
 | `playwright-testing` | Playwright E2E testing standards, test structure, and UI verification workflows. | Testing | No |
 | `requirements-management` | Rules for creating and updating requirement documents with multilingual outputs. | Planning | No |
+| `review-agent-profile` | Baseline AI code review standards for correctness, architecture, safety, and maintainability. | General | No |
+| `review-strict-profile` | boss-style review profile: direct, strict, architecture-first feedback with concrete fixes. | General | No |
 | `rule-management-workflow` | Workflow for adding or editing rules in the AGENTS.mdc + rules/core structure. | Meta | No |
 | `security-baseline` | Security baseline: no secrets in code, parameterized queries, input validation at boundaries, dep... | Security | No |
 | `skills-storage-workflow` | Skill authoring, storage, and sync workflow for Cursor, Codex, Zed, and OpenCode. | Skills | No |

@@ -1,6 +1,6 @@
 # Skills Overview
 
-A map of all 32 skills — what they do, how they group, and how they interact.
+A map of all 62 skills — what they do, how they group, and how they interact.
 
 ---
 
@@ -223,6 +223,6 @@ For deeper documentation on the major orchestrators:
 - [`docs/agents/code-verifier.md`](agents/code-verifier.md) — quality gate, severity table, gate logic
 
 See also:
-- [`docs/skill-catalog.md`](skill-catalog.md) — auto-generated table of all 32 skills
+- [`docs/skill-catalog.md`](skill-catalog.md) — auto-generated table of all 62 skills
 - [`docs/rules-catalog.md`](rules-catalog.md) — all engineering rules
 - [`docs/onboarding.md`](onboarding.md) — getting started guide

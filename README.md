@@ -167,7 +167,7 @@ The single always-on file that acts as a routing table. It tells the agent:
 ├── AGENTS.mdc             # Same with YAML frontmatter (for Cursor alwaysApply)
 ├── rules/
 │   └── core/              # Coding standards, git rules, review profiles (.mdc)
-├── skills/                # Skill definitions (54 skills, multi-platform)
+├── skills/                # Skill definitions (62 skills, multi-platform)
 │   └── shared/            # Shared prompts reused across skills
 ├── plugins/               # Generated Codex plugin bundles
 ├── .agents/plugins/       # Codex marketplace metadata
