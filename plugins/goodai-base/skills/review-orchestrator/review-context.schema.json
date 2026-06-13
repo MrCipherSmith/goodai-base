@@ -122,6 +122,57 @@
           "items": {
             "type": "string"
           }
+        },
+        "model_plan": {
+          "type": "object",
+          "description": "Detected model capabilities and chosen strategy for review sub-agents.",
+          "properties": {
+            "detector_ran": {
+              "type": "boolean"
+            },
+            "strategy": {
+              "type": "string",
+              "enum": [
+                "current",
+                "ask",
+                "adaptive",
+                "economy",
+                "per-group",
+                "current-session"
+              ]
+            },
+            "current_model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "complex_model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "normal_model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "simple_model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "user_confirmed_expensive_fanout": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true
