@@ -554,6 +554,171 @@ STATUS: DONE | DONE_WITH_CONCERNS
 
 ---
 
+## PR Review Report Publication
+
+When the review target is a GitHub pull request, ask whether to publish the consolidated review report after the report is generated. A PR target is present when the user provided a PR URL/number, `gh pr view` resolves the current branch, or the caller passes `pr_number` / `pr_url`.
+
+Ask before publishing unless `publish_pr_review_report` was explicitly set by automation settings:
+
+```text
+Publish this review report to the PR?
+
+  A) Concise PR comment only
+  B) Concise PR comment + detailed AI markdown artifact (recommended for follow-up fixes)
+  C) Do not publish
+
+> pick a letter (default: C)
+```
+
+**Automation values:**
+- `publish_pr_review_report: comment` or legacy `true` -> publish the concise PR comment only.
+- `publish_pr_review_report: comment-and-ai-artifact` -> publish the concise PR comment and generate the detailed AI markdown artifact.
+- `publish_pr_review_report: none` or legacy `false` -> do not publish.
+
+**Default:** do not publish without explicit confirmation. If no PR number can be resolved, skip publication and state that no PR target was available.
+
+### Concise PR Comment
+
+The visible PR comment is for humans. It must be written in English only and stay concise.
+
+```markdown
+## AI Review Report
+
+**Verdict:** REQUEST_CHANGES
+**Summary:** 2-3 concise sentences with overall risk and the main merge blocker.
+
+| Severity | Area | Finding | Suggested Fix | Owner |
+|---|---|---|---|---|
+| blocker | `src/file.ts:42` | What is broken and why it matters. | Concrete fix direction, not a vague instruction. | author |
+
+<details>
+<summary>Minor / info findings</summary>
+
+| Severity | Area | Finding | Suggested Fix |
+|---|---|---|---|
+| minor | `src/other.ts:10` | ... | ... |
+
+</details>
+
+### Meta
+| Field | Value |
+|---|---|
+| Orchestrator | `review-orchestrator` |
+| Model | `<actual current model id/name, or unknown; never current-session>` |
+| Model strategy | `<current | ask | adaptive | economy | per-group | current-session>` |
+| Model assignment | `<current session | adaptive classes | per reviewer classes | unsupported>` |
+| Agents | `<reviewers dispatched>` |
+| Scope | `<PR #N, base..head, merge-base>` |
+| Commit | `<HEAD sha>` |
+| Context | `<job/context path if provided, otherwise none>` |
+| AI artifact | `<path or link when generated, otherwise none>` |
+| Reviewed at | `<UTC timestamp>` |
+```
+
+### Detailed AI Markdown Artifact
+
+When the user chooses option B, generate a separate English-only markdown artifact for AI follow-up work. Prefer a repository-local job/review path such as:
+
+```text
+jobs/reviews/pr-<number>/review-ai-report.md
+```
+
+If the review is running inside `job-orchestrator`, write it under the active job docs, for example:
+
+```text
+jobs/<job-name>/ai/review-ai-report.md
+```
+
+If the environment provides an external artifact mechanism, attach or upload that markdown file and put the link/path in the concise PR comment `AI artifact` meta row. If no attachment/upload mechanism exists, keep the file path in the comment and in `review_context.review_plan.publication_plan.ai_artifact_path`.
+
+The AI artifact must use this structure:
+
+```markdown
+---
+review_run_id: <stable id, e.g. pr-5462-2026-06-13T10-22-00Z>
+orchestrator: review-orchestrator
+verdict: <APPROVE | APPROVE_WITH_SUGGESTIONS | REQUEST_CHANGES>
+context_mode: <none | light | full>
+model_strategy: <current | ask | adaptive | economy | per-group | current-session>
+current_model: <actual current model id/name, or unknown>
+model_assignment: <current session | adaptive classes | per reviewer classes | unsupported>
+agents:
+  - <reviewer>
+scope:
+  pr: <number or null>
+  base: <base sha/ref>
+  head: <head sha/ref>
+  files_changed: <count>
+generated_at: <UTC timestamp>
+---
+
+# AI Review Report
+
+## Executive Summary
+<Short machine-readable summary of merge risk and required fix order.>
+
+## Review Context
+<Bounded description of diff scope, requirements, omitted context, and assumptions.>
+
+## Findings
+
+### F-NNN: <title>
+
+- Severity: blocker | major | minor | info
+- Reviewer: <reviewer>
+- File: `path/to/file.ts`
+- Lines: <line or range>
+- Confidence: high | medium | low
+- Status: open
+
+Problem:
+<Detailed explanation of what is wrong.>
+
+Why it matters:
+<Correctness, safety, maintainability, performance, or UX impact.>
+
+Evidence:
+<Specific code references or behavior observed.>
+
+Suggested fix:
+<Detailed fix plan with steps.>
+
+Patch guidance:
+```diff
+<Optional illustrative diff. Keep it minimal and clearly mark if illustrative.>
+```
+
+Regression coverage:
+```gherkin
+Feature: <feature or invariant>
+
+  Scenario: <behavior that should not regress>
+    Given <initial state>
+    When <action>
+    Then <expected result>
+```
+
+## Fix Order
+1. <Blocker/major fix sequencing with dependencies.>
+
+## Validation Plan
+- <Commands or checks to run.>
+
+## Notes For Follow-Up Agents
+<Context needed by an implementer agent; no secrets, raw prompts, or unrelated local paths.>
+```
+
+Formatting rules for PR comments and AI artifacts:
+- English only, regardless of chat language or reviewer output language.
+- Keep the visible comment concise: max 10 blocker/major rows before `<details>`.
+- Put minor/info findings under `<details>` unless there are no higher severity findings.
+- Every blocker/major row must include a concrete suggested fix.
+- Include enough metadata to reproduce the review, but do not include internal prompts, raw logs, secrets, or unrelated local paths.
+- In the metadata table, `Model` must be the actual model id/name. Put `current-session`, `adaptive`, or `per-group` under `Model strategy` / `Model assignment`, not under `Model`.
+- If posting via CLI, write the body to a temp file and use `gh pr comment <pr-number> --body-file <file>`; never inline a large heredoc into shell history.
+
+---
+
 ## Job Context Awareness
 
 When dispatched by `job-orchestrator` or called with an explicit context path, the prompt MAY include:

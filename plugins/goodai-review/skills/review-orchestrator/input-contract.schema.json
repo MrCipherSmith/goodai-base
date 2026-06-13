@@ -90,8 +90,20 @@
       "type": "string",
       "enum": [
         "ask",
+        "comment",
+        "comment-and-ai-artifact",
+        "none",
         "true",
         "false"
+      ],
+      "default": "ask"
+    },
+    "review_report_artifact": {
+      "type": "string",
+      "enum": [
+        "ask",
+        "ai-md",
+        "none"
       ],
       "default": "ask"
     }
