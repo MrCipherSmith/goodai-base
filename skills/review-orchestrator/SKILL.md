@@ -607,7 +607,11 @@ The visible PR comment is for humans. It must be written in English only and sta
 | Model | `<actual current model id/name, or unknown; never current-session>` |
 | Model strategy | `<current | ask | adaptive | economy | per-group | current-session>` |
 | Model assignment | `<current session | adaptive classes | per reviewer classes | unsupported>` |
-| Agents | `<reviewers dispatched>` |
+| Agents run | `<reviewers actually dispatched, including fallback runtimes when used>` |
+| Available reviewers | `<all reviewers considered by the orchestrator for this repository/runtime, grouped briefly as generic/convention/project/legacy when useful>` |
+| Skipped reviewers | `<reviewers not dispatched with short reasons, e.g. no matching files, optional group not selected, unavailable native agent, PR number missing>` |
+| Selection basis | `<auto-detected scope, explicit flags, user-selected optional groups, and why this reviewer set was chosen>` |
+| Fallback/blocked reviewers | `<reviewers run via fallback or blocked because native agent/skill was unavailable, otherwise none>` |
 | Scope | `<PR #N, base..head, merge-base>` |
 | Commit | `<HEAD sha>` |
 | Context | `<job/context path if provided, otherwise none>` |
@@ -717,6 +721,9 @@ Formatting rules for PR comments and AI artifacts:
 - Put minor/info findings under `<details>` unless there are no higher severity findings.
 - Every blocker/major row must include a concrete suggested fix.
 - Include enough metadata to reproduce the review, but do not include internal prompts, raw logs, secrets, or unrelated local paths.
+- The PR comment metadata must distinguish `Agents run` from `Available reviewers` and `Skipped reviewers`; never use a single `Agents` row that hides skipped or unavailable reviewers.
+- `Skipped reviewers` must include short reasons from `review_context.routing.reasons`, `review_context.review_plan.skipped`, and dispatch/runtime compatibility checks.
+- If the list is long, keep `Agents run` complete and summarize `Available reviewers` / `Skipped reviewers` by group with counts plus notable names; put full details in the AI artifact when one is generated.
 - When `comment-and-ai-artifact` is selected, the PR comment meta section must include both `AI artifact` and `AI artifact description`; do not rely on the link alone.
 - In the metadata table, `Model` must be the actual model id/name. Put `current-session`, `adaptive`, or `per-group` under `Model strategy` / `Model assignment`, not under `Model`.
 - If posting via CLI, write the body to a temp file and use `gh pr comment <pr-number> --body-file <file>`; never inline a large heredoc into shell history.
