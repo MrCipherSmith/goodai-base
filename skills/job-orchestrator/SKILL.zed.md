@@ -932,6 +932,7 @@ Publish the review report to the PR?
 - If the job has review findings but no PR number yet, store `pending_pr_review_report_comment` and `pending_review_ai_artifact` in job state. If the later PR step creates a PR, ask the same question after PR creation.
 - If the user chooses A, delegate concise comment formatting to `review-orchestrator`'s PR Review Report Publication contract when available.
 - If the user chooses B, delegate concise comment formatting and generate `jobs/<job-name>/ai/review-ai-report.md` using `review-orchestrator`'s Detailed AI Markdown Artifact contract.
+- If the user chooses B, the PR comment `Meta` section must include both an `AI artifact` link/path and an `AI artifact description` row explaining in human-readable language that the markdown file contains detailed findings, fix guidance, patch guidance, regression coverage, validation plan, and follow-up agent context.
 - If using legacy reviewers, normalize findings into the same concise PR comment and AI artifact structures before posting.
 - Record the final decision in job state as `publication_plan.mode`: `comment`, `comment-and-ai-artifact`, or `none`.
 

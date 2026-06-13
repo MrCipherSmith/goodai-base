@@ -611,7 +611,8 @@ The visible PR comment is for humans. It must be written in English only and sta
 | Scope | `<PR #N, base..head, merge-base>` |
 | Commit | `<HEAD sha>` |
 | Context | `<job/context path if provided, otherwise none>` |
-| AI artifact | `<path or link when generated, otherwise none>` |
+| AI artifact | `<markdown link or file path to the detailed AI report when generated, otherwise none>` |
+| AI artifact description | `<one concise human-readable sentence explaining that the linked markdown file contains detailed findings, fix guidance, patch guidance, regression coverage, validation plan, and follow-up agent context>` |
 | Reviewed at | `<UTC timestamp>` |
 ```
 
@@ -630,6 +631,8 @@ jobs/<job-name>/ai/review-ai-report.md
 ```
 
 If the environment provides an external artifact mechanism, attach or upload that markdown file and put the link/path in the concise PR comment `AI artifact` meta row. If no attachment/upload mechanism exists, keep the file path in the comment and in `review_context.review_plan.publication_plan.ai_artifact_path`.
+
+The concise PR comment must also include an `AI artifact description` meta row whenever an AI artifact is generated. The description is for human readers and must explain what was added and what the file contains, for example: `Detailed AI follow-up report with expanded findings, fix guidance, illustrative patch guidance, Gherkin regression coverage, validation plan, and context for follow-up agents.`
 
 The AI artifact must use this structure:
 
@@ -714,6 +717,7 @@ Formatting rules for PR comments and AI artifacts:
 - Put minor/info findings under `<details>` unless there are no higher severity findings.
 - Every blocker/major row must include a concrete suggested fix.
 - Include enough metadata to reproduce the review, but do not include internal prompts, raw logs, secrets, or unrelated local paths.
+- When `comment-and-ai-artifact` is selected, the PR comment meta section must include both `AI artifact` and `AI artifact description`; do not rely on the link alone.
 - In the metadata table, `Model` must be the actual model id/name. Put `current-session`, `adaptive`, or `per-group` under `Model strategy` / `Model assignment`, not under `Model`.
 - If posting via CLI, write the body to a temp file and use `gh pr comment <pr-number> --body-file <file>`; never inline a large heredoc into shell history.
 
