@@ -910,7 +910,38 @@ DATA:
   CONTENT: <findings summary for man/, structured findings for ai/>
 ```
 
-#### 2.6.2 Post-Review Checkpoint
+#### 2.6.2 PR Review Report Publication
+
+If this job is reviewing an existing GitHub PR, or if a PR number/URL was resolved before the review step, ask whether to publish the consolidated review report after review findings are documented and before fix decisions. This gives the user a chance to record the current review state before any automatic fix loop changes it.
+
+Ask unless automation settings explicitly set `publish_pr_review_report`:
+
+```text
+Publish the review report to the PR?
+
+  A) Concise PR comment only
+  B) Concise PR comment + detailed AI markdown artifact (recommended for follow-up fixes)
+  C) Do not publish
+
+> pick a letter (default: C)
+```
+
+**Rules:**
+- The PR comment and AI artifact must be written in English only, regardless of the chat language or reviewer output language.
+- Default is C. Never publish to a PR without explicit user confirmation or `publish_pr_review_report: comment`, `publish_pr_review_report: comment-and-ai-artifact`, or legacy `publish_pr_review_report: true`.
+- If the job has review findings but no PR number yet, store `pending_pr_review_report_comment` and `pending_review_ai_artifact` in job state. If the later PR step creates a PR, ask the same question after PR creation.
+- If the user chooses A, delegate concise comment formatting to `review-orchestrator`'s PR Review Report Publication contract when available.
+- If the user chooses B, delegate concise comment formatting and generate `jobs/<job-name>/ai/review-ai-report.md` using `review-orchestrator`'s Detailed AI Markdown Artifact contract.
+- If using legacy reviewers, normalize findings into the same concise PR comment and AI artifact structures before posting.
+- Record the final decision in job state as `publication_plan.mode`: `comment`, `comment-and-ai-artifact`, or `none`.
+
+**Automation values:**
+- `publish_pr_review_report: ask` -> ask the question above.
+- `publish_pr_review_report: comment` or legacy `true` -> publish the concise PR comment only.
+- `publish_pr_review_report: comment-and-ai-artifact` -> publish the concise PR comment and create/link the detailed AI markdown artifact.
+- `publish_pr_review_report: none` or legacy `false` -> do not publish.
+
+#### 2.6.3 Post-Review Checkpoint
 
 After review completes, present findings and ask user:
 
@@ -1424,6 +1455,7 @@ The subagent must not fetch orchestrator state independently. If the subagent ne
 | `run_security_audit` | `true` | true/false | Auto-run security-audit if auth/API/DB files touched |
 | `run_perf_check` | `true` | true/false | Auto-run perf-check if frontend/bundle files changed |
 | `run_changelog` | `true` | true/false | Auto-generate changelog entry and include in PR description |
+| `publish_pr_review_report` | `ask` | `ask`/`comment`/`comment-and-ai-artifact`/`none`/`true`/`false` | Whether to publish a concise PR review comment and optional detailed AI markdown artifact |
 | `run_deploy` | `ask` | `ask`/`true`/`false` | Post-PR deploy: ask user (ask), always deploy (true), never (false) |
 
 ## Dry-Run Mode

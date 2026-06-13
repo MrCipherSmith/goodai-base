@@ -272,6 +272,58 @@
             },
             "additionalProperties": true
           }
+        },
+        "publication_plan": {
+          "type": "object",
+          "description": "User-confirmed PR review report publication mode and generated artifact metadata.",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "ask",
+                "comment",
+                "comment-and-ai-artifact",
+                "none"
+              ]
+            },
+            "pr_number": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "pr_url": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "comment_posted": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "ai_artifact_path": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "ai_artifact_link": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "user_confirmed": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": true
         }
       },
       "additionalProperties": true
