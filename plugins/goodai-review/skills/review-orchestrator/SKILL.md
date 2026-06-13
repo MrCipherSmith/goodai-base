@@ -487,6 +487,20 @@ Severity ordering for sort: `blocker` > `major` > `minor` > `info`.
 
 ---
 
+### Model Metadata Rules
+
+`current-session` is a model assignment/runtime strategy, not a model name. Never render it as `model: current-session` or as the PR comment `Model` value.
+
+When writing review report metadata or a PR comment:
+1. Read `review_context.token_policy.model_plan`.
+2. Set `Model strategy` from `model_plan.strategy`.
+3. Set `Current model` from the first available value: `model_plan.current_model`, detected tool output, current runtime model shown by the platform, or `unknown`.
+4. If `strategy` is `adaptive`, `economy`, or `per-group`, include model classes: `complex_model`, `normal_model`, and `simple_model` when known.
+5. If model assignment is unsupported and `strategy` is `current-session`, write `Model assignment: current session` and still write `Current model: <actual model or unknown>`.
+6. If the actual model is unknown, write `unknown`; do not substitute `current-session`.
+
+---
+
 ## Output Contract
 
 ```
@@ -514,7 +528,9 @@ STATUS: DONE | DONE_WITH_CONCERNS
 - Reviewers dispatched: <comma-separated list>
 - Changed files: <count>
 - Context mode: `<none | light | full>`
-- Model strategy: `<current | ask | adaptive | current-session>`
+- Model strategy: `<current | ask | adaptive | economy | per-group | current-session>`
+- Current model: `<actual current model id/name, or unknown>`
+- Model assignment: `<single current session | adaptive classes | per reviewer classes | unsupported>`
 - Token budget: `<used/limit if known; omissions count>`
 
 ## Stats
