@@ -125,6 +125,105 @@
         }
       },
       "additionalProperties": true
+    },
+    "review_plan": {
+      "type": "object",
+      "description": "Grouped reviewer plan shown before optional reviewer prompts.",
+      "properties": {
+        "already_selected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "optional_convention_detected": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "reviewer",
+              "reason"
+            ],
+            "properties": {
+              "reviewer": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "enable_with": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "optional_legacy_profile_available": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "selected_legacy_profile": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dispatch_plan": {
+          "type": "array",
+          "description": "Per-reviewer runtime dispatch decision for native agent compatibility.",
+          "items": {
+            "type": "object",
+            "required": [
+              "reviewer",
+              "runtime"
+            ],
+            "properties": {
+              "reviewer": {
+                "type": "string"
+              },
+              "runtime": {
+                "type": "string",
+                "enum": [
+                  "native-agent",
+                  "general-purpose-fallback",
+                  "blocked"
+                ]
+              },
+              "agent_type": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "skill_path": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true

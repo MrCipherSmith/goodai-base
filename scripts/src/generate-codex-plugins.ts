@@ -83,6 +83,10 @@ const PLUGINS: PluginBundle[] = [
       'Run a strict architecture review.',
     ],
     skills: [
+      'code-ai-review',
+      'code-b091-review',
+      'code-mobx-store-review',
+      'code-style-review',
       'review-architecture',
       'review-backend',
       'review-clean-code',

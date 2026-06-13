@@ -52,6 +52,26 @@ skills:
     version: 1.0.0
     category: configuration
     path: skills/claude-md-management
+  - name: code-ai-review
+    description: 'Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current branch changes from merge-base by default, including both committed and local uncommitted changes. Use when: code review requested, checking branch changes, reviewing implementation quality.'
+    version: 1.0.0
+    category: review
+    path: skills/code-ai-review
+  - name: code-b091-review
+    description: 'Performs strict b091-style code review following code-review-b091-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: b091 review requested, strict validation needed.'
+    version: 1.0.0
+    category: review
+    path: skills/code-b091-review
+  - name: code-mobx-store-review
+    description: 'Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInAction, state typing, View↔Store boundaries. Use when: reviewing MobX changes, state management validation.'
+    version: 1.1.0
+    category: review
+    path: skills/code-mobx-store-review
+  - name: code-style-review
+    description: 'Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch changes. Checks naming, organization, patterns, TypeScript usage. Use when: style validation needed, architecture review.'
+    version: 1.0.0
+    category: review
+    path: skills/code-style-review
   - name: code-verifier
     description: 'Use when running a full quality gate after implementation — lint, type-check, tests, and import validation. Mandatory step in job-orchestrator after task-implementer and after fix iterations. Use standalone when you need a structured verification report.'
     version: 1.0.0
@@ -235,11 +255,41 @@ NOT for: architectural layer violations (review-architecture), naming convention
     version: 1.0.0
     category: review
     path: skills/review-clean-code
+  - name: review-core-boundaries
+    description: 'Use when reviewing shared core/infrastructure module changes for dependency
+direction, feature-boundary leakage, abstraction stability, composition,
+and blast-radius risks. Dispatched by review-orchestrator for
+--core-boundaries, --project-conventions, --all, or src/core/** changes.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-core-boundaries
+  - name: review-flow-graph
+    description: 'Use when reviewing generic ReactFlow or graph-surface abstraction changes:
+public graph surface, store subclassing, layout lifecycle, internal helper
+boundaries, selection lifecycle, and large-graph performance. Dispatched by
+review-orchestrator for --flow-graph, --project-conventions, --all, or
+src/core/flow/** / graph abstraction changes.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-flow-graph
   - name: review-frontend
     description: 'Use when a frontend review is requested, checking React component patterns, MobX state management (observer, actions, computed, reactions, lifecycle), View-Store boundaries, and TypeScript safety in changed frontend code. NOT for backend patterns, security vulnerabilities, performance bottlenecks, or cross-layer architecture.'
     version: 1.1.0
     category: review
     path: skills/review-frontend
+  - name: review-frontend-conventions
+    description: 'Use when reviewing frontend code against repository-local conventions commonly
+captured in CLAUDE.md or similar project guides: React/MobX boundaries,
+TypeScript strictness, i18n placement, storage wrappers, error handling,
+styling tokens, Storybook expectations, and local tooling rules. Dispatched
+by review-orchestrator for --frontend-conventions, --project-conventions,
+--all, or frontend src/**/*.ts(x) changes when local convention docs exist.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-frontend-conventions
   - name: review-greptile
     description: 'Use when: a PR needs codebase-aware review using Greptile — an AI reviewer with full
 repository indexing. Unlike diff-only reviewers, Greptile understands cross-file impact
@@ -280,11 +330,11 @@ or architectural pattern concerns — those belong in their respective specializ
     description: 'Use when: a code review is requested and the user does not explicitly name a specialized reviewer.
 Handles "review", "code review", "review PR", "review --frontend", "review --backend",
 "review --architecture", "review --security", "review --performance", "review --style",
-"review --strict", "review --all". Routes to specialized reviewers in parallel and
+"review --strict", "review --project-conventions", "review --legacy-profiles", "review --all". Routes to specialized reviewers in parallel and
 consolidates findings into one unified report.
 NOT for: running a single specialized reviewer — invoke it directly by name instead.
 '
-    version: 1.3.0
+    version: 1.5.0
     category: review
     path: skills/review-orchestrator
   - name: review-performance
@@ -330,6 +380,17 @@ anti-patterns, or any finding that could cause a functional regression.
     version: 1.0.0
     category: review
     path: skills/review-style
+  - name: review-testing-practices
+    description: 'Use when reviewing unit, integration, Storybook, component, or e2e tests
+against repository-local testing conventions: co-location, network mocking,
+MSW-style boundary mocks, behaviour assertions, deterministic waits,
+smoke/full split, locator priority, and screenshot-test discipline.
+Dispatched by review-orchestrator for --testing-practices,
+--project-conventions, --all, or changed test/e2e/story files.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-testing-practices
   - name: security-audit
     description: 'Use when checking for dependency vulnerabilities, accidentally committed secrets, or security issues in Docker images.'
     version: 1.0.0
