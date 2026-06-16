@@ -16,7 +16,7 @@ Total: 62 skills
 | `changelog` | Use when generating a changelog, release notes, or summarizing what changed between tags, version... | 1.0.0 | workflow |
 | `claude-md-management` | Use when saving session learnings, coding patterns, conventions, or commands discovered during wo... | 1.0.0 | configuration |
 | `code-ai-review` | Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current ... | 1.0.0 | review |
-| `code-b091-review` | Performs strict b091-style code review following code-review-b091-profile.mdc. Reviews current br... | 1.0.0 | review |
+| `code-boss-review` | Performs strict boss-style code review following code-review-boss-profile.mdc. Reviews current br... | 1.0.0 | review |
 | `code-mobx-store-review` | Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInA... | 1.1.0 | review |
 | `code-style-review` | Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch... | 1.0.0 | review |
 | `code-verifier` | Use when running a full quality gate after implementation — lint, type-check, tests, and import v... | 1.0.0 | verification |

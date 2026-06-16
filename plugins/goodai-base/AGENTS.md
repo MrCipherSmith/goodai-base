@@ -194,7 +194,7 @@ Reference guidelines for coding standards and workflows:
 - `core/review-agent-profile.mdc`: Baseline review standards, verdict labels, output structure.
 - `core/review-strict-profile.mdc`: Strict review persona constraints and checklist.
 - `core/code-review-ai-assistant.mdc`: Baseline AI code review standards for strict correctness, architecture, safety, and maintainability reviews.
-- `core/code-review-b091-profile.mdc`: b091-style direct, architecture-first review profile.
+- `core/code-review-boss-profile.mdc`: boss-style direct, architecture-first review profile.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
 - `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
 - `core/tdd-workflow.mdc`: Red-green-refactor cycle, test-first mandate, no-done-without-green invariant. Loaded with `task-implementer` and `tests-creator`.
@@ -256,7 +256,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Use When**: "review", "code review", "review PR", "full review", "полное ревью", "review --frontend", "review --all", any code review request
 - **Auto-detects scope** from diff file extensions when no flag is given
 - **Path mode**: "review the UserStore", "review src/pipelines/" — reviews full file contents, not just diff
-- **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--project-conventions` · `--frontend-conventions` · `--testing-practices` · `--core-boundaries` · `--flow-graph` · `--legacy-profiles` · `--code-ai` · `--b091` · `--code-style` · `--mobx-store` · `--strict` · `--all` · (auto-detect from diff)
+- **Routing flags**: `--frontend` · `--backend` · `--architecture` · `--security` · `--performance` · `--style` · `--project-conventions` · `--frontend-conventions` · `--testing-practices` · `--core-boundaries` · `--flow-graph` · `--legacy-profiles` · `--code-ai` · `--boss` · `--code-style` · `--mobx-store` · `--strict` · `--all` · (auto-detect from diff)
 - **Convention reviewer prompt**: when local convention reviewers are auto-detected and not explicitly requested, ask whether to include all, choose individually, or skip them
 - **Legacy/profile reviewer prompt**: when profile reviewers are available and not explicitly requested, ask whether to include all applicable, choose individually, or skip them
 - **Output**: Unified report — `APPROVE | APPROVE_WITH_SUGGESTIONS | REQUEST_CHANGES` + findings by severity
@@ -283,7 +283,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
 | `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
 | `code-ai-review` | Optional strict AI review profile for correctness, safety, and maintainability | blocker |
-| `code-b091-review` | Optional b091-style strict logic and architecture review profile | blocker |
+| `code-boss-review` | Optional boss-style strict logic and architecture review profile | blocker |
 | `code-style-review` | Optional legacy style/architecture profile | major |
 | `code-mobx-store-review` | Optional MobX store/state profile, suggested for store files | major |
 
@@ -291,7 +291,7 @@ Intelligent agents for complex analysis and review tasks:
 - `core/review-agent-profile.mdc` — baseline review standards, verdict labels, output structure
 - `core/review-strict-profile.mdc` — strict persona constraints and checklist
 - `core/code-review-ai-assistant.mdc` — strict AI review baseline used by `code-ai-review`
-- `core/code-review-b091-profile.mdc` — b091-style profile used by `code-b091-review`
+- `core/code-review-boss-profile.mdc` — boss-style profile used by `code-boss-review`
 
 **Review domain routing:**
 
@@ -311,9 +311,9 @@ Intelligent agents for complex analysis and review tasks:
 | `review --testing-practices` | local testing/e2e conventions only |
 | `review --core-boundaries` | shared core boundary review only |
 | `review --flow-graph` | shared flow/graph abstraction review only |
-| `review --legacy-profiles` | code-ai + b091 + code-style + MobX profile when store files are present |
+| `review --legacy-profiles` | code-ai + boss + code-style + MobX profile when store files are present |
 | `review --code-ai` | code-ai-review only |
-| `review --b091` | code-b091-review only |
+| `review --boss` | code-boss-review only |
 | `review --code-style` | code-style-review only |
 | `review --mobx-store` | code-mobx-store-review only |
 | `iago` / `/iago` / `/squawk` | iago only (Mermaid PR diagram) |

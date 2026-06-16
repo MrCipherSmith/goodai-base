@@ -12,7 +12,7 @@ cd scripts && bun run generate-codex-plugins
 ## Included Skills
 
 - `code-ai-review`
-- `code-b091-review`
+- `code-boss-review`
 - `code-mobx-store-review`
 - `code-style-review`
 - `iago`

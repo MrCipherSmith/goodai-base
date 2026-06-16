@@ -21,7 +21,7 @@ cd scripts && bun run generate-codex-plugins
 - `changelog`
 - `claude-md-management`
 - `code-ai-review`
-- `code-b091-review`
+- `code-boss-review`
 - `code-mobx-store-review`
 - `code-style-review`
 - `code-verifier`

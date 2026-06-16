@@ -10,7 +10,7 @@ Total: 29 rules
 | `async-patterns` | Async patterns: Promise.all for parallelism, no unhandled rejections, mandatory timeouts for exte... | General | No |
 | `clean-architecture` | Clean Architecture layer rules: dependency direction, layer isolation, no cross-layer leakage. Us... | General | No |
 | `code-review-ai-assistant` | Baseline AI code review standards for correctness, architecture, safety, and maintainability. | Code Review | No |
-| `code-review-b091-profile` | b091-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
+| `code-review-boss-profile` | boss-style review profile: direct, strict, architecture-first feedback with concrete fixes. | Code Review | No |
 | `code-style-patterns` | Code style and architecture patterns for TypeScript, React, and MobX. | TypeScript / React | No |
 | `commit-message-formatting` | Conventional commit formatting rules. | Git | No |
 | `database-patterns` | Database access patterns: no N+1 queries, indexes before deploy, backward-compatible migrations, ... | General | No |

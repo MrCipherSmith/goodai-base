@@ -109,7 +109,7 @@ All notable changes to goodai-base are documented here.
 
 - **`AGENTS.md`** — Added full `gproject` sub-domain section: pipeline diagram, phase table, mode comparison, routing rules, and disambiguation. `gproject-orchestrator` is documented as a standalone top-level orchestrator — scope ends at `roadmap.md`.
 - **`README.md`** — Updated skill count (30 → 40), added "Project Documentation" category with all 9 gproject skills, added `gproject-orchestrator` as a notable example with link to pipeline docs.
-- **`rules.json`** — Removed stale `code-b091-review` entry (skill was renamed to `code-boss-review` in v1.8.0 but the rules index was not updated).
+- **`rules.json`** — Removed stale `code-boss-review` entry (skill was renamed to `code-boss-review` in v1.8.0 but the rules index was not updated).
 
 ---
 

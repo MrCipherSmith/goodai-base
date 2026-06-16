@@ -84,7 +84,7 @@ const PLUGINS: PluginBundle[] = [
     ],
     skills: [
       'code-ai-review',
-      'code-b091-review',
+      'code-boss-review',
       'code-mobx-store-review',
       'code-style-review',
       'review-architecture',
