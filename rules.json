@@ -349,10 +349,44 @@
       }
     },
     {
+      "id": "review-agent-profile",
+      "type": "rule",
+      "path": "rules/core/review-agent-profile.mdc",
+      "description": "Baseline review standards, verdict labels, output structure.",
+      "triggers": {
+        "keywords": [
+          "baseline",
+          "review",
+          "standards",
+          "verdict",
+          "labels",
+          "output",
+          "structure"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "review-strict-profile",
+      "type": "rule",
+      "path": "rules/core/review-strict-profile.mdc",
+      "description": "Strict review persona constraints and checklist.",
+      "triggers": {
+        "keywords": [
+          "strict",
+          "review",
+          "persona",
+          "constraints",
+          "checklist"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "code-review-ai-assistant",
       "type": "rule",
       "path": "rules/core/code-review-ai-assistant.mdc",
-      "description": "Default AI code review baseline.",
+      "description": "Baseline AI code review standards for strict correctness, architecture, safety, and maintainability reviews.",
       "triggers": {
         "keywords": [
           "code review baseline",
@@ -371,7 +405,7 @@
       "id": "code-review-boss-profile",
       "type": "rule",
       "path": "rules/core/code-review-boss-profile.mdc",
-      "description": "boss-style review profile and tone constraints.",
+      "description": "boss-style direct, architecture-first review profile.",
       "triggers": {
         "keywords": [
           "boss",
@@ -577,58 +611,26 @@
       }
     },
     {
-      "id": "code-ai-review",
+      "id": "review-orchestrator",
       "type": "skill",
-      "path": "skills/code-ai-review/SKILL.md",
-      "description": "General AI code review — correctness, type safety, security, performance, error handling",
+      "path": "skills/review-orchestrator/SKILL.md",
+      "description": "Entry point — routes review request to specialized reviewers, dispatches in parallel, consolidates unified report",
       "triggers": {
         "keywords": [
-          "review code",
-          "check my code",
-          "ai code review",
-          "code review",
-          "review changes"
+          "entry",
+          "point",
+          "routes",
+          "review",
+          "request",
+          "specialized",
+          "reviewers",
+          "dispatches",
+          "parallel",
+          "consolidates",
+          "unified",
+          "report"
         ],
-        "intents": [
-          "review code changes",
-          "check code quality",
-          "ai review"
-        ]
-      }
-    },
-    {
-      "id": "code-style-review",
-      "type": "skill",
-      "path": "skills/code-style-review/SKILL.md",
-      "description": "Code style and architecture review — TypeScript strictness, MobX patterns, React structure",
-      "triggers": {
-        "keywords": [
-          "style review",
-          "architecture check",
-          "style check",
-          "typescript review"
-        ],
-        "intents": [
-          "style review",
-          "architecture review"
-        ]
-      }
-    },
-    {
-      "id": "code-mobx-store-review",
-      "type": "skill",
-      "path": "skills/code-mobx-store-review/SKILL.md",
-      "description": "Targeted MobX store review — member ordering, accessibility modifiers, action binding, bidirectional sync",
-      "triggers": {
-        "keywords": [
-          "store review",
-          "mobx store review",
-          "review store"
-        ],
-        "intents": [
-          "review mobx store",
-          "store review"
-        ]
+        "intents": []
       }
     },
     {
@@ -823,24 +825,6 @@
       }
     },
     {
-      "id": "code-review",
-      "type": "skill",
-      "path": "skills/code-review/SKILL.md",
-      "description": "Comprehensive code review with 4 parallel agents (correctness, security, performance, style)",
-      "triggers": {
-        "keywords": [
-          "full review",
-          "review pr",
-          "comprehensive review",
-          "review pull request"
-        ],
-        "intents": [
-          "comprehensive code review",
-          "full pr review"
-        ]
-      }
-    },
-    {
       "id": "feature-dev",
       "type": "skill",
       "path": "skills/feature-dev/SKILL.md",
@@ -995,7 +979,7 @@
       "id": "gproject-orchestrator",
       "type": "skill",
       "path": "skills/gproject-orchestrator/SKILL.md",
-      "description": "Orchestrates full project documentation pipeline — from discovery to PRD to roadmap",
+      "description": "Thin routing orchestrator — drives the 7-phase pipeline, manages decisions registry, enforces human gates, handles state resumption",
       "triggers": {
         "keywords": [
           "orchestrates",
@@ -1008,6 +992,234 @@
           "roadmap"
         ],
         "intents": []
+      }
+    },
+    {
+      "id": "prd-creator",
+      "type": "skill",
+      "path": "skills/prd-creator/SKILL.md",
+      "description": "Quick single-pass PRD — transforms unstructured request into a formal, testable Product Requirements Document",
+      "triggers": {
+        "keywords": [
+          "create prd",
+          "write prd",
+          "product requirements",
+          "prd",
+          "requirements document"
+        ],
+        "intents": [
+          "create product requirements document",
+          "write prd"
+        ]
+      }
+    },
+    {
+      "id": "autodoc-orchestrator",
+      "type": "skill",
+      "path": "skills/autodoc-orchestrator/SKILL.md",
+      "description": "Thin routing orchestrator — drives the 5-phase pipeline, detects modules, launches parallel analysts and writers, assembles final docs",
+      "triggers": {
+        "keywords": [
+          "thin",
+          "routing",
+          "orchestrator",
+          "drives",
+          "5-phase",
+          "pipeline",
+          "detects",
+          "modules",
+          "launches",
+          "parallel",
+          "analysts",
+          "writers",
+          "assembles",
+          "final",
+          "docs"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "brainstorm",
+      "type": "skill",
+      "path": "skills/brainstorm/SKILL.md",
+      "description": "Structured brainstorming — architecture decisions, problem solving, open exploration",
+      "triggers": {
+        "keywords": [
+          "brainstorm",
+          "explore options",
+          "architecture decision",
+          "design options"
+        ],
+        "intents": [
+          "brainstorm solutions",
+          "explore architecture options"
+        ]
+      }
+    },
+    {
+      "id": "interview",
+      "type": "skill",
+      "path": "skills/interview/SKILL.md",
+      "description": "Critical requirements interviewer — asks targeted questions one-by-one with answer options before expensive operations",
+      "triggers": {
+        "keywords": [
+          "clarify requirements",
+          "ask questions first",
+          "interview",
+          "gather requirements"
+        ],
+        "intents": [
+          "clarify requirements",
+          "gather requirements interactively"
+        ]
+      }
+    },
+    {
+      "id": "hookify",
+      "type": "skill",
+      "path": "skills/hookify/SKILL.md",
+      "description": "Create agent hooks from natural language descriptions",
+      "triggers": {
+        "keywords": [
+          "create hook",
+          "add hook",
+          "hookify",
+          "configure hook"
+        ],
+        "intents": [
+          "create claude code hook",
+          "add automation hook"
+        ]
+      }
+    },
+    {
+      "id": "claude-md-management",
+      "type": "skill",
+      "path": "skills/claude-md-management/SKILL.md",
+      "description": "Capture session learnings and persist into CLAUDE.md files",
+      "triggers": {
+        "keywords": [
+          "update claude.md",
+          "save learnings",
+          "revise claude.md",
+          "persist learnings"
+        ],
+        "intents": [
+          "update claude.md",
+          "save session learnings"
+        ]
+      }
+    },
+    {
+      "id": "iago",
+      "type": "skill",
+      "path": "skills/iago/SKILL.md",
+      "description": "Generate or update an idempotent Mermaid diagram block for PR review context",
+      "triggers": {
+        "keywords": [
+          "generate",
+          "update",
+          "idempotent",
+          "mermaid",
+          "diagram",
+          "block",
+          "review",
+          "context"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "pr-issue-documenter",
+      "type": "skill",
+      "path": "skills/pr-issue-documenter/SKILL.md",
+      "description": "Generate structured PR descriptions and issue documentation from branch changes",
+      "triggers": {
+        "keywords": [
+          "add pr description",
+          "document pr",
+          "create issue for pr",
+          "pr description",
+          "pr summary"
+        ],
+        "intents": [
+          "document pull request",
+          "generate pr description"
+        ]
+      }
+    },
+    {
+      "id": "code-ai-review",
+      "type": "skill",
+      "path": "skills/code-ai-review/SKILL.md",
+      "description": "General AI code review — correctness, type safety, security, performance, error handling",
+      "triggers": {
+        "keywords": [
+          "review code",
+          "check my code",
+          "ai code review",
+          "code review",
+          "review changes"
+        ],
+        "intents": [
+          "review code changes",
+          "check code quality",
+          "ai review"
+        ]
+      }
+    },
+    {
+      "id": "code-style-review",
+      "type": "skill",
+      "path": "skills/code-style-review/SKILL.md",
+      "description": "Code style and architecture review — TypeScript strictness, MobX patterns, React structure",
+      "triggers": {
+        "keywords": [
+          "style review",
+          "architecture check",
+          "style check",
+          "typescript review"
+        ],
+        "intents": [
+          "style review",
+          "architecture review"
+        ]
+      }
+    },
+    {
+      "id": "code-mobx-store-review",
+      "type": "skill",
+      "path": "skills/code-mobx-store-review/SKILL.md",
+      "description": "Targeted MobX store review — member ordering, accessibility modifiers, action binding, bidirectional sync",
+      "triggers": {
+        "keywords": [
+          "store review",
+          "mobx store review",
+          "review store"
+        ],
+        "intents": [
+          "review mobx store",
+          "store review"
+        ]
+      }
+    },
+    {
+      "id": "code-review",
+      "type": "skill",
+      "path": "skills/code-review/SKILL.md",
+      "description": "Comprehensive code review with 4 parallel agents (correctness, security, performance, style)",
+      "triggers": {
+        "keywords": [
+          "full review",
+          "review pr",
+          "comprehensive review",
+          "review pull request"
+        ],
+        "intents": [
+          "comprehensive code review",
+          "full pr review"
+        ]
       }
     },
     {
@@ -1165,97 +1377,6 @@
       }
     },
     {
-      "id": "prd-creator",
-      "type": "skill",
-      "path": "skills/prd-creator/SKILL.md",
-      "description": "Quick single-pass PRD — transforms unstructured request into a formal, testable Product Requirements Document",
-      "triggers": {
-        "keywords": [
-          "create prd",
-          "write prd",
-          "product requirements",
-          "prd",
-          "requirements document"
-        ],
-        "intents": [
-          "create product requirements document",
-          "write prd"
-        ]
-      }
-    },
-    {
-      "id": "brainstorm",
-      "type": "skill",
-      "path": "skills/brainstorm/SKILL.md",
-      "description": "Structured brainstorming — architecture decisions, problem solving, open exploration",
-      "triggers": {
-        "keywords": [
-          "brainstorm",
-          "explore options",
-          "architecture decision",
-          "design options"
-        ],
-        "intents": [
-          "brainstorm solutions",
-          "explore architecture options"
-        ]
-      }
-    },
-    {
-      "id": "interview",
-      "type": "skill",
-      "path": "skills/interview/SKILL.md",
-      "description": "Critical requirements interviewer — asks targeted questions one-by-one with answer options before expensive operations",
-      "triggers": {
-        "keywords": [
-          "clarify requirements",
-          "ask questions first",
-          "interview",
-          "gather requirements"
-        ],
-        "intents": [
-          "clarify requirements",
-          "gather requirements interactively"
-        ]
-      }
-    },
-    {
-      "id": "hookify",
-      "type": "skill",
-      "path": "skills/hookify/SKILL.md",
-      "description": "Create agent hooks from natural language descriptions",
-      "triggers": {
-        "keywords": [
-          "create hook",
-          "add hook",
-          "hookify",
-          "configure hook"
-        ],
-        "intents": [
-          "create claude code hook",
-          "add automation hook"
-        ]
-      }
-    },
-    {
-      "id": "claude-md-management",
-      "type": "skill",
-      "path": "skills/claude-md-management/SKILL.md",
-      "description": "Capture session learnings and persist into CLAUDE.md files",
-      "triggers": {
-        "keywords": [
-          "update claude.md",
-          "save learnings",
-          "revise claude.md",
-          "persist learnings"
-        ],
-        "intents": [
-          "update claude.md",
-          "save session learnings"
-        ]
-      }
-    },
-    {
       "id": "pr-review-comments",
       "type": "skill",
       "path": "skills/pr-review-comments/SKILL.md",
@@ -1270,25 +1391,6 @@
         "intents": [
           "analyze pr review comments",
           "understand reviewer feedback"
-        ]
-      }
-    },
-    {
-      "id": "pr-issue-documenter",
-      "type": "skill",
-      "path": "skills/pr-issue-documenter/SKILL.md",
-      "description": "Generate structured PR descriptions and issue documentation from branch changes",
-      "triggers": {
-        "keywords": [
-          "add pr description",
-          "document pr",
-          "create issue for pr",
-          "pr description",
-          "pr summary"
-        ],
-        "intents": [
-          "document pull request",
-          "generate pr description"
         ]
       }
     },

@@ -194,7 +194,7 @@ Reference guidelines for coding standards and workflows:
 - `core/review-agent-profile.mdc`: Baseline review standards, verdict labels, output structure.
 - `core/review-strict-profile.mdc`: Strict review persona constraints and checklist.
 - `core/code-review-ai-assistant.mdc`: Baseline AI code review standards for strict correctness, architecture, safety, and maintainability reviews.
-- `core/code-review-b091-profile.mdc`: b091-style direct, architecture-first review profile.
+- `core/code-review-boss-profile.mdc`: boss-style direct, architecture-first review profile.
 - `core/playwright-testing.mdc`: Playwright E2E testing standards, UI verification, and visual regression workflows.
 - `core/storybook-guidelines.mdc`: Storybook authoring and review standards.
 - `core/tdd-workflow.mdc`: Red-green-refactor cycle, test-first mandate, no-done-without-green invariant. Loaded with `task-implementer` and `tests-creator`.
@@ -291,7 +291,7 @@ Intelligent agents for complex analysis and review tasks:
 - `core/review-agent-profile.mdc` — baseline review standards, verdict labels, output structure
 - `core/review-strict-profile.mdc` — strict persona constraints and checklist
 - `core/code-review-ai-assistant.mdc` — strict AI review baseline used by `code-ai-review`
-- `core/code-review-b091-profile.mdc` — b091-style profile used by `code-b091-review`
+- `core/code-review-boss-profile.mdc` — boss-style profile used by `code-b091-review`
 
 **Review domain routing:**
 
