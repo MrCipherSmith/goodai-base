@@ -16,6 +16,16 @@ This is the **knowledge base repo** for AI agent skills and rules. It is not a p
 
 Every project's Claude session starts by reading `~/goodai-base/AGENTS.md` (via global `~/.claude/CLAUDE.md`). Claude then reads only the specific skill or rule file that matches the user's request. **Skills are invoked with the `Skill` tool, not by manually following SKILL.md steps.**
 
+## graphify
+
+- For code-structure, relationship, ownership, lifecycle, or impact questions, if `graphify-out/graph.json` exists, use graphify before broad grep or raw file browsing.
+- Resolve the CLI with `command -v graphify`; if it is missing and `$HOME/.local/bin/graphify` exists, use `$HOME/.local/bin/graphify`.
+- Use `graphify query "<question>"` for broad codebase questions, `graphify path "<A>" "<B>"` for relationships, `graphify explain "<symbol>"` for local neighborhood, and `graphify affected "<symbol>"` for blast radius.
+- During code review, run graphify for changed exported classes, stores, API wrappers, services, adapters, components, managers, core exports, flow nodes, and shared utilities when the graph is available.
+- Review outputs must record graph usage as `graph_context: used` with queries run, or `graph_context: unavailable` with `missing_graph`, `missing_cli`, or `query_failed`.
+- Treat graph results as navigation only; verify every assertion and review finding against the actual code.
+- If a backend graph MCP server is available, use the exact tools `mcp__backend_graph.query_graph`, `mcp__backend_graph.get_neighbors`, `mcp__backend_graph.shortest_path`, `mcp__backend_graph.get_pr_impact`, and `mcp__backend_graph.god_nodes` for backend and cross-repo questions.
+
 ---
 
 ## Working in This Repo

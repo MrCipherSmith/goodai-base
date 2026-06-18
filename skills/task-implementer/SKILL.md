@@ -541,3 +541,7 @@ Use this context to:
 - Use correct API signatures for libraries
 - Avoid anti-patterns documented in the context
 - Make implementation decisions consistent with the project style
+
+## graphify (code and impact lookup)
+
+When `graphify-out/graph.json` exists, prefer graphify for code structure, relationships, ownership, lifecycle, and impact before blind grep. Resolve the CLI with `command -v graphify`; if it is missing and `/.local/bin/graphify` exists, use that absolute binary path. Use `graphify affected "<symbol>"` for blast radius, `graphify query` for broad questions, and `graphify path`/`graphify explain` for relationships. Treat graph output as navigation only and verify against actual files. If graphify is unavailable, continue with normal search and record the unavailable reason when producing an analysis, review, or implementation report. See `skills/shared/graphify-lookup.md`.

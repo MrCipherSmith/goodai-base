@@ -40,6 +40,22 @@ It defines global behavior and tells the agent how to select the required rule f
 
 ---
 
+> **Code-intelligence default:** for any code-structure, relationship, ownership, lifecycle, or
+> impact question, if `graphify-out/graph.json` exists, query the graph first
+> (`graphify query|path|explain|affected`, or a registered cross-repo MCP graph) before blind
+> grep — then verify against the real files. Resolve the CLI with `command -v graphify`; if it is
+> missing and `$HOME/.local/bin/graphify` exists, use that absolute binary path. During code
+> review, use `graphify affected "<symbol>"` for changed exported classes, stores, API wrappers,
+> services, adapters, components, managers, core exports, flow nodes, and shared utilities, and
+> record `graph_context: used` or `graph_context: unavailable` in the review output. If a backend
+> graph MCP server is available, use the exact tools `mcp__backend_graph.query_graph`,
+> `mcp__backend_graph.get_neighbors`, `mcp__backend_graph.shortest_path`,
+> `mcp__backend_graph.get_pr_impact`, and `mcp__backend_graph.god_nodes`. If no graph/CLI is
+> present, continue with normal search and record the unavailable reason for reviews. Detail:
+> `skills/shared/graphify-lookup.md`.
+
+---
+
 ## 📚 Understanding Rules vs Skills
 
 ### What are RULES? (in `rules/core/*.mdc`)
