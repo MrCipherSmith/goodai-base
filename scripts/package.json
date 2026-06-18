@@ -12,10 +12,13 @@
     "generate-rules-catalog": "bun src/generate-rules-catalog.ts",
     "generate-skill-registry": "bun src/generate-skill-registry.ts",
     "generate-rules-json": "bun src/generate-rules-json.ts",
+    "generate-goodai-graph": "bun src/generate-goodai-graph.ts",
     "generate-agents": "bun src/generate-agents.ts",
     "generate-codex-plugins": "bun src/generate-codex-plugins.ts",
     "check-codex-plugins": "bun src/generate-codex-plugins.ts --check",
     "validate-rules-json": "bun src/validate-rules-json.ts",
+    "validate-goodai-graph": "bun src/validate-goodai-graph.ts",
+    "goodai-graph": "bun src/goodai-graph.ts",
     "validate-skills-before-sync": "bun src/validate-skills-before-sync.ts",
     "deploy-skill-hook": "bun src/deploy-skill-hook.ts"
   },
