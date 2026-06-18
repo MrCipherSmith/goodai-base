@@ -131,23 +131,32 @@ let validated = 0;
 // Iterate over skill directories
 const entries = readdirSync(skillsDir, { withFileTypes: true });
 const skillDirs = entries
-  .filter(e => e.isDirectory() && !SKIP_DIRS.has(e.name))
+  .filter(e => {
+    if (!e.isDirectory() || SKIP_DIRS.has(e.name)) {
+      return false;
+    }
+
+    const skillDir = join(skillsDir, e.name);
+    return readdirSync(skillDir).some(file => file === 'SKILL.md' || /^SKILL\.[^.]+\.md$/.test(file));
+  })
   .map(e => e.name)
   .sort();
 
 for (const skillName of skillDirs) {
   const skillDir = join(skillsDir, skillName);
 
-  const cursorFile = join(skillDir, 'SKILL.cursor.md');
-  const codexFile = join(skillDir, 'SKILL.codex.md');
+  const canonicalFile = join(skillDir, 'SKILL.md');
 
-  if (!existsSync(cursorFile) || !statSync(cursorFile).isFile()) {
-    console.log(`FAIL: ${skillName} - required profile missing: SKILL.cursor.md`);
+  if (!existsSync(canonicalFile) || !statSync(canonicalFile).isFile()) {
+    console.log(`FAIL: ${skillName} - required canonical profile missing: SKILL.md`);
     errors++;
+    continue;
   }
 
-  if (!existsSync(codexFile) || !statSync(codexFile).isFile()) {
-    console.log(`FAIL: ${skillName} - required profile missing: SKILL.codex.md`);
+  validated++;
+  const canonicalErr = validateSkillProfile(canonicalFile, skillName, 'canonical');
+  if (canonicalErr !== null) {
+    console.log(canonicalErr);
     errors++;
   }
 
@@ -179,7 +188,7 @@ const validateRulesScript = join(scriptDir, 'validate-rules-json.ts');
 if (existsSync(validateRulesScript)) {
   console.log('');
   console.log('Running rules.json validation...');
-  const result = Bun.spawnSync(['bun', validateRulesScript]);
+  const result = Bun.spawnSync([process.execPath, validateRulesScript]);
   if (result.stdout) process.stdout.write(result.stdout);
   if (result.stderr) process.stderr.write(result.stderr);
   if (result.exitCode !== 0) {

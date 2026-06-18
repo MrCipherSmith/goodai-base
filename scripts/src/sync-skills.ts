@@ -140,7 +140,7 @@ if (!fileExists(skillsDir) || !statSync(skillsDir).isDirectory()) {
 
 console.log('Running pre-sync validation...');
 const validationResult = Bun.spawnSync(
-  ['bun', join(import.meta.dir, 'validate-skills-before-sync.ts'), skillsDir, schemaFile],
+  [process.execPath, join(import.meta.dir, 'validate-skills-before-sync.ts'), skillsDir, schemaFile],
   { stdout: 'pipe', stderr: 'pipe' }
 );
 if (validationResult.stdout) process.stdout.write(validationResult.stdout);
