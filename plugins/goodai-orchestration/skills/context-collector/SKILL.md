@@ -653,3 +653,7 @@ Execute update flow and return a CONTEXT_RESULT block.
 10. **DO NOT** fetch external docs for standard well-known patterns already covered by project rules.
 11. **DO NOT** modify any project files — this is a read + research + write-to-jobs skill only.
 12. **DO NOT** skip the metadata block and update log — they are mandatory for version tracking.
+
+## graphify (code and impact lookup)
+
+When `graphify-out/graph.json` exists, prefer graphify for code structure, relationships, ownership, lifecycle, and impact before blind grep. Resolve the CLI with `command -v graphify`; if it is missing and `$HOME/.local/bin/graphify` exists, use that absolute binary path. Use `graphify affected "<symbol>"` for blast radius, `graphify query` for broad questions, and `graphify path`/`graphify explain` for relationships. Treat graph output as navigation only and verify against actual files. If graphify is unavailable, continue with normal search and record the unavailable reason when producing an analysis, review, or implementation report. See `skills/shared/graphify-lookup.md`.

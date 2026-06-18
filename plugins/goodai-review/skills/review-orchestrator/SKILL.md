@@ -96,6 +96,24 @@ Required content:
 - Decisions: why each reviewer was selected or skipped.
 - Token policy: effective budget, truncation decisions, files summarized instead of fully inlined.
 - Legacy/profile reviewer availability and selection state.
+- Graph context: graph availability, resolved `graphify` binary, cross-repo graph MCP availability,
+  graph queries already run, and unavailable reason when graph lookup cannot run.
+
+Graph context setup:
+
+```bash
+GRAPHIFY_BIN="$(command -v graphify || true)"
+if [ -z "$GRAPHIFY_BIN" ] && [ -x "$HOME/.local/bin/graphify" ]; then
+  GRAPHIFY_BIN="$HOME/.local/bin/graphify"
+fi
+test -f graphify-out/graph.json && test -n "$GRAPHIFY_BIN"
+```
+
+If the graph is available, run `skills/shared/graphify-lookup.md` during context gathering. For
+high-risk changed symbols (stores, API wrappers, services, adapters, core exports, flow nodes,
+shared managers, and exported utilities), run `$GRAPHIFY_BIN affected "<symbol>"` once and include
+the summarized results in `review_context.graph_context`. If a backend graph MCP is available,
+record `backend_graph_mcp.available: true` and expose the exact tool names from the shared lookup.
 
 Context modes:
 - `none`: no additional context collection; use only diff/path and local rules.
@@ -394,6 +412,12 @@ scope_mode: diff | path
 context_doc: <path or empty>
 issue_url: <url or empty>
 model_class: simple | normal | complex | current-session
+graph_context:
+  graph_available: true | false
+  graphify_bin: <resolved path or empty>
+  backend_graph_mcp_available: true | false
+  queries: <summarized graphify/MCP queries already run>
+  unavailable_reason: missing_graph | missing_cli | query_failed | empty
 budget:
   max_prompt_tokens: <number or null>
   max_findings: <number>

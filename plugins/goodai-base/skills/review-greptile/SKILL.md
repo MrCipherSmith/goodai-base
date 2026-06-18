@@ -169,6 +169,10 @@ If custom context exists that explains or excuses a finding — mark the finding
 
 ---
 
+## Graphify Impact Pass
+
+Before emitting findings, run the shared graphify lookup for changed symbols when `graphify-out/graph.json` exists. See `skills/shared/graphify-lookup.md`. Use `graphify affected` for exported classes, stores, API wrappers, services, adapters, components, managers, core exports, flow nodes, shared utilities, and other symbols whose blast radius is relevant to this reviewer. For ownership, lifecycle, or dependency questions, use `graphify path` or `graphify explain`. If a backend graph MCP server is available, use the explicit `mcp__backend_graph.*` tools listed in the shared lookup for backend contract or cross-repo questions. Treat graph output as navigation only and verify every finding in code. Record `graph_context: used` with queries run, or `graph_context: unavailable` with the reason.
+
 ## Output Contract
 
 ```

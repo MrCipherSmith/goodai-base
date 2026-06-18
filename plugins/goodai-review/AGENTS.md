@@ -38,12 +38,11 @@ It defines global behavior and tells the agent how to select the required rule f
 
 ---
 
-
 > **Code-intelligence default:** for any code-structure, relationship, ownership, lifecycle, or
 > impact question, if `graphify-out/graph.json` exists, query the graph first
 > (`graphify query|path|explain|affected`, or a registered cross-repo MCP graph) before blind
 > grep — then verify against the real files. Resolve the CLI with `command -v graphify`; if it is
-> missing and `/.local/bin/graphify` exists, use that absolute binary path. During code
+> missing and `$HOME/.local/bin/graphify` exists, use that absolute binary path. During code
 > review, use `graphify affected "<symbol>"` for changed exported classes, stores, API wrappers,
 > services, adapters, components, managers, core exports, flow nodes, and shared utilities, and
 > record `graph_context: used` or `graph_context: unavailable` in the review output. If a backend
