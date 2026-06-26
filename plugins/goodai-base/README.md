@@ -25,6 +25,7 @@ cd scripts && bun run generate-codex-plugins
 - `code-ai-review`
 - `code-boss-review`
 - `code-mobx-store-review`
+- `code-review`
 - `code-style-review`
 - `code-verifier`
 - `commit`
@@ -53,6 +54,7 @@ cd scripts && bun run generate-codex-plugins
 - `perf-check`
 - `pr`
 - `pr-issue-documenter`
+- `pr-review-comments`
 - `prd-creator`
 - `push`
 - `review-architecture`

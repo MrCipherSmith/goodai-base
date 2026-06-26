@@ -14,8 +14,10 @@ cd scripts && bun run generate-codex-plugins
 - `code-ai-review`
 - `code-boss-review`
 - `code-mobx-store-review`
+- `code-review`
 - `code-style-review`
 - `iago`
+- `pr-review-comments`
 - `review-architecture`
 - `review-backend`
 - `review-clean-code`
