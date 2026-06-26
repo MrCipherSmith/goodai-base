@@ -41,9 +41,9 @@ describe('sync-skills.ts', () => {
     expect(stdout).toContain('Syncing skills from');
   });
 
-  it('output contains "-> Syncing to" for at least one target', () => {
+  it('output contains a tool sync header for at least one target', () => {
     const { stdout } = runScript();
-    expect(stdout).toContain('-> Syncing to');
+    expect(stdout).toContain('-> [Claude Code] Syncing skills to');
   });
 
   it('output contains "OK   " for at least one skill', () => {
@@ -51,14 +51,14 @@ describe('sync-skills.ts', () => {
     expect(stdout).toContain('OK   ');
   });
 
-  it('output contains "-> Syncing Claude slash commands"', () => {
+  it('output contains Claude slash command sync header', () => {
     const { stdout } = runScript();
-    expect(stdout).toContain('-> Syncing Claude slash commands');
+    expect(stdout).toContain('-> [Claude Code] Syncing slash commands');
   });
 
-  it('output contains "-> Syncing AGENTS.md to all tool targets"', () => {
+  it('output contains AGENTS.md sync header', () => {
     const { stdout } = runScript();
-    expect(stdout).toContain('-> Syncing AGENTS.md to all tool targets');
+    expect(stdout).toContain('-> Syncing AGENTS.md');
   });
 
   it('output contains "Running pre-sync validation..."', () => {

@@ -3,7 +3,7 @@ description: "boss-style review profile: direct, strict, architecture-first feed
 alwaysApply: false
 ---
 
-# boss Review Profile
+# Boss Review Profile
 
 ## Purpose
 Replicate the boss review style for requested reviews.
