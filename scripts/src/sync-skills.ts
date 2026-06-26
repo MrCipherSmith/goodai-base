@@ -80,6 +80,7 @@ const configFile = join(repoRoot, 'goodai.config.json');
 
 const argv = process.argv.slice(2);
 const forceAll = argv.includes('--all');
+const skipValidation = argv.includes('--skip-validation');
 const toolsIdx = argv.indexOf('--tools');
 const toolsArg = toolsIdx >= 0 ? argv[toolsIdx + 1] : undefined;
 
@@ -138,18 +139,22 @@ if (!fileExists(skillsDir) || !statSync(skillsDir).isDirectory()) {
   process.exit(1);
 }
 
-console.log('Running pre-sync validation...');
-const validationResult = Bun.spawnSync(
-  ['bun', join(import.meta.dir, 'validate-skills-before-sync.ts'), skillsDir, schemaFile],
-  { stdout: 'pipe', stderr: 'pipe' }
-);
-if (validationResult.stdout) process.stdout.write(validationResult.stdout);
-if (validationResult.stderr) process.stderr.write(validationResult.stderr);
+if (skipValidation) {
+  console.log('Pre-sync validation skipped (--skip-validation)');
+} else {
+  console.log('Running pre-sync validation...');
+  const validationResult = Bun.spawnSync(
+    ['bun', join(import.meta.dir, 'validate-skills-before-sync.ts'), skillsDir, schemaFile],
+    { stdout: 'pipe', stderr: 'pipe' }
+  );
+  if (validationResult.stdout) process.stdout.write(validationResult.stdout);
+  if (validationResult.stderr) process.stderr.write(validationResult.stderr);
 
-if (validationResult.exitCode !== 0) {
-  console.log('');
-  console.log('Sync aborted due to validation errors.');
-  process.exit(1);
+  if (validationResult.exitCode !== 0) {
+    console.log('');
+    console.log('Sync aborted due to validation errors.');
+    process.exit(1);
+  }
 }
 
 console.log('');
