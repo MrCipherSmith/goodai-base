@@ -17,6 +17,8 @@ cd scripts && bun run generate-codex-plugins
 - `autodoc-orchestrator`
 - `autodoc-scanner`
 - `autodoc-writer`
+- `brd-creator`
+- `fsd-creator`
 - `gproject-consistency-checker`
 - `gproject-discovery`
 - `gproject-orchestrator`
@@ -26,6 +28,8 @@ cd scripts && bun run generate-codex-plugins
 - `gproject-spec-writer`
 - `gproject-stack-advisor`
 - `prd-creator`
+- `spec-orchestrator`
+- `trd-creator`
 
 ## Included References
 

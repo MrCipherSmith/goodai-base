@@ -22,6 +22,7 @@ It defines global behavior and tells the agent how to select the required rule f
 | Explicit skill name (e.g., "Run feature-analyzer")         | **Invoke named skill directly**    | "Use feature-analyzer", "Run feature-analyzer" |
 | "Add PR description", "Document PR", "Create issue for PR" | **`pr-issue-documenter` directly** | "Describe PR changes", "Update PR and issue"   |
 | "Write PRD", "Plan project", "Create spec", "gproject"     | **ASK: quick PRD or full pipeline?** | `prd-creator` (fast) vs `gproject-orchestrator` (full) |
+| "Full spec", "BRD to TRD", "Pre-implementation docs", "Prepare spec with review" | **`spec-orchestrator` directly** | Full documentation pipeline with review loops |
 | "How to write...", "Standards for..."                      | **Check Core Rule Catalog**        | "How to write DTOs", "Git commit format"       |
 | "Create...", "Add..." (with specific type)                 | **Check Core Rule Catalog**        | "Create documentation", "Add pipeline step"    |
 | "Change model", "Use different model", "Switch model"      | **Check Model Selection**          | "Use GPT-5 for sub-agent", "Switch to claude"  |
@@ -566,7 +567,73 @@ Subagent notes:
 - **Purpose**: Quick single-pass PRD — transforms unstructured request into a formal, testable Product Requirements Document
 - **Use When**: "Create a PRD", "Draft PRD", "Write product requirements" — fast result without full pipeline
 - **vs `gproject-orchestrator`**: No stack/architecture decisions, no consistency review, no roadmap — simpler and faster
-- **Modes**: Direct (user) or Orchestrated (called by another agent)
+- **Modes**: Direct (user) or Orchestrated (called by `spec-orchestrator` or another agent). Supports refinement mode via `reviewer_findings` + `current_draft` fields.
+
+---
+
+### Pre-Implementation Specification Skills (spec pipeline)
+
+> **Sub-domain purpose**: Produce a complete pre-implementation documentation suite — BRD → PRD → FSD → TRD — with an iterative review loop after each document stage. The reviewer receives full upstream context, not clean-context, to enable cross-artifact consistency checks.
+
+**`skills/spec-orchestrator`** ⭐ ENTRY POINT
+
+- **Purpose**: Orchestrates the full BRD → PRD → FSD → TRD pipeline with contextual review loops at each document stage
+- **Use When**:
+  - "Create full spec", "Full spec pipeline", "BRD to TRD"
+  - "Pre-implementation docs", "Prepare spec"
+  - "Write all documents before implementation"
+  - User wants BRD, PRD, FSD, and TRD produced together with automated quality review
+- **Key Features**:
+  - 6-stage pipeline: Gather → Expand → BRD → PRD → FSD → TRD
+  - PRD is mandatory; all other stages are optional and skippable
+  - Review loop per document stage: reviewer with full upstream context → creator refines until 0 problems
+  - Reviewer model auto-resolved by provider (Claude Haiku / gpt-4o-mini / omitted)
+  - DONE_WITH_CONCERNS propagation with upstream_warnings
+  - Job directory with collision handling; pipeline log
+- **Output**: `brd.md`, `prd.md`, `fsd.md`, `trd.md` + `spec-pipeline-log.md` in `<JOBS_ROOT>/<job-name>/`
+- **Version**: v1.0.0
+
+**Subagents (dispatched by spec-orchestrator — can also run standalone):**
+
+| Stage | Skill | Output |
+|-------|-------|--------|
+| 1 | `interviewer` (batch mode) | `raw-requirements.md` |
+| 2 | `brainstorm` (batch mode) | `brainstorm.md` |
+| 3 | `brd-creator` (new) | `brd.md` |
+| 4 | `prd-creator` (existing, modified) | `prd.md` |
+| 5 | `fsd-creator` (new) | `fsd.md` |
+| 6 | `trd-creator` (new) | `trd.md` |
+
+**`skills/brd-creator`**
+- **Purpose**: Creates a Business Requirements Document (BRD) — business problem, objectives, stakeholders, scope, success metrics, constraints, out of scope
+- **Use When**: "Create BRD", "Write business requirements", or dispatched by `spec-orchestrator`
+- **Modes**: Direct (user) or Orchestrated. Supports generation mode and refinement mode (via `reviewer_findings`)
+
+**`skills/fsd-creator`**
+- **Purpose**: Expands PRD into a Functional Specification Document — feature behavior, UI states, logic rules, validation rules, error cases, interface contracts
+- **Use When**: "Create FSD", "Write functional spec", or dispatched by `spec-orchestrator`
+- **Modes**: Orchestrated (requires `upstream.prd`). Supports refinement mode.
+
+**`skills/trd-creator`**
+- **Purpose**: Expands PRD + FSD into a Technical Requirements Document — architecture, tech stack, data models, API contracts, NFRs, integration points, deployment notes
+- **Use When**: "Create TRD", "Write technical requirements", or dispatched by `spec-orchestrator`
+- **Modes**: Orchestrated (requires `upstream.prd`). Supports refinement mode. Can check codebase via `codebase_path`.
+
+### Spec Pipeline Routing Rules
+
+| User Request | Action |
+|-------------|--------|
+| "Full spec", "BRD to TRD", "All pre-implementation docs" | `spec-orchestrator` directly |
+| "Quick PRD only", "Just the PRD" | `prd-creator` directly |
+| "Create BRD" | `brd-creator` directly |
+| "Create FSD" | `fsd-creator` directly (provide PRD content) |
+| "Create TRD" | `trd-creator` directly (provide PRD content) |
+| "Full project from scratch with roadmap" | `gproject-orchestrator` |
+
+**Disambiguation:**
+- `spec-orchestrator` → documentation suite only, no code
+- `gproject-orchestrator` → documentation + architecture decisions + roadmap
+- `job-orchestrator` → code implementation pipeline (may follow spec-orchestrator output)
 
 ---
 

@@ -18,6 +18,7 @@ cd scripts && bun run generate-codex-plugins
 - `autodoc-scanner`
 - `autodoc-writer`
 - `brainstorm`
+- `brd-creator`
 - `changelog`
 - `claude-md-management`
 - `code-ai-review`
@@ -32,6 +33,7 @@ cd scripts && bun run generate-codex-plugins
 - `deploy`
 - `feature-analyzer`
 - `feature-dev`
+- `fsd-creator`
 - `gproject-consistency-checker`
 - `gproject-discovery`
 - `gproject-orchestrator`
@@ -70,9 +72,11 @@ cd scripts && bun run generate-codex-plugins
 - `review-style`
 - `review-testing-practices`
 - `security-audit`
+- `spec-orchestrator`
 - `task-implementer`
 - `test-gen`
 - `tests-creator`
+- `trd-creator`
 
 ## Included References
 

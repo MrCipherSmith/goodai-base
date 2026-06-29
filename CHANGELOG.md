@@ -4,6 +4,25 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.13.0] — spec-orchestrator + BRD/FSD/TRD creators
+
+> Released: 2026-06-29
+
+### Added
+
+- **`skills/spec-orchestrator`** — New orchestration skill. Produces a full pre-implementation documentation suite (BRD → PRD → FSD → TRD) from a single user request. Each document stage is followed by a contextual review loop: the reviewer receives the full upstream artifact context (not clean-context), enabling cross-artifact consistency checks. Creator-as-fixer pattern: when the reviewer finds problems, the creator refines the current draft rather than regenerating. Reviewer model auto-resolved by provider (Claude Haiku, gpt-4o-mini, or omitted for OpenRouter/unknown). PRD is mandatory; all other stages are skippable. Outputs `spec-pipeline-log.md` with per-stage status.
+- **`skills/brd-creator`** — New creator skill. Produces a Business Requirements Document with sections: Business Problem, Objectives, Stakeholders, Scope, Success Metrics, Constraints, Out of Scope. Supports generation and refinement modes (via `reviewer_findings` + `current_draft`). Direct and orchestrated modes.
+- **`skills/fsd-creator`** — New creator skill. Expands PRD into a Functional Specification Document: Feature Behavior, UI States, Logic Rules, Validation Rules, Error Cases, Interface Contracts. Supports generation and refinement modes. Accepts `codebase_path` for architecture consistency checks.
+- **`skills/trd-creator`** — New creator skill. Expands PRD + FSD into a Technical Requirements Document: Architecture, Tech Stack, Data Models, API Contracts, NFRs, Integration Points, Deployment Notes. Supports generation and refinement modes. Accepts `codebase_path` for tech stack verification.
+
+### Changed
+
+- **`skills/prd-creator` v1.1.0** — Orchestrated mode extended with optional fields: `upstream_context` (string|null — upstream artifact content), `metadata.output_path` (where prd-creator writes prd.md), `current_draft`, `reviewer_findings`, `upstream_warnings`. When `reviewer_findings` is present, prd-creator must refine `current_draft` rather than regenerating. Backward-compatible — all new fields are optional.
+- **`AGENTS.md`** — Added routing entries for `spec-orchestrator`, `brd-creator`, `fsd-creator`, `trd-creator`. Added "Pre-Implementation Specification Skills" section. Added quick-decision row for "Full spec / BRD to TRD".
+- **`scripts/src/generate-codex-plugins.ts`** — Added `spec-orchestrator`, `brd-creator`, `fsd-creator`, `trd-creator` to `goodai-project-docs` bundle.
+
+---
+
 ## [1.12.0] — Greptile integration + npm package
 
 > Released: 2026-04-17

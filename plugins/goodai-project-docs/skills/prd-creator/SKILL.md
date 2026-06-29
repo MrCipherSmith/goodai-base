@@ -63,8 +63,15 @@ The agent MUST NOT:
 
 ### 3.2 Orchestrated Mode
 
-- **Input:** Schema-validated input including `contextSchema`, `initialRequest`, `constraints`, `metadata`. (See `input-contract.schema.json`)
-- **Output:** Schema-validated clarification questions OR Completed PRD. (See `output-contract.schema.json`)
+- **Input:** Schema-validated input including `mode`, `initialRequest`, and optional fields `upstream_context`, `constraints`, `contextSchema`, `metadata`, `current_draft`, `reviewer_findings`, `upstream_warnings`. (See `input-contract.schema.json`)
+- **Output:** PRD written directly to `metadata.output_path`. (See `output-contract.schema.json`)
+
+**Orchestrated mode behavior:**
+
+- **Generation mode** (no `current_draft`/`reviewer_findings`): produce PRD from scratch using `initialRequest` and `upstream_context`.
+- **Refinement mode** (`reviewer_findings` present): address every finding in `reviewer_findings` by refining `current_draft`. Do **not** regenerate from scratch — preserve the original structure and revise only what the findings require.
+- The PRD **must be written to `metadata.output_path`** when provided. The orchestrator reads from that path after each invocation.
+- Do not ask clarification questions in orchestrated mode — generate the best possible PRD from available context.
 
 ---
 
@@ -155,8 +162,8 @@ Then
 - You MUST NOT create a single file in the generic `docs/` root.
 
 **Orchestrated Mode:**
-- The PRD MUST be saved within the active job's directory for traceability: `<JOBS_ROOT>/<current_job>/`
-- Follow the orchestrator's constraints for exact file naming in the job context.
+- The PRD MUST be written to `metadata.output_path` when provided. This is how `spec-orchestrator` locates the output.
+- If `metadata.output_path` is absent, fall back to `<JOBS_ROOT>/<current_job>/prd.md`.
 
 ---
 

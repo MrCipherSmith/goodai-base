@@ -16,6 +16,10 @@
       "minLength": 10,
       "description": "The raw user request or initial problem statement."
     },
+    "upstream_context": {
+      "type": ["string", "null"],
+      "description": "Upstream artifact content for orchestrated mode. Priority order: brd.md → brainstorm.md → raw-requirements.md → null."
+    },
     "contextSchema": {
       "type": "object",
       "description": "Contextual information for the PRD (primarily used in Orchestrated mode).",
@@ -49,6 +53,10 @@
       "type": "object",
       "description": "Additional metadata about the request.",
       "properties": {
+        "output_path": {
+          "type": "string",
+          "description": "Absolute path where prd.md should be written (orchestrated mode). The orchestrator reads from this path after each invocation."
+        },
         "priority": {
           "type": "string",
           "enum": ["low", "medium", "high"]
@@ -58,6 +66,29 @@
           "enum": ["low", "medium", "high"]
         }
       }
+    },
+    "current_draft": {
+      "type": "string",
+      "description": "Current prd.md content read from output_path. Present only in refinement mode."
+    },
+    "reviewer_findings": {
+      "type": "array",
+      "description": "Problems returned by the reviewer. Present only in refinement mode. When present, prd-creator must refine current_draft rather than regenerating.",
+      "items": {
+        "type": "object",
+        "required": ["id", "location", "severity", "description"],
+        "properties": {
+          "id":          { "type": "string" },
+          "location":    { "type": "string" },
+          "severity":    { "type": "string", "enum": ["blocker", "major", "minor"] },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "upstream_warnings": {
+      "type": "array",
+      "description": "DONE_WITH_CONCERNS notes propagated from prior pipeline stages.",
+      "items": { "type": "string" }
     }
   }
 }

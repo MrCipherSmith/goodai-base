@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "trd-creator-input-contract",
+  "title": "TRD-Creator Orchestrated Input Contract",
+  "type": "object",
+  "required": ["request", "upstream"],
+  "properties": {
+    "request": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Original user request."
+    },
+    "upstream": {
+      "type": "object",
+      "required": ["prd"],
+      "description": "Upstream artifacts. prd is always required.",
+      "properties": {
+        "brd": { "type": ["string", "null"], "description": "Content of brd.md, or null." },
+        "prd": { "type": "string",           "description": "Content of prd.md — always present." },
+        "fsd": { "type": ["string", "null"], "description": "Content of fsd.md, or null." }
+      }
+    },
+    "codebase_path": {
+      "type": ["string", "null"],
+      "description": "Path to the project codebase for consistency checks. Null disables checks."
+    },
+    "current_draft": {
+      "type": "string",
+      "description": "Current trd.md content. Present only in refinement mode."
+    },
+    "reviewer_findings": {
+      "type": "array",
+      "description": "Problems returned by the reviewer. Present only in refinement mode.",
+      "items": {
+        "type": "object",
+        "required": ["id", "location", "severity", "description"],
+        "properties": {
+          "id":          { "type": "string" },
+          "location":    { "type": "string" },
+          "severity":    { "type": "string", "enum": ["blocker", "major", "minor"] },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "upstream_warnings": {
+      "type": "array",
+      "description": "DONE_WITH_CONCERNS notes propagated from prior stages.",
+      "items": { "type": "string" }
+    }
+  }
+}

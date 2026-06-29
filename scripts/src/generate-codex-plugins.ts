@@ -158,6 +158,10 @@ const PLUGINS: PluginBundle[] = [
       'gproject-spec-writer',
       'gproject-stack-advisor',
       'prd-creator',
+      'spec-orchestrator',
+      'brd-creator',
+      'fsd-creator',
+      'trd-creator',
     ],
   },
 ];
