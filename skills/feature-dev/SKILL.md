@@ -9,7 +9,7 @@ triggers:
   - "Feature from scratch"
 metadata:
   author: "MrCipherSmith"
-  version: "2.0.0"
+  version: "2.1.0"
   category: "workflow"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -40,15 +40,31 @@ End-to-end feature development workflow from idea to merge-ready PR.
 
 1. Parse input (description or GitHub issue via `gh issue view`)
 2. Clarify ambiguities — ask the user up to 3 questions max
-3. Produce the **Implementation Spec** (per `implementation-doc-mandate.mdc`):
+
+**Spec generation — choose one:**
+
+**Option A — Lightweight (default for small/medium features):**
+Produce the **Implementation Spec** inline (per `implementation-doc-mandate.mdc`):
    - **What**: feature description in 2-3 sentences
    - **Why**: user value / business reason
    - **Scope**: what's in, what's explicitly out
    - **Acceptance criteria**: testable bullet points
    - **Approach**: which files will change, key design decisions
    - **Test strategy**: framework, which scenarios will be covered
-4. **Save spec** to `.feature-spec.md` in project root (add to .gitignore if not already)
-5. **Get user confirmation before proceeding**
+
+Save spec to `.feature-spec.md` in project root (add to .gitignore if not already).
+
+**Option B — Full spec via spec-orchestrator (for complex / greenfield features):**
+When the feature is complex, cross-cutting, or involves multiple stakeholders, offer:
+```
+This feature looks complex. Generate formal spec documents first?
+A) Yes — spec-orchestrator: BRD + PRD + FSD + TRD
+B) PRD only — quick product requirements
+C) No — lightweight inline spec (default)
+```
+If A or B: invoke `spec-orchestrator` with the request + `codebase_path`. Use produced `prd.md` as the primary spec document (and `fsd.md` / `trd.md` as design references in Phase 2). Still save `.feature-spec.md` as a pointer to the spec artifacts.
+
+3. **Get user confirmation before proceeding**
 
 ### Phase 2: DESIGN
 

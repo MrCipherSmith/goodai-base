@@ -21,7 +21,7 @@ triggers:
   - "Full issue implementation"
 metadata:
   author: "MrCipherSmith"
-  version: "3.2.0"
+  version: "3.3.0"
   category: "orchestration"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -86,6 +86,7 @@ Parse the user's request to identify the intent:
 | "Analyze issue #N" / "Study issue" | `analyze` | Analysis only: analyze → report. Then ask if user wants to implement. |
 | "Review my code" / "Review branch" | `review` | Review only: review → report |
 | "Analyze and implement" | `implement` | Same as implement |
+| "Spec then implement" / "BRD first" / "Write spec" | `spec_then_implement` | spec-orchestrator → analyze → implement → review → PR |
 | Custom request | `custom` | Run `interviewer` skill first, then build plan from output |
 
 **Ambiguity detection:** If the request uses vague words ("improve", "fix", "refactor") with no issue number or specific file — trigger the **Interactive Approach Selection** below.
@@ -102,6 +103,7 @@ I see several ways to approach this. Which fits best?
   C) 📋 Analysis + brainstorm — explore approaches before committing
   D) 🔧 Review only — review current branch changes
   E) 📝 Custom — describe what you need, I'll build the plan
+  F) 📄 Spec then implement — generate BRD/PRD/FSD/TRD first, then implement
 
 > pick a letter or describe your own approach
 ```
@@ -112,6 +114,7 @@ I see several ways to approach this. Which fits best?
 - C → `analyze` intent + trigger `brainstorm` after analysis
 - D → `review` intent
 - E → `custom` intent → proceed to 0.1.5 (interviewer gate)
+- F → `spec_then_implement` intent → proceed to 0.1.6 (spec gate)
 
 **Skip this step** when intent is clear (explicit issue number, "implement issue #N", "review my code").
 
@@ -141,6 +144,39 @@ INPUT:
 - `ready_to_proceed: true` → continue to 0.2 with enriched context.
 
 **Skip** for `implement`/`analyze` with an issue number — requirements are in the issue.
+
+### 0.1.6 Spec-Orchestrator Gate (for `spec_then_implement`, `custom`, and descriptive implement requests)
+
+**Auto-trigger when:**
+- Intent is `spec_then_implement` (user explicitly requested spec)
+- Intent is `custom` and interviewer output suggests a new feature / no existing issue
+- Intent is `implement` but the request is purely descriptive (no issue number, no file paths) AND `run_spec_orchestrator: "ask"`
+- Request contains keywords: "spec", "BRD", "PRD", "FSD", "TRD", "спецификац", "документ", "вначале"
+
+**Skip when:**
+- `run_spec_orchestrator: "no"` (automation setting)
+- Request has an explicit GitHub issue number
+- Intent is `analyze` or `review`
+
+**If triggered, ask:**
+```
+This looks like a new feature from description. Should I generate formal spec documents first?
+
+  A) Full spec — BRD + PRD + FSD + TRD, then implement (recommended for complex features)
+  B) PRD only — quick product requirements, then implement
+  C) No — go straight to implementation
+
+> pick a letter (default: C if no response in 30s)
+```
+
+**Mapping:**
+- A → insert `spec` step (full) at top of implement plan; passes `skip_stages: []`
+- B → insert `spec` step (PRD only) at top of implement plan; passes `skip_stages: ["gather","expand","brd","fsd","trd"]`
+- C → skip spec step, proceed with standard implement plan
+
+**Auto-select without asking when:**
+- `run_spec_orchestrator: "yes"` → choose A
+- `run_spec_orchestrator: "prd-only"` → choose B
 
 ### 0.2 Collect Required Context
 
@@ -254,7 +290,8 @@ Based on intent, construct an ordered list of steps:
 **For `implement` intent:**
 ```
 PLAN:
-  1.  { id: "analyze",        type: "analyze",   agent: "issue-analyzer",    depends: [] }
+  0.  { id: "spec",           type: "spec",      agent: "spec-orchestrator", depends: [],          conditional: true }
+  1.  { id: "analyze",        type: "analyze",   agent: "issue-analyzer",    depends: ["spec"] }
   2.  { id: "context",        type: "context",   agent: "context-collector", depends: ["analyze"] }
   3.  { id: "prepare",        type: "prepare",   agent: "orchestrator",      depends: ["context"] }
   4.  { id: "tests-creator",  type: "tests",     agent: "tests-creator",     depends: ["prepare"] }
@@ -272,6 +309,7 @@ PLAN:
 ```
 
 **Conditional step triggers:**
+- `spec`: triggered by 0.1.6 Spec-Orchestrator Gate (user chose A or B, or `run_spec_orchestrator` auto-selects)
 - `sanity-check`: always runs — verifies ≥1 commit was made
 - `tests-creator`: always runs — mandatory TDD step before every task-implementer wave
 - `verify`: always runs — code-verifier is the mandatory quality gate after implementation
@@ -348,6 +386,7 @@ Show each step with its agent and status, then ask the user to approve or adjust
 ```
 Execution plan — <N> steps:
 
+  Step 0   spec             spec-orchestrator           → BRD/PRD/FSD/TRD [conditional: run_spec_orchestrator]
   Step 1   analyze          issue-analyzer              → issue #<N>
   Step 2   context          context-collector           → project context + test framework
   Step 3   prepare          orchestrator                → feature branch
@@ -404,6 +443,59 @@ FOR step in PLAN:
   IF step failed critically:
     Ask user: "Step '<name>' failed. Continue with remaining steps or abort?"
     IF abort: skip to Phase 3 (COMPLETION) with status "aborted"
+```
+
+### 2.1.9 Step: SPEC (conditional — spec-orchestrator)
+
+Runs only when Spec-Orchestrator Gate (0.1.6) was triggered and user chose A or B.
+
+**Dispatch `spec-orchestrator`:**
+
+```
+Task({
+  description: "Generate spec: <job-name>",
+  subagent_type: "general",
+  prompt: |
+    Load skill: skills/spec-orchestrator/SKILL.md
+
+    request: "<original user request>"
+    job_name: "<job-name>-spec"
+    jobs_root: "<JOBS_ROOT>"
+    codebase_path: "<project_dir or null>"
+    skip_stages: <from gate choice — [] for full, ["gather","expand","brd","fsd","trd"] for PRD-only>
+    max_review_iterations: 3
+})
+```
+
+**Parse result:**
+- `STATUS: DONE` or `STATUS: DONE_WITH_CONCERNS` → collect spec artifact paths
+- `STATUS: BLOCKED` → surface to user, offer to skip spec and continue
+- `STATUS: NEEDS_CONTEXT` → re-dispatch with enriched request
+
+**Extract produced artifacts** (read from job directory):
+```
+SPEC_ARTIFACTS:
+  brd_path:  <JOBS_ROOT>/<job-name>-spec/brd.md (or null if skipped)
+  prd_path:  <JOBS_ROOT>/<job-name>-spec/prd.md
+  fsd_path:  <JOBS_ROOT>/<job-name>-spec/fsd.md (or null if skipped)
+  trd_path:  <JOBS_ROOT>/<job-name>-spec/trd.md (or null if skipped)
+  log_path:  <JOBS_ROOT>/<job-name>-spec/spec-pipeline-log.md
+```
+
+**Pass spec artifacts to downstream steps:**
+- `context-collector`: include `SPEC_ARTIFACTS` paths in `FOCUS_AREAS` so context-collector reads and summarizes the spec docs
+- `issue-analyzer` (if issue number present): include prd.md content as `upstream_context`
+- `wave-executor` (implement step): pass `spec_context_path: prd_path` so task-implementer reads the PRD for implementation guidance
+
+**Document:**
+```
+ACTION: add-document
+DATA:
+  DOC_TYPE: spec
+  TARGET: both
+  TITLE: Specification — <job-name>
+  CONTENT: <summary of spec artifacts produced + their paths>
+  AGENT: spec-orchestrator
 ```
 
 ### 2.2 Step: ANALYZE
@@ -1439,6 +1531,7 @@ The subagent must not fetch orchestrator state independently. If the subagent ne
 | Setting | Default | Options | Description |
 |---------|---------|---------|-------------|
 | `skip_confirmation` | `true` | true/false | Skip confirmation for sub-agents |
+| `run_spec_orchestrator` | `"ask"` | `"ask"` / `"yes"` / `"prd-only"` / `"no"` | Pre-implementation spec generation: ask user (ask), always full BRD→TRD (yes), PRD only (prd-only), skip (no) |
 | `base_branch` | auto-detect | any | Base branch (auto-detect from repo default, or ask user) |
 | `max_review_iterations` | `3` | 1-5 | Max review → fix iterations |
 | `create_pr` | `true` | true/false | Whether to propose PR at the end |
