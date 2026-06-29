@@ -1014,6 +1014,108 @@
       }
     },
     {
+      "id": "spec-orchestrator",
+      "type": "skill",
+      "path": "skills/spec-orchestrator/SKILL.md",
+      "description": "Orchestrates the full BRD → PRD → FSD → TRD pipeline with contextual review loops at each document stage",
+      "triggers": {
+        "keywords": [
+          "orchestrates",
+          "full",
+          "brd",
+          "prd",
+          "fsd",
+          "trd",
+          "pipeline",
+          "contextual",
+          "review",
+          "loops",
+          "document",
+          "stage"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "brd-creator",
+      "type": "skill",
+      "path": "skills/brd-creator/SKILL.md",
+      "description": "Creates a Business Requirements Document (BRD) — business problem, objectives, stakeholders, scope, success metrics, constraints, out of scope",
+      "triggers": {
+        "keywords": [
+          "creates",
+          "business",
+          "requirements",
+          "document",
+          "brd",
+          "problem",
+          "objectives",
+          "stakeholders",
+          "scope",
+          "success",
+          "metrics",
+          "constraints",
+          "out"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "fsd-creator",
+      "type": "skill",
+      "path": "skills/fsd-creator/SKILL.md",
+      "description": "Expands PRD into a Functional Specification Document — feature behavior, UI states, logic rules, validation rules, error cases, interface contracts",
+      "triggers": {
+        "keywords": [
+          "expands",
+          "prd",
+          "functional",
+          "specification",
+          "document",
+          "feature",
+          "behavior",
+          "states",
+          "logic",
+          "rules",
+          "validation",
+          "error",
+          "cases",
+          "interface",
+          "contracts"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "trd-creator",
+      "type": "skill",
+      "path": "skills/trd-creator/SKILL.md",
+      "description": "Expands PRD + FSD into a Technical Requirements Document — architecture, tech stack, data models, API contracts, NFRs, integration points, deployment notes",
+      "triggers": {
+        "keywords": [
+          "expands",
+          "prd",
+          "fsd",
+          "technical",
+          "requirements",
+          "document",
+          "architecture",
+          "tech",
+          "stack",
+          "data",
+          "models",
+          "api",
+          "contracts",
+          "nfrs",
+          "integration",
+          "points",
+          "deployment",
+          "notes"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "autodoc-orchestrator",
       "type": "skill",
       "path": "skills/autodoc-orchestrator/SKILL.md",
