@@ -4,6 +4,27 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.14.0] — caveman-mode + terse sub-agent responses
+
+> Released: 2026-07-01
+
+### Added
+
+- **`skills/caveman-mode`** — New standalone skill. Activates terse response style for the current session (`/caveman` command). Based on the 6-rule caveman format (no preamble, no filler, no restatement, fragments > sentences, bullets > prose, code unchanged) benchmarked at 9–21% output token savings. Deactivate with `/caveman off`. Complementary to RTK which reduces input tokens.
+- **`rules/core/terse-subagent-response.mdc`** — New rule file. The automated, sub-agent-level version of caveman mode. Orchestrators inject this rule into sub-agent dispatch prompts to reduce inter-agent token flow. Specifies terse STATUS response format and limits finding `problem`/`suggested_fix`/`description` fields to 1 sentence each.
+
+### Changed
+
+- **`skills/review-orchestrator` v1.6.0** — Reviewer dispatch now includes response-style instruction: apply `terse-subagent-response.mdc`, keep `problem` and `suggested_fix` values ≤ 1 sentence, no prose before/after `REVIEW_RESULT` JSON. Highest-impact integration point (up to 10+ parallel reviewers per run).
+- **`skills/job-orchestrator` v3.4.0** — Wave-executor response format now explicitly requires `terse-subagent-response.mdc`. No preamble, no filler, no restatement in wave summaries.
+- **`skills/gproject-orchestrator` v1.1.0** — Phase sub-agent output contract changed from "3-5 sentences max" to "≤5 bullet fragments" with `terse-subagent-response.mdc` reference.
+- **`skills/autodoc-orchestrator` v1.1.0** — Phase sub-agent output contract changed from "3-5 sentences" to "≤5 bullet fragments" with `terse-subagent-response.mdc` reference.
+- **`skills/spec-orchestrator` v1.1.0** — Reviewer mission instructions now require each `description` to be 1 sentence and prohibit prose before/after JSON.
+- **`AGENTS.md`** — Added caveman-mode to Quick Decision Guide. Added `terse-subagent-response.mdc` to Core Rule Catalog under Development Workflow. Added `caveman-mode` skill entry under Configuration Skills.
+- **`scripts/src/generate-codex-plugins.ts`** — Added `caveman-mode` to `goodai-core` bundle.
+
+---
+
 ## [1.13.0] — spec-orchestrator + BRD/FSD/TRD creators
 
 > Released: 2026-06-29

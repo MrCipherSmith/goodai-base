@@ -1178,6 +1178,32 @@
       }
     },
     {
+      "id": "caveman-mode",
+      "type": "skill",
+      "path": "skills/caveman-mode/SKILL.md",
+      "description": "Activates terse response style (9–21% token savings) for the current session — no preamble, no filler, fragments over sentences, bullets over prose",
+      "triggers": {
+        "keywords": [
+          "activates",
+          "terse",
+          "response",
+          "style",
+          "token",
+          "savings",
+          "current",
+          "session",
+          "preamble",
+          "filler",
+          "fragments",
+          "over",
+          "sentences",
+          "bullets",
+          "prose"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "hookify",
       "type": "skill",
       "path": "skills/hookify/SKILL.md",

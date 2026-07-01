@@ -12,6 +12,7 @@ cd scripts && bun run generate-codex-plugins
 ## Included Skills
 
 - `brainstorm`
+- `caveman-mode`
 - `changelog`
 - `claude-md-management`
 - `commit`

@@ -1,7 +1,7 @@
 {
   "name": "goodai-base",
-  "version": "1.12.0",
-  "description": "62 reusable AI agent skills and 29 coding rules for Claude Code, Cursor, Codex, Zed, and OpenCode",
+  "version": "1.14.0",
+  "description": "63 reusable AI agent skills and 30 coding rules for Claude Code, Cursor, Codex, Zed, and OpenCode",
   "keywords": [
     "claude-code",
     "codex",

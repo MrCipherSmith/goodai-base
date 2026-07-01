@@ -10,7 +10,7 @@ description: >
   Trigger on: user provides a repo path, asks to document existing code, wants
   onboarding docs, API reference, or architecture overview generated automatically.
   NOT for: writing new PRDs or planning new features (use gproject-orchestrator).
-version: 1.0.0
+version: 1.1.0
 ---
 
 <!-- SUBAGENT-STOP: If you are a subagent dispatched by another orchestrator, HALT.
@@ -130,9 +130,9 @@ Agent({
 
     ## Output Contract
     1. Write artifact to: <output path>
-    2. Return ONLY:
+    2. Return ONLY (apply rules/core/terse-subagent-response.mdc):
        STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT
-       summary: (3-5 sentences)
+       summary: (≤5 bullet fragments — no prose)
        concerns: (if DONE_WITH_CONCERNS)
        questions: (if NEEDS_CONTEXT — with A/B/C/D options)
        next_phase_hints: (key findings for orchestrator routing)

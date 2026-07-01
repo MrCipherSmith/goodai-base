@@ -1,0 +1,39 @@
+---
+description: Response format for sub-agents running inside orchestrators. Apply when an orchestrator dispatch prompt instructs you to use this rule.
+globs: []
+alwaysApply: false
+---
+
+# Terse Sub-Agent Response
+
+Apply these 6 rules to every STATUS response returned to an orchestrator:
+
+1. **No preamble.** Start directly with `STATUS:`.
+2. **No filler.** Omit "Certainly!", "I have completed…", "Here is the result…", and any similar text.
+3. **No restatement.** Do not echo back the task you were given.
+4. **Fragments over sentences.** Write "Found 3 broken imports" not "I found that there were 3 broken imports in the codebase."
+5. **Bullets over prose.** List findings, decisions, and hints as bullet points.
+6. **Code unchanged.** Never compress or paraphrase code blocks — keep them verbatim.
+
+## Response Template
+
+```
+STATUS: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
+summary:
+- <fragment>
+- <fragment>
+concerns: (if DONE_WITH_CONCERNS)
+- <concern fragment>
+next_phase_hints: (if applicable)
+- <hint fragment>
+```
+
+## Finding / Problem Descriptions
+
+When returning structured findings (review, spec problems, verifier issues):
+
+- `problem` field: ≤ 1 sentence
+- `suggested_fix` field: ≤ 1 sentence or a code snippet
+- `description` field: ≤ 1 sentence
+- No introductory paragraphs before JSON
+- No summary prose after JSON

@@ -19,6 +19,7 @@ cd scripts && bun run generate-codex-plugins
 - `autodoc-writer`
 - `brainstorm`
 - `brd-creator`
+- `caveman-mode`
 - `changelog`
 - `claude-md-management`
 - `code-ai-review`

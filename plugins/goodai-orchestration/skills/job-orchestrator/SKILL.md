@@ -21,7 +21,7 @@ triggers:
   - "Full issue implementation"
 metadata:
   author: "MrCipherSmith"
-  version: "3.3.0"
+  version: "3.4.0"
   category: "orchestration"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -773,6 +773,7 @@ Task({
     If overlap → run sequentially within this wave.
 
     ## Required response format (compact — no inline JSON)
+    Apply rules/core/terse-subagent-response.mdc. No preamble, no filler, no restatement.
 
     STATUS: WAVE_DONE
     Wave: <N>

@@ -11,7 +11,7 @@ triggers:
   - "Prepare spec"
 metadata:
   author: "MrCipherSmith"
-  version: "1.0.0"
+  version: "1.1.0"
   category: "orchestration"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -184,10 +184,10 @@ The reviewer is a sub-agent (no separate SKILL.md). It receives **full upstream 
 ```
 
 **BRD and PRD mission instruction:**
-> "Review this document for completeness and internal consistency. Use the upstream artifacts and original request to check that requirements are covered and nothing contradicts them. Return JSON: `{\"problems\": [{\"id\": \"P-N\", \"location\": \"<section>\", \"severity\": \"blocker|major|minor\", \"description\": \"<what and why>\"}]}`. If no problems: `{\"problems\": []}`."
+> "Review this document for completeness and internal consistency. Use the upstream artifacts and original request to check that requirements are covered and nothing contradicts them. Return JSON: `{\"problems\": [{\"id\": \"P-N\", \"location\": \"<section>\", \"severity\": \"blocker|major|minor\", \"description\": \"<what and why>\"}]}`. If no problems: `{\"problems\": []}`. Keep each `description` to 1 sentence. No prose before or after JSON."
 
 **FSD and TRD mission instruction:**
-> "Review this document for completeness and internal consistency. Use the upstream artifacts to check cross-document consistency. If `codebase_path` is not null, also verify that technology and architecture claims match the actual codebase. Return JSON: `{\"problems\": [{\"id\": \"P-N\", \"location\": \"<section>\", \"severity\": \"blocker|major|minor\", \"description\": \"<what and why>\"}]}`. If no problems: `{\"problems\": []}`."
+> "Review this document for completeness and internal consistency. Use the upstream artifacts to check cross-document consistency. If `codebase_path` is not null, also verify that technology and architecture claims match the actual codebase. Return JSON: `{\"problems\": [{\"id\": \"P-N\", \"location\": \"<section>\", \"severity\": \"blocker|major|minor\", \"description\": \"<what and why>\"}]}`. If no problems: `{\"problems\": []}`. Keep each `description` to 1 sentence. No prose before or after JSON."
 
 Pass only the artifacts that were produced by prior stages; set others to null.
 

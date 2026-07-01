@@ -55,6 +55,7 @@ const PLUGINS: PluginBundle[] = [
     ],
     skills: [
       'brainstorm',
+      'caveman-mode',
       'changelog',
       'claude-md-management',
       'commit',

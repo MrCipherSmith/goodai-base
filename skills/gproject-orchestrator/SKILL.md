@@ -14,7 +14,7 @@ description: >
   "what's the best approach to build...", "document the approach for...",
   "create a roadmap for...", "spec this out", "write requirements for...".
   NOT for: code implementation (use job-orchestrator), code review (use code-review skills).
-version: 1.0.0
+version: 1.1.0
 ---
 
 <!-- SUBAGENT-STOP: If you are a subagent dispatched by another orchestrator, HALT.
@@ -128,9 +128,9 @@ Task({
 
     ## Output Contract
     1. Write full artifact to: jobs/<job>/artifacts/<artifact_name>.md
-    2. Return ONLY:
+    2. Return ONLY (apply rules/core/terse-subagent-response.mdc):
        - STATUS: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-       - summary: (3-5 sentences max)
+       - summary: (≤5 bullet fragments — no prose)
        - new_decisions: (key: value pairs, if any)
        - concerns: (if DONE_WITH_CONCERNS)
        - questions: (if NEEDS_CONTEXT, with A/B/C/D options)

@@ -26,6 +26,7 @@ It defines global behavior and tells the agent how to select the required rule f
 | "How to write...", "Standards for..."                      | **Check Core Rule Catalog**        | "How to write DTOs", "Git commit format"       |
 | "Create...", "Add..." (with specific type)                 | **Check Core Rule Catalog**        | "Create documentation", "Add pipeline step"    |
 | "Change model", "Use different model", "Switch model"      | **Check Model Selection**          | "Use GPT-5 for sub-agent", "Switch to claude"  |
+| "/caveman", "terse mode", "short responses", "minimize tokens" | **`caveman-mode` skill directly** | "Short responses please", "Enable caveman mode" |
 
 > **Orchestrator Routing Rule:** When the user does NOT explicitly name a specific skill
 > (e.g., "run review-logic", "use feature-analyzer"), and the request CAN be handled
@@ -206,6 +207,7 @@ Reference guidelines for coding standards and workflows:
 - `core/commit-message-formatting.mdc`: Conventional commit format policy.
 - `rules/core/subagent-status-protocol.md` — Subagent response format: required STATUS: prefix, four status types (DONE/DONE_WITH_CONCERNS/BLOCKED/NEEDS_CONTEXT), orchestrator handling logic
 - `rules/core/subagent-context-construction.md` — Explicit context construction for orchestrator→subagent dispatches: required fields, minimality principle, dispatch template
+- `rules/core/terse-subagent-response.mdc` — 6-rule terse response format for sub-agents in orchestrators: no preamble, no filler, fragments over sentences, bullets over prose, code unchanged. Injected by orchestrators into sub-agent dispatch prompts to reduce inter-agent token flow.
 
 
 **System Management:**
@@ -740,6 +742,12 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 - **Invoked by**: `job-orchestrator` Phase 0; `feature-dev` Phase 1; or directly by user
 
 ### Configuration Skills
+
+**`skills/caveman-mode`**
+- **Purpose**: Activates terse response style (9–21% token savings) for the current session — no preamble, no filler, fragments over sentences, bullets over prose
+- **Use When**: "/caveman", "terse mode", "short responses", "minimize tokens"
+- **Key Features**: 6-rule caveman format; deactivates with `/caveman off`; automated version (`terse-subagent-response.mdc`) is injected by orchestrators into sub-agent dispatch prompts
+- **Version**: v1.0.0
 
 **`skills/hookify`**
 - **Purpose**: Create agent hooks from natural language descriptions

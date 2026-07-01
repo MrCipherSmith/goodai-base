@@ -7,7 +7,7 @@ description: |
   "review --strict", "review --project-conventions", "review --legacy-profiles", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.5.0"
+version: "1.6.0"
 triggers:
   - "review"
   - "code review"
@@ -35,7 +35,7 @@ triggers:
   - "review --mobx-store"
 metadata:
   author: "MrCipherSmith"
-  version: "1.5.0"
+  version: "1.6.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -409,6 +409,8 @@ file_contents: <bounded file contents relevant to this reviewer>
 ```
 
 Each reviewer must return a `REVIEW_RESULT` object matching `skills/review-orchestrator/reviewer-finding.schema.json`, followed by a concise markdown summary. The orchestrator must reject or normalize free-form reports before consolidation.
+
+**Response style:** Apply `rules/core/terse-subagent-response.mdc`. Finding `problem` and `suggested_fix` values ≤ 1 sentence each. No prose before or after `REVIEW_RESULT` JSON.
 
 **Important for path mode:** instruct each reviewer to check the **entire file**, not just changes. The scope report should say "Path: `<TARGET_PATH>`" instead of a branch/merge-base.
 
