@@ -36,11 +36,19 @@ const CONFIG_PATH = join(GOODAI_BASE, "goodai.config.json");
 interface ToolDef {
   id: string;
   label: string;
-  skillsDir: string;
+  skillsDir?: string;
   agentsFile?: string;
   globalConfigLabel?: string;
   globalConfigPath?: string;
   globalConfigContent?: (goodaiPath: string) => string;
+  /**
+   * "skillsDir" (default): sync-skills copies files into skillsDir.
+   * "plugin": ZCode loads skills only through its plugin/marketplace system,
+   *           so we use generate-zcode-plugin + sync-zcode instead.
+   */
+  installMode?: "skillsDir" | "plugin";
+  /** For plugin installMode: where the plugin cache lives (used for "(detected)"). */
+  pluginCacheDir?: string;
 }
 
 const TOOLS: ToolDef[] = [
@@ -82,6 +90,16 @@ const TOOLS: ToolDef[] = [
     skillsDir: join(HOME, ".config", "zed", "skills"),
     agentsFile: join(HOME, ".config", "zed", "AGENTS.md"),
     // AGENTS.md sync is sufficient for Zed
+  },
+  {
+    id: "zcode",
+    label: "ZCode",
+    // ZCode does NOT scan a plain skills directory — it loads skills only
+    // through its plugin/marketplace system. We install a generated plugin via
+    // generate-zcode-plugin + sync-zcode instead of the skillsDir model.
+    installMode: "plugin",
+    pluginCacheDir: join(HOME, ".zcode", "cli", "plugins", "cache", "goodai-base"),
+    agentsFile: undefined,
   },
 ];
 
@@ -328,7 +346,11 @@ async function setup() {
   ));
 
   const toolLabels = TOOLS.map((t) => {
-    const installed = existsSync(t.skillsDir) || existsSync(join(t.skillsDir, ".."));
+    // Detect installed tools: skillsDir for most, pluginCacheDir for ZCode.
+    const detectDir = t.installMode === "plugin" ? t.pluginCacheDir : t.skillsDir;
+    const installed = detectDir
+      ? existsSync(detectDir) || existsSync(join(detectDir, ".."))
+      : false;
     const hint = installed ? c.dim(" (detected)") : "";
     return `${t.label}${hint}`;
   });
@@ -509,14 +531,21 @@ async function setup() {
 
   // Sync skills to selected tools
   if (syncNow) {
-    step(`Syncing skills to: ${selectedTools.map((t) => t.label).join(", ")}`);
-    const toolsArg = syncToolIds.join(",");
-    const proc = spawnSync(
-      "bun",
-      ["src/sync-skills.ts", "--tools", toolsArg],
-      { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
-    );
-    proc.status === 0 ? ok() : warn(`sync-skills failed:\n${proc.stderr?.trim()}`);
+    // SkillsDir-based tools (claude/cursor/codex/zed/opencode) are handled by
+    // sync-skills. Plugin-based tools (ZCode) have their own install pipeline.
+    const skillsDirTools = selectedTools.filter((t) => t.installMode !== "plugin");
+    const pluginTools = selectedTools.filter((t) => t.installMode === "plugin");
+
+    if (skillsDirTools.length > 0) {
+      step(`Syncing skills to: ${skillsDirTools.map((t) => t.label).join(", ")}`);
+      const toolsArg = skillsDirTools.map((t) => t.id).join(",");
+      const proc = spawnSync(
+        "bun",
+        ["src/sync-skills.ts", "--tools", toolsArg],
+        { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
+      );
+      proc.status === 0 ? ok() : warn(`sync-skills failed:\n${proc.stderr?.trim()}`);
+    }
 
     // Sync native Claude agents if claude is selected
     if (syncToolIds.includes("claude")) {
@@ -527,6 +556,26 @@ async function setup() {
         { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
       );
       agentProc.status === 0 ? ok() : warn(`sync-agents failed: ${agentProc.stderr?.trim()}`);
+    }
+
+    // Install plugin-based tools (ZCode): generate bundle, then file-drop install
+    for (const tool of pluginTools) {
+      step(`Generating plugin for ${tool.label}`);
+      const genProc = spawnSync(
+        "bun",
+        ["src/generate-zcode-plugin.ts"],
+        { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
+      );
+      genProc.status === 0 ? ok() : warn(`generate-zcode-plugin failed:\n${genProc.stderr?.trim()}`);
+      if (genProc.status !== 0) continue;
+
+      step(`Installing ${tool.label} plugin`);
+      const syncProc = spawnSync(
+        "bun",
+        ["src/sync-zcode.ts"],
+        { cwd: join(GOODAI_BASE, "scripts"), stdio: ["inherit", "pipe", "pipe"], encoding: "utf8" }
+      );
+      syncProc.status === 0 ? ok() : warn(`sync-zcode failed:\n${syncProc.stderr?.trim()}`);
     }
   }
 
@@ -553,7 +602,17 @@ async function setup() {
   if (docsRoot) console.log(`  ${c.bold("DOCS_ROOT:")}   ${docsRoot}`);
 
   console.log(`\n  ${c.dim("Re-run at any time:")} ${c.cyan("bun setup.ts --reconfigure")}`);
-  console.log(`  ${c.dim("Sync only:")}           ${c.cyan(`cd ${GOODAI_BASE}/scripts && bun run sync-skills --tools ${syncToolIds.join(",")}`)}\n`);
+  {
+    const skillsDirIds = selectedTools.filter((t) => t.installMode !== "plugin").map((t) => t.id);
+    const hasZCode = syncToolIds.includes("zcode");
+    if (skillsDirIds.length > 0) {
+      console.log(`  ${c.dim("Sync only:")}           ${c.cyan(`cd ${GOODAI_BASE}/scripts && bun run sync-skills --tools ${skillsDirIds.join(",")}`)}`);
+    }
+    if (hasZCode) {
+      console.log(`  ${c.dim("Reinstall ZCode plugin:")} ${c.cyan(`cd ${GOODAI_BASE}/scripts && bun run generate-zcode-plugin && bun run sync-zcode`)}`);
+    }
+    console.log();
+  }
 
   if (configureEnv) {
     console.log(c.dim("  Restart your shell (or run 'source ~/.zshrc') to apply env vars.\n"));

@@ -4,7 +4,7 @@ A curated knowledge base of AI agent skills, coding rules, and orchestration wor
 
 Instead of writing the same prompts over and over, you define **skills** (reusable agent workflows) and **rules** (coding standards), sync them across your AI tools, and get consistent, high-quality output every session.
 
-Works with Claude Code, Cursor, Codex, Zed, and OpenCode.
+Works with Claude Code, Cursor, Codex, Zed, OpenCode, and ZCode.
 
 ---
 
@@ -67,7 +67,7 @@ curl -fsSL https://raw.githubusercontent.com/MrCipherSmith/goodai-base/main/inst
 
 The installer clones the repo, installs dependencies, and launches an interactive setup wizard. The wizard:
 
-1. **AI tools** — choose which tools to sync (Claude Code, Cursor, Codex, OpenCode, Zed)
+1. **AI tools** — choose which tools to sync (Claude Code, Cursor, Codex, OpenCode, Zed, ZCode). ZCode is installed as a plugin (generated + dropped into `~/.zcode/cli/plugins/`).
 2. **Global config** — injects goodai-base routing block into each tool's global instructions file
 3. **Artifact paths** — optionally set `GOODAI_JOBS_ROOT` / `GOODAI_DOCS_ROOT` env vars
 4. **Sub-agent model** — sonnet / opus / haiku

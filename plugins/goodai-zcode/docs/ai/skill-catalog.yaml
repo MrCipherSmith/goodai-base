@@ -1,0 +1,423 @@
+# Machine-readable skill catalog for hook/agent consumption
+# Auto-generated from skills/*/SKILL.md — do not edit manually
+skills:
+  - name: autodoc-analyst
+    description: 'Phase 2 subagent for autodoc-orchestrator. Deep-dives into a single module to extract purpose, structure, public API surface, patterns, and key dependencies. Use when: dispatched by autodoc-orchestrator Phase 2 (one instance per module). NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/autodoc-analyst
+  - name: autodoc-architect
+    description: 'Phase 3 subagent for autodoc-orchestrator. Synthesizes all module analyses into a system-level architecture description: layers, data flows, integration points, and cross-cutting concerns. Use when: dispatched by autodoc-orchestrator Phase 3. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/autodoc-architect
+  - name: autodoc-assembler
+    description: 'Phase 5 subagent for autodoc-orchestrator. Assembles all documentation sections into a cohesive package: main README.md and navigation index. Use when: dispatched by autodoc-orchestrator Phase 5. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/autodoc-assembler
+  - name: autodoc-orchestrator
+    description: 'Autonomous reverse-engineering documentation pipeline — scans an existing codebase and produces comprehensive developer documentation without user involvement after initial setup. Use when: "autodoc", "generate docs for my project", "document this codebase", "reverse engineer documentation", "create project documentation from code", "сгенерируй документацию проекта", "задокументируй кодовую базу", "автодок", "autodoc". Trigger on: user provides a repo path, asks to document existing code, wants onboarding docs, API reference, or architecture overview generated automatically. NOT for: writing new PRDs or planning new features (use gproject-orchestrator).
+'
+    version: —
+    category: —
+    path: skills/autodoc-orchestrator
+  - name: autodoc-scanner
+    description: 'Phase 1 subagent for autodoc-orchestrator. Scans project structure, detects stack, identifies module boundaries, entry points, and dependencies. Use when: dispatched by autodoc-orchestrator Phase 1. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/autodoc-scanner
+  - name: autodoc-writer
+    description: 'Phase 4 subagent for autodoc-orchestrator. Writes one documentation section from analysis artifacts. Dispatched in parallel — one instance per section. Use when: dispatched by autodoc-orchestrator Phase 4. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/autodoc-writer
+  - name: brainstorm
+    description: 'Use when exploring architecture decisions, tech choices, feature ideas, or any open-ended problem that benefits from multiple perspectives.'
+    version: 1.0.0
+    category: ideation
+    path: skills/brainstorm
+  - name: changelog
+    description: 'Use when generating a changelog, release notes, or summarizing what changed between tags, versions, or date ranges.'
+    version: 1.0.0
+    category: workflow
+    path: skills/changelog
+  - name: claude-md-management
+    description: 'Use when saving session learnings, coding patterns, conventions, or commands discovered during work into CLAUDE.md files.'
+    version: 1.0.0
+    category: configuration
+    path: skills/claude-md-management
+  - name: code-ai-review
+    description: 'Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current branch changes from merge-base by default, including both committed and local uncommitted changes. Use when: code review requested, checking branch changes, reviewing implementation quality.'
+    version: 1.0.0
+    category: review
+    path: skills/code-ai-review
+  - name: code-boss-review
+    description: 'Performs strict boss-style code review following code-review-boss-profile.mdc. Reviews current branch changes from merge-base. Direct, no-fluff feedback focused on logic correctness. Use when: boss review requested, strict validation needed.'
+    version: 1.0.0
+    category: review
+    path: skills/code-boss-review
+  - name: code-mobx-store-review
+    description: 'Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInAction, state typing, View↔Store boundaries. Use when: reviewing MobX changes, state management validation.'
+    version: 1.1.0
+    category: review
+    path: skills/code-mobx-store-review
+  - name: code-review
+    description: 'Comprehensive code review with 4 parallel agents: correctness/logic, security, performance, style/maintainability. Produces unified severity report (CRITICAL/HIGH/MEDIUM/LOW). Use for thorough PR reviews and pre-merge checks.'
+    version: 1.0.0
+    category: review
+    path: skills/code-review
+  - name: code-style-review
+    description: 'Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch changes. Checks naming, organization, patterns, TypeScript usage. Use when: style validation needed, architecture review.'
+    version: 1.0.0
+    category: review
+    path: skills/code-style-review
+  - name: code-verifier
+    description: 'Use when running a full quality gate after implementation — lint, type-check, tests, and import validation. Mandatory step in job-orchestrator after task-implementer and after fix iterations. Use standalone when you need a structured verification report.'
+    version: 1.0.0
+    category: verification
+    path: skills/code-verifier
+  - name: commit
+    description: 'Use when committing code changes and a well-structured conventional commit message is needed, with optional amend or selective staging.'
+    version: 1.0.0
+    category: workflow
+    path: skills/commit
+  - name: context-collector
+    description: 'Use when a job needs a unified context document — gathering docs, libraries, and references for sub-agents before execution.'
+    version: 1.1.0
+    category: context
+    path: skills/context-collector
+  - name: db-migrate
+    description: 'Use when creating, applying, rolling back, or checking the status of database migrations.'
+    version: 1.0.0
+    category: database
+    path: skills/db-migrate
+  - name: dependency-update
+    description: 'Use when checking for outdated packages or upgrading dependencies with compatibility verification.'
+    version: 1.0.0
+    category: maintenance
+    path: skills/dependency-update
+  - name: deploy
+    description: 'Use when deploying to any environment (staging, production) or when a deployment pipeline needs to run.'
+    version: 1.0.0
+    category: ops
+    path: skills/deploy
+  - name: feature-analyzer
+    description: 'Use when analyzing feature branch changes across repos, planning implementation, or understanding backend→frontend contracts. NEVER start without explicit user confirmation of source, target, and branch.'
+    version: 2.4.0
+    category: analysis
+    path: skills/feature-analyzer
+  - name: feature-dev
+    description: 'Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided workflow.'
+    version: 2.0.0
+    category: workflow
+    path: skills/feature-dev
+  - name: gproject-consistency-checker
+    description: 'Validates PRD/Implementation Plan against decisions registry, architecture doc, and best practices constraints. Catches contradictions, gaps, and violations. Use when: dispatched by gproject-orchestrator Phase 5. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/gproject-consistency-checker
+  - name: gproject-discovery
+    description: 'Collects and structures initial project information from multiple sources. Use when: dispatched by gproject-orchestrator Phase 0. NOT for: direct user invocation — always called through orchestrator.
+'
+    version: —
+    category: —
+    path: skills/gproject-discovery
+  - name: gproject-orchestrator
+    description: 'Project documentation orchestrator — builds PRDs, specs, and implementation plans through a phased pipeline of specialized subagents. Use when: "Create project documentation", "Write PRD for...", "Plan project...", "Document how to implement...", "Spec out feature...", "Project planning", "gproject", "Создай документацию проекта", "Напиши PRD". Make sure to use this skill whenever the user mentions PRD, project planning, technical specification, implementation plan, feature spec, architecture document, project documentation, or wants to plan any software project from scratch or document a new feature in an existing codebase — even if they don''t explicitly say "PRD" or "spec". Also trigger on: "how should I build...", "plan out...", "what''s the best approach to build...", "document the approach for...", "create a roadmap for...", "spec this out", "write requirements for...". NOT for: code implementation (use job-orchestrator), code review (use code-review skills).
+'
+    version: —
+    category: —
+    path: skills/gproject-orchestrator
+  - name: gproject-patterns-researcher
+    description: 'Researches best practices per technology in the chosen stack and defines application architecture patterns. Produces constraints that PRD must follow. Use when: dispatched by gproject-orchestrator Phase 3. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/gproject-patterns-researcher
+  - name: gproject-planner
+    description: 'Generates roadmap, milestones, task breakdown, and dependency graph from PRD. Use when: dispatched by gproject-orchestrator Phase 6. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/gproject-planner
+  - name: gproject-problem-definer
+    description: 'Defines core problems, goals, non-goals, and success metrics from discovery data. Use when: dispatched by gproject-orchestrator Phase 1. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/gproject-problem-definer
+  - name: gproject-spec-writer
+    description: 'Generates PRD or Implementation Plan constrained by decisions registry, architecture doc, and best practices. Does NOT invent new architectural decisions. Use when: dispatched by gproject-orchestrator Phase 4. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/gproject-spec-writer
+  - name: gproject-stack-advisor
+    description: 'Determines project level (MVP/pet/startup/production) and recommends optimal technology stack with trade-off analysis. Use when: dispatched by gproject-orchestrator Phase 2. NOT for: direct user invocation.
+'
+    version: —
+    category: —
+    path: skills/gproject-stack-advisor
+  - name: hookify
+    description: 'Use when adding automated hook behavior to Claude Code or Cursor from a natural language description.'
+    version: 1.0.0
+    category: configuration
+    path: skills/hookify
+  - name: iago
+    description: 'Use when generating or updating a Mermaid diagram for a GitHub pull request review, especially after reviewing a diff and needing to explain control flow, sequence, classes, or entity relationships. Triggered by: iago, /iago, /squawk, generate PR diagram, add Mermaid diagram to PR, or visualize this review.'
+    version: 1.0.0
+    category: review
+    path: skills/iago
+  - name: interview
+    description: 'Use before implementation, design, or migration when requirements are unclear and targeted clarifying questions are needed to gather precise context.'
+    version: 1.0.0
+    category: analysis
+    path: skills/interview
+  - name: interviewer
+    description: 'Use when requirements are ambiguous and precise clarification is needed before proceeding with a complex task.'
+    version: 1.0.0
+    category: meta
+    path: skills/interviewer
+  - name: issue-analyzer
+    description: 'Use when decomposing a GitHub issue into atomic tasks for AI implementation, planning task breakdown, or preparing work for task-implementer agents.'
+    version: 1.1.0
+    category: analysis
+    path: skills/issue-analyzer
+  - name: job-documenter
+    description: 'Use when a job folder needs to be initialized, or analysis/report/review documents need to be created or updated in jobs/.'
+    version: 1.0.0
+    category: documentation
+    path: skills/job-documenter
+  - name: job-orchestrator
+    description: 'Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-end with sub-agents.'
+    version: 3.2.0
+    category: orchestration
+    path: skills/job-orchestrator
+  - name: perf-check
+    description: 'Use when measuring bundle size, detecting performance regressions, auditing slow queries, or investigating why something is slow.'
+    version: 1.0.0
+    category: performance
+    path: skills/perf-check
+  - name: pr
+    description: 'Use when opening a pull request for the current branch.'
+    version: 1.0.0
+    category: workflow
+    path: skills/pr
+  - name: pr-issue-documenter
+    description: 'Use when documenting PR changes, adding a PR description, creating a linked issue for a PR, or updating an existing issue body.'
+    version: 1.0.0
+    category: documentation
+    path: skills/pr-issue-documenter
+  - name: pr-review-comments
+    description: 'Собирает комментарии к указанному PR (по ссылке) через GitHub MCP или gh, группирует по авторам, при комментариях от boss предлагает обновить правило core/code-review-boss-profile.mdc (с согласия пользователя), анализирует каждый комментарий и даёт объяснение и возможный фикс. Триггеры: разбери комментарии к PR, комментарии к PR, pr review comments, обнови правило по ревью boss.'
+    version: —
+    category: —
+    path: skills/pr-review-comments
+  - name: prd-creator
+    description: 'Use when a vague or unstructured request needs to be converted into a formal, testable Product Requirements Document.'
+    version: 1.0.0
+    category: planning
+    path: skills/prd-creator
+  - name: push
+    description: 'Use when pushing the current branch to the remote, especially when upstream tracking or safety checks are needed.'
+    version: 1.0.0
+    category: workflow
+    path: skills/push
+  - name: review-architecture
+    description: 'Use when: reviewing code for architectural violations — layer violations, dependency direction
+mistakes, module boundary coupling, SOLID principle breaches, NestJS module/provider structure,
+React MVVM boundary violations, or MobX store layer misplacement.
+Triggered by: "review architecture", "check architecture", "architectural review",
+or dispatched by review-orchestrator with --architecture or --backend.
+NOT for: style/naming preferences, logic correctness bugs, or security vulnerabilities.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-architecture
+  - name: review-backend
+    description: 'Use when: reviewing NestJS backend changes — API design, service layer, DTO validation,
+database patterns, and TypeScript correctness. Covers "review backend", "backend review",
+"review API", "review NestJS", or dispatched by review-orchestrator with --backend flag.
+NOT for: frontend patterns, MobX, React components, general security vulnerabilities
+(use review-security-code for XSS/injection/auth-bypass), or performance profiling
+(use review-performance).
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-backend
+  - name: review-clean-code
+    description: 'Use when: reviewing code against Clean Code principles (Uncle Bob) and SOLID at the
+function/class level — meaningful names, small functions, single level of abstraction,
+argument count, error handling, DRY, comment quality, and SOLID (SRP, OCP, LSP, ISP, DIP)
+as applied to individual classes and functions.
+Triggered by: "review clean code", "check clean code", "Uncle Bob review", "SOLID review",
+"review --clean-code", or dispatched by review-orchestrator.
+NOT for: architectural layer violations (review-architecture), naming convention formatting
+(review-style), logic correctness bugs (review-logic), or security (review-security-code).
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-clean-code
+  - name: review-core-boundaries
+    description: 'Use when reviewing shared core/infrastructure module changes for dependency
+direction, feature-boundary leakage, abstraction stability, composition,
+and blast-radius risks. Dispatched by review-orchestrator for
+--core-boundaries, --project-conventions, --all, or src/core/** changes.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-core-boundaries
+  - name: review-flow-graph
+    description: 'Use when reviewing generic ReactFlow or graph-surface abstraction changes:
+public graph surface, store subclassing, layout lifecycle, internal helper
+boundaries, selection lifecycle, and large-graph performance. Dispatched by
+review-orchestrator for --flow-graph, --project-conventions, --all, or
+src/core/flow/** / graph abstraction changes.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-flow-graph
+  - name: review-frontend
+    description: 'Use when a frontend review is requested, checking React component patterns, MobX state management (observer, actions, computed, reactions, lifecycle), View-Store boundaries, and TypeScript safety in changed frontend code. NOT for backend patterns, security vulnerabilities, performance bottlenecks, or cross-layer architecture.'
+    version: 1.1.0
+    category: review
+    path: skills/review-frontend
+  - name: review-frontend-conventions
+    description: 'Use when reviewing frontend code against repository-local conventions commonly
+captured in CLAUDE.md or similar project guides: React/MobX boundaries,
+TypeScript strictness, i18n placement, storage wrappers, error handling,
+styling tokens, Storybook expectations, and local tooling rules. Dispatched
+by review-orchestrator for --frontend-conventions, --project-conventions,
+--all, or frontend src/**/*.ts(x) changes when local convention docs exist.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-frontend-conventions
+  - name: review-greptile
+    description: 'Use when: a PR needs codebase-aware review using Greptile — an AI reviewer with full
+repository indexing. Unlike diff-only reviewers, Greptile understands cross-file impact
+across the entire codebase. Triggered by: "greptile review", "review with greptile",
+"review --greptile", or dispatched by review-orchestrator on PRs.
+Requires: PR number + GitHub/GitLab repo name.
+NOT for: path-mode reviews or diff without a PR number — use other review-* skills instead.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-greptile
+  - name: review-highload
+    description: 'Use when: reviewing code that will run under high concurrency or high traffic —
+race conditions, connection pool exhaustion, cache invalidation, missing indexes,
+unbounded queues, missing backpressure, retry storms, idempotency gaps,
+hot-path blocking I/O, and distributed systems anti-patterns.
+Triggered by: "review highload", "review scalability", "highload review",
+"review concurrency", "review --highload", or dispatched by review-orchestrator.
+NOT for: frontend re-render performance (review-performance), general N+1 queries
+(review-performance), clean code style (review-clean-code), or NestJS module structure
+(review-architecture).
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-highload
+  - name: review-logic
+    description: 'Use when: reviewing code for logic correctness, algorithmic bugs, missing error handling,
+async/await mistakes, null/undefined risks, race conditions, type contract violations,
+or spec compliance. Dispatched by review-orchestrator for --frontend, --backend, and --all.
+Also invoked directly: "review logic", "check correctness", "are there any bugs here".
+NOT for: security vulnerabilities, performance profiling, style/naming preferences,
+or architectural pattern concerns — those belong in their respective specialized reviewers.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-logic
+  - name: review-orchestrator
+    description: 'Use when: a code review is requested and the user does not explicitly name a specialized reviewer.
+Handles "review", "code review", "review PR", "review --frontend", "review --backend",
+"review --architecture", "review --security", "review --performance", "review --style",
+"review --strict", "review --project-conventions", "review --legacy-profiles", "review --all". Routes to specialized reviewers in parallel and
+consolidates findings into one unified report.
+NOT for: running a single specialized reviewer — invoke it directly by name instead.
+'
+    version: 1.5.0
+    category: review
+    path: skills/review-orchestrator
+  - name: review-performance
+    description: 'Use when a performance review is requested, checking for N+1 queries, unnecessary re-renders, memory leaks, missing indexes, large bundle imports, and synchronous blocking in changed code. NOT for security, logic correctness, style, or architecture.'
+    version: 1.0.0
+    category: review
+    path: skills/review-performance
+  - name: review-pr-feedback
+    description: 'Use when: a developer has received PR review comments and wants to understand them,
+act on them, or extract patterns from them. Covers "analyze PR comments",
+"review PR feedback", "what did reviewers say", "parse PR #N", "explain PR comments",
+or dispatched by review-orchestrator when a PR URL is provided.
+NOT for: reviewing code directly — this skill reads human or bot PR feedback and
+makes it actionable. To review code, use the domain review skills.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-pr-feedback
+  - name: review-security-code
+    description: 'Use when a code-level security review is requested, checking for injection vulnerabilities, auth gaps, insecure cryptography, secrets, and OWASP Top 10 patterns in changed code. NOT for infrastructure, deployment, or dependency audits.'
+    version: 1.0.0
+    category: review
+    path: skills/review-security-code
+  - name: review-strict
+    description: 'Use when: a strict engineering pass is needed — either as a meta-reviewer reading consolidated
+findings from other reviewers and elevating weak findings, or standalone on a git diff.
+Covers "strict review", "review --strict", "boss review", "review as boss", or dispatched
+by review-orchestrator as an optional post-pass after other reviewers complete.
+NOT for: first-pass review (run domain reviewers first); large refactors outside the diff
+scope (file separately).
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-strict
+  - name: review-style
+    description: 'Use when: reviewing code for style, naming conventions, readability, and DRY violations —
+without touching logic, architecture, security, or performance. Covers "review style",
+"style review", "check naming", "check readability", or dispatched by review-orchestrator
+with --style flag.
+NOT for: logic bugs, architectural violations, security vulnerabilities, performance
+anti-patterns, or any finding that could cause a functional regression.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-style
+  - name: review-testing-practices
+    description: 'Use when reviewing unit, integration, Storybook, component, or e2e tests
+against repository-local testing conventions: co-location, network mocking,
+MSW-style boundary mocks, behaviour assertions, deterministic waits,
+smoke/full split, locator priority, and screenshot-test discipline.
+Dispatched by review-orchestrator for --testing-practices,
+--project-conventions, --all, or changed test/e2e/story files.
+'
+    version: 1.0.0
+    category: review
+    path: skills/review-testing-practices
+  - name: security-audit
+    description: 'Use when checking for dependency vulnerabilities, accidentally committed secrets, or security issues in Docker images.'
+    version: 1.0.0
+    category: quality
+    path: skills/security-audit
+  - name: task-implementer
+    description: 'Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing autonomous code changes from a JSON task object.'
+    version: 1.2.0
+    category: implementation
+    path: skills/task-implementer
+  - name: test-gen
+    description: 'Use when unit or integration tests need to be written for a specific file or module.'
+    version: 1.0.0
+    category: testing
+    path: skills/test-gen
+  - name: tests-creator
+    description: 'Use when writing test cases BEFORE implementation — converts acceptance criteria into failing test stubs that task-implementer will make pass. Mandatory step in the TDD pipeline between issue-analyzer and task-implementer.'
+    version: 1.0.0
+    category: testing
+    path: skills/tests-creator

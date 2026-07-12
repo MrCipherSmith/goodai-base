@@ -15,6 +15,9 @@
     "generate-agents": "bun src/generate-agents.ts",
     "generate-codex-plugins": "bun src/generate-codex-plugins.ts",
     "check-codex-plugins": "bun src/generate-codex-plugins.ts --check",
+    "generate-zcode-plugin": "bun src/generate-zcode-plugin.ts",
+    "check-zcode-plugin": "bun src/generate-zcode-plugin.ts --check",
+    "sync-zcode": "bun src/sync-zcode.ts",
     "validate-rules-json": "bun src/validate-rules-json.ts",
     "validate-skills-before-sync": "bun src/validate-skills-before-sync.ts",
     "deploy-skill-hook": "bun src/deploy-skill-hook.ts"

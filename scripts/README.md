@@ -14,11 +14,14 @@ cd scripts && bun install
 |---|---|
 | `sync-skills` | Sync `SKILL.<platform>.md` files to all agent directories |
 | `sync-agents` | Regenerate stale Claude Code native agent files (checksum-based) |
+| `sync-zcode` | Install the `goodai-zcode` plugin into `~/.zcode/cli/plugins/` (file-drop) |
 | `generate-skill-catalog` | Regenerate `docs/skill-catalog.md` and `docs/ai/skill-catalog.yaml` |
 | `generate-rules-catalog` | Regenerate `docs/rules-catalog.md` |
 | `generate-skill-registry` | Regenerate `hooks/skill-registry.json` from skills frontmatter |
 | `generate-rules-json` | Regenerate `rules.json` from AGENTS.md |
 | `generate-agents` | Generate `~/.claude/agents/<name>.md` from agent-worthy skills |
+| `generate-codex-plugins` | Build Codex plugin bundles under `plugins/` from skills + rules |
+| `generate-zcode-plugin` | Build the ZCode plugin bundle under `plugins/goodai-zcode/` from skills + rules |
 | `validate-rules-json` | Validate `rules.json` against AGENTS.md |
 | `validate-skills-before-sync` | Pre-sync gate: checks required platform variants and frontmatter |
 | `detect-context` | Detect matching rules/skills for stdin text input |
@@ -64,6 +67,15 @@ cd scripts && bun run deploy-skill-hook /path/to/your/project
 | OpenCode | `~/.config/opencode/skills/` | `~/.config/opencode/AGENTS.md` | — |
 | Zed | `~/.config/zed/skills/` | `~/.config/zed/AGENTS.md` | — |
 | Antigravity | `~/.antigravity/skills/` | — | — |
+| ZCode | — *(plugin)* | `~/.zcode/cli/plugins/cache/goodai-base/goodai-zcode/<version>/AGENTS.md` | — |
+
+> **ZCode is plugin-based.** Unlike the others, ZCode does not scan a plain
+> skills directory — it loads skills only through its plugin/marketplace system.
+> `sync-skills` therefore does not handle ZCode. Instead, build the bundle with
+> `bun run generate-zcode-plugin` and install it with `bun run sync-zcode` (or
+> select ZCode in `bun setup.ts`, which runs both automatically). The installed
+> plugin lives at `~/.zcode/cli/plugins/cache/goodai-base/goodai-zcode/<version>/`
+> and is registered in `~/.zcode/cli/plugins/marketplaces/goodai-base/marketplace.json`.
 
 **Global config** (injected by setup wizard, not by sync-skills):
 - Claude Code: `~/.claude/CLAUDE.md` — goodai-base routing block

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@goodai/goodai-zcode-plugin",
+  "version": "1.15.0",
+  "private": true,
+  "license": "MIT",
+  "description": "All goodai-base skills and rules in one ZCode plugin."
+}
