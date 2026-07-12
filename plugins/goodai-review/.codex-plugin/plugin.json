@@ -1,6 +1,6 @@
 {
   "name": "goodai-review",
-  "version": "1.12.0",
+  "version": "1.15.0",
   "description": "Code review orchestrator and specialized review skills.",
   "author": {
     "name": "MrCipherSmith",

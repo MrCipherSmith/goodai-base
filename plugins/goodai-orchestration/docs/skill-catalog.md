@@ -2,7 +2,7 @@
 
 _Auto-generated from `skills/*/SKILL.md`. Do not edit manually._
 
-Total: 62 skills
+Total: 64 skills
 
 | Name | Description | Version | Category |
 | ---- | ----------- | ------- | -------- |
@@ -18,6 +18,7 @@ Total: 62 skills
 | `code-ai-review` | Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current ... | 1.0.0 | review |
 | `code-boss-review` | Performs strict boss-style code review following code-review-boss-profile.mdc. Reviews current br... | 1.0.0 | review |
 | `code-mobx-store-review` | Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInA... | 1.1.0 | review |
+| `code-review` | Comprehensive code review with 4 parallel agents: correctness/logic, security, performance, style... | 1.0.0 | review |
 | `code-style-review` | Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch... | 1.0.0 | review |
 | `code-verifier` | Use when running a full quality gate after implementation — lint, type-check, tests, and import v... | 1.0.0 | verification |
 | `commit` | Use when committing code changes and a well-structured conventional commit message is needed, wit... | 1.0.0 | workflow |
@@ -45,6 +46,7 @@ Total: 62 skills
 | `perf-check` | Use when measuring bundle size, detecting performance regressions, auditing slow queries, or inve... | 1.0.0 | performance |
 | `pr` | Use when opening a pull request for the current branch. | 1.0.0 | workflow |
 | `pr-issue-documenter` | Use when documenting PR changes, adding a PR description, creating a linked issue for a PR, or up... | 1.0.0 | documentation |
+| `pr-review-comments` | Собирает комментарии к указанному PR (по ссылке) через GitHub MCP или gh, группирует по авторам, ... | — | — |
 | `prd-creator` | Use when a vague or unstructured request needs to be converted into a formal, testable Product Re... | 1.0.0 | planning |
 | `push` | Use when pushing the current branch to the remote, especially when upstream tracking or safety ch... | 1.0.0 | workflow |
 | `review-architecture` | Use when: reviewing code for architectural violations — layer violations, dependency direction

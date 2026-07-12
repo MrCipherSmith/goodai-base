@@ -4,6 +4,24 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.15.0] — ZCode support
+
+> Released: 2026-07-12
+
+### Added
+
+- **ZCode sync target** — ZCode is now a first-class sync target alongside Claude Code, Cursor, Codex, Zed, and OpenCode. Unlike the others, ZCode does not scan a plain skills directory: it loads skills only through its plugin/marketplace system. goodai-base now ships a dedicated pipeline for that.
+- **`scripts/src/generate-zcode-plugin.ts`** — Builds a single `goodai-zcode` plugin bundle (all skills + rules + AGENTS.md + docs) under `plugins/goodai-zcode/`, plus a marketplace manifest at `.agents/zcode-plugins/marketplace.json`. Supports `--check` for CI freshness gating.
+- **`scripts/src/sync-zcode.ts`** — File-drop installer: copies the bundle into `~/.zcode/cli/plugins/cache/goodai-base/goodai-zcode/<version>/`, writes a `.zcode-plugin-seed.json`, and registers the marketplace at `~/.zcode/cli/plugins/marketplaces/goodai-base/marketplace.json`. Supports `--dry-run`, `--repo-root`, `--home`.
+- **`scripts/tests/generate-zcode-plugin.test.ts`** — 4 tests covering freshness (`--check`), marketplace manifest, plugin.json format, and bundle completeness.
+- **`setup.ts`** — ZCode selectable in the tools multi-select (auto-detected via `~/.zcode/cli/plugins/`). The setup wizard runs `generate-zcode-plugin` + `sync-zcode` for ZCode instead of the skillsDir-based `sync-skills`.
+
+### Changed
+
+- **`README.md`** / **`scripts/README.md`** — Listed ZCode as a supported tool and documented the plugin-based install model, including the sync-targets table.
+
+---
+
 ## [1.14.0] — caveman-mode + terse sub-agent responses
 
 > Released: 2026-07-01

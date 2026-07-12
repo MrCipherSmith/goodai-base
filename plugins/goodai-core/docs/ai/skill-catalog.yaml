@@ -67,6 +67,11 @@ skills:
     version: 1.1.0
     category: review
     path: skills/code-mobx-store-review
+  - name: code-review
+    description: 'Comprehensive code review with 4 parallel agents: correctness/logic, security, performance, style/maintainability. Produces unified severity report (CRITICAL/HIGH/MEDIUM/LOW). Use for thorough PR reviews and pre-merge checks.'
+    version: 1.0.0
+    category: review
+    path: skills/code-review
   - name: code-style-review
     description: 'Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch changes. Checks naming, organization, patterns, TypeScript usage. Use when: style validation needed, architecture review.'
     version: 1.0.0
@@ -210,6 +215,11 @@ skills:
     version: 1.0.0
     category: documentation
     path: skills/pr-issue-documenter
+  - name: pr-review-comments
+    description: 'Собирает комментарии к указанному PR (по ссылке) через GitHub MCP или gh, группирует по авторам, при комментариях от boss предлагает обновить правило core/code-review-boss-profile.mdc (с согласия пользователя), анализирует каждый комментарий и даёт объяснение и возможный фикс. Триггеры: разбери комментарии к PR, комментарии к PR, pr review comments, обнови правило по ревью boss.'
+    version: —
+    category: —
+    path: skills/pr-review-comments
   - name: prd-creator
     description: 'Use when a vague or unstructured request needs to be converted into a formal, testable Product Requirements Document.'
     version: 1.0.0
