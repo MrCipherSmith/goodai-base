@@ -294,7 +294,8 @@ PLAN:
   1.  { id: "analyze",        type: "analyze",   agent: "issue-analyzer",    depends: ["spec"] }
   2.  { id: "context",        type: "context",   agent: "context-collector", depends: ["analyze"] }
   3.  { id: "prepare",        type: "prepare",   agent: "orchestrator",      depends: ["context"] }
-  4.  { id: "tests-creator",  type: "tests",     agent: "tests-creator",     depends: ["prepare"] }
+  3b. { id: "gatekeep",       type: "gatekeep",  agent: "plan-gatekeeper",   depends: ["prepare"], conditional: true }
+  4.  { id: "tests-creator",  type: "tests",     agent: "tests-creator",     depends: ["gatekeep"] }
   5.  { id: "implement",      type: "implement", agent: "task-implementer",  depends: ["tests-creator"] }
   6.  { id: "sanity-check",    type: "check",    agent: "orchestrator",    depends: ["implement"] }
   7.  { id: "verify",          type: "verify",   agent: "code-verifier",   depends: ["sanity-check"] }
@@ -310,15 +311,13 @@ PLAN:
 
 **Conditional step triggers:**
 - `spec`: triggered by 0.1.6 Spec-Orchestrator Gate (user chose A or B, or `run_spec_orchestrator` auto-selects)
+- `gatekeep`: triggered if the job is flagged for high complexity or architectural/database/API boundary changes, or explicitly requested by user (enabled by default for implementations)
 - `sanity-check`: always runs — verifies ≥1 commit was made
 - `tests-creator`: always runs — mandatory TDD step before every task-implementer wave
 - `verify`: always runs — code-verifier is the mandatory quality gate after implementation
 - `security`: diff touches auth/, api/, migrations, schema files, or `.env`
 - `fix`: review or verify found CRITICAL/HIGH findings
 - `verify-post-fix`: always runs after fix (confirms fix resolved the findings)
-- `perf-check`: diff contains *.tsx, *.jsx, *.css, dist/, build/ files
-- `security`: diff touches auth/, api/, migrations, schema files, or `.env`
-- `fix`: review found CRITICAL/WARNING findings
 - `perf-check`: diff contains *.tsx, *.jsx, *.css, dist/, build/ files
 - `pr`: `create_pr: true`
 - `deploy`: user answers "yes" to post-PR staging deploy prompt
@@ -693,6 +692,42 @@ BRANCH_STATE:
 > **Store `package_manager` and `run_command` in JOB_STATE** — all subsequent steps use these instead of hardcoded `npm`.
 
 **Document:** Update README via job-documenter (update-readme) with branch info.
+
+### 2.4.0 Step: GATEKEEP (conditional — plan-gatekeeper)
+
+Runs only when Gatekeep step is enabled in the plan.
+
+**Prepare prompt:** Use the template from `skills/plan-gatekeeper/SKILL.md`:
+
+```
+Task({
+  description: "Gatekeep plan: <job-name>",
+  subagent_type: "general",
+  prompt: |
+    You are the plan-gatekeeper agent. Your task is to stress-test the proposed
+    plan and decisions, and ensure all design contracts are solid.
+
+    Load the skill from: skills/plan-gatekeeper/SKILL.md
+
+    ACTION: gatekeep
+    JOB_NAME: <job-name>
+    JOBS_ROOT: <JOBS_ROOT>
+    PROJECT: <project_dir>
+
+    DATA:
+      plan: <current plan/tasks description>
+      context: <latest context from context_v<N>.md>
+      project: <project_dir>
+
+    Execute the gatekeeping interview and return a STATUS response.
+})
+```
+
+**Parse result:**
+- Parses status protocol response (e.g. `STATUS: DONE` or `STATUS: DONE_WITH_CONCERNS`).
+- Automatically extracts any proposed ADRs from `## Architectural Decisions (ADR)` and dispatches `job-documenter` to register/synchronize them.
+- Extracts `refined_plan` to update/overwrite the current task list in `state.json` if adjustments were agreed.
+- If status is `BLOCKED` or `NEEDS_CONTEXT`, follow the standard subagent resolution flows (resolve blocker or request more info from user).
 
 ### 2.4.1 Step: TESTS-CREATOR + IMPLEMENT — Wave Isolation
 
@@ -1440,15 +1475,62 @@ Do not attempt to infer status from prose. Do not trust a response that "looks f
 **`STATUS: DONE`**
 - Accept result.
 - Extract structured payload (JSON result, files changed, commits, verification results).
+- Check for and process any proposed ADRs in the `## Architectural Decisions (ADR)` section (see ADR Extraction below).
 - Mark step as completed in JOB_STATE.
 - Continue to next step in the plan.
 
 **`STATUS: DONE_WITH_CONCERNS`**
 - Accept result as complete.
 - Read the `## Concerns for orchestrator` section carefully.
+- Check for and process any proposed ADRs in the `## Architectural Decisions (ADR)` section (see ADR Extraction below).
 - Decide: (a) log concern and continue, (b) surface concern to user at next checkpoint, or (c) re-dispatch with adjusted scope if the concern affects correctness.
 - Do NOT silently discard concerns. Record them in JOB_STATE and include in the final report.
 - Mark step as completed.
+
+### Automatic ADR extraction from subagent responses
+
+When a subagent returns `STATUS: DONE` or `STATUS: DONE_WITH_CONCERNS`, check if the response contains a `## Architectural Decisions (ADR)` section.
+
+If the section is present, parse it to extract one or more ADRs:
+1. **Parse each ADR block** to find:
+   - **Title**: text matching `**Title**: <title>` (e.g. `postgres-for-write-model`)
+   - **Status**: text matching `**Status**: <status>` (e.g. `Accepted`)
+   - **Context**: text matching `**Context**: <context>`
+   - **Decision**: text matching `**Decision**: <decision>`
+   - **Consequences**: text matching `**Consequences**: <consequences>`
+2. **Determine the next index** for the ADR (e.g., check how many files exist in the project's global `docs/adr/` or local `man/adr/` and assign `<num>` as `0001`, `0002`, etc.).
+3. **Format the ADR content** as a clean Markdown document:
+   ```markdown
+   # ADR: <Title>
+
+   ## Status
+   <Status>
+
+   ## Context
+   <Context>
+
+   ## Decision
+   <Decision>
+
+   ## Consequences
+   <Consequences>
+   ```
+4. **Dispatch `job-documenter`** to save and synchronize the ADR:
+   ```
+   ACTION: add-document
+   JOB_NAME: <JOB_NAME>
+   JOBS_ROOT: <JOBS_ROOT>
+   DATA:
+     DOC_TYPE: adr
+     DOC_NAME: <num>-<kebab-case-title>
+     TARGET: man
+     TITLE: ADR <num>: <Title>
+     CONTENT: <formatted ADR content>
+     AGENT: <Subagent Name>
+     TASK: <Current task/step description>
+     DOC_STATUS: final
+     PROJECT: <PROJECT_DIR>
+   ```
 
 **`STATUS: BLOCKED`**
 - Do NOT proceed to any step that depends on this task.

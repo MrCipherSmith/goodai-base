@@ -161,8 +161,9 @@ Standard document names (used in both `man/` and `ai/`):
 | `error-log.md` | Error documentation | Errors encountered during job execution |
 | `tasks.feature` | Gherkin scenarios (ai/ only) | Atomic task definitions for sub-agents |
 | `review-findings.md` | Structured review data (ai/ only) | Machine-parseable review results |
+| `adr/` (folder) | Architecture Decisions (man/ only) | Architectural Decision Records (ADRs) proposed during the job |
 
-Custom names are allowed but MUST follow kebab-case convention.
+Custom names are allowed but MUST follow kebab-case convention. Any ADR files should be placed under `man/adr/` and named as `<num>-<slug>.md` (e.g. `0001-postgres-for-orders.md`).
 
 ## Document Metadata
 

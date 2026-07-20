@@ -171,8 +171,8 @@ Add a new document to an existing job.
 
 **Input DATA:**
 ```
-DOC_TYPE:    <analysis | report | review | context | implementation-report | final-report | improvements | requirements | error-log | tasks.feature | review-findings | custom>
-DOC_NAME:    <file name without extension, kebab-case — used if DOC_TYPE is "custom">
+DOC_TYPE:    <analysis | report | review | context | implementation-report | final-report | improvements | requirements | error-log | tasks.feature | review-findings | adr | custom>
+DOC_NAME:    <file name without extension, kebab-case — used if DOC_TYPE is "custom" or "adr">
 TARGET:      man | ai | both
 TITLE:       <document title>
 CONTENT:     <full document content — markdown>
@@ -184,8 +184,9 @@ DOC_STATUS:  <draft | final>
 
 **Procedure:**
 
-1. **Determine file name:**
-   - If DOC_TYPE is a standard type → use standard name from `jobs-documentation.mdc` (e.g. `analysis.md`, `report.md`)
+1. **Determine file name and path:**
+   - If DOC_TYPE is `adr` → use `adr/DOC_NAME.md`
+   - If DOC_TYPE is a standard type (other than `adr`) → use standard name from `jobs-documentation.mdc` (e.g. `analysis.md`, `report.md`)
    - If DOC_TYPE is `tasks.feature` → use `tasks.feature` (ai/ only)
    - If DOC_TYPE is `custom` → use DOC_NAME + `.md`
 
@@ -212,6 +213,11 @@ DOC_STATUS:  <draft | final>
    | Version | <VERSION> |
    | Status | <DOC_STATUS> |
    ```
+
+3b. **If DOC_TYPE is `adr`, synchronize to the project's global directory:**
+   - Resolve the project root path. First, check if `PROJECT` is passed in DATA. If not, parse the project path from the job's `README.md` context table (under the `Project` key).
+   - Write the exact same file content (including the title and metadata block) to `<PROJECT_DIR>/docs/adr/<DOC_NAME>.md`. Create the `docs/adr/` directory structure if it does not exist.
+   - If synchronization fails, log a warning in `DOCUMENTER_RESULT` but do not fail the overall action.
 
 4. **Update README.md:**
    - Add entry to the appropriate Documents table(s) (`man/` and/or `ai/`)

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goodai-base.local/schemas/plan-gatekeeper/input-contract.schema.json",
+  "title": "Plan Gatekeeper Input Contract",
+  "description": "Input schema for plan-gatekeeper skill.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plan", "context", "project"],
+  "properties": {
+    "plan": {
+      "type": "string",
+      "description": "The proposed implementation plan or steps to stress-test"
+    },
+    "context": {
+      "type": "string",
+      "description": "Context compiled from context-collector or issue-analyzer"
+    },
+    "project": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+    },
+    "known_facts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of already known architectural decisions or facts"
+    }
+  }
+}
