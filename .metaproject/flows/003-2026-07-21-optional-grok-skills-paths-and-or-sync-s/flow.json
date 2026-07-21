@@ -3,9 +3,9 @@
   "id": "003",
   "slug": "optional-grok-skills-paths-and-or-sync-s",
   "title": "Optional: Grok skills paths and/or sync-skills grok target",
-  "status": "in-progress",
+  "status": "done",
   "createdAt": "2026-07-21T15:40:10.030Z",
-  "updatedAt": "2026-07-21T15:40:29.961Z",
+  "updatedAt": "2026-07-21T15:40:55.364Z",
   "source": {
     "type": "description",
     "ref": null
@@ -147,6 +147,21 @@
       "at": "2026-07-21T15:40:29.961Z",
       "event": "ac-confirmed",
       "detail": "AC4: journal smoke: job-orchestrator+brd+spec via ~/.claude/skills ALL_VIA_CLAUDE true; neither"
+    },
+    {
+      "at": "2026-07-21T15:40:55.353Z",
+      "event": "completing",
+      "detail": "merged commit: 0bcc372"
+    },
+    {
+      "at": "2026-07-21T15:40:55.364Z",
+      "event": "done",
+      "detail": "all gates passed"
     }
-  ]
+  ],
+  "merged": {
+    "commit": "0bcc372",
+    "ref": "origin/main",
+    "at": "2026-07-21T15:40:55.364Z"
+  }
 }

@@ -32,3 +32,5 @@ graph_used: not-relevant | wiki_used: not-relevant | ctx_used: no | raw_rg_used:
 - 2026-07-21T15:40:29.831Z - ac-confirmed: AC2: N/A Option 7 not applied; smoke already green via claude; snippet in plan.md for user
 - 2026-07-21T15:40:29.896Z - ac-confirmed: AC3: N/A Option 8 not chosen
 - 2026-07-21T15:40:29.961Z - ac-confirmed: AC4: journal smoke: job-orchestrator+brd+spec via ~/.claude/skills ALL_VIA_CLAUDE true; neither
+- 2026-07-21T15:40:55.353Z - completing: merged commit: 0bcc372
+- 2026-07-21T15:40:55.364Z - done: all gates passed
