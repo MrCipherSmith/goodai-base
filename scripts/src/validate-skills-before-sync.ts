@@ -6,6 +6,7 @@ import { homedir } from 'node:os';
 import { readTextFile } from './shared/fs-utils';
 
 const SKIP_DIRS = new Set(['shared']);
+/** Optional platform variants validated when present (strategy A: canonical-only). */
 const PLATFORMS = ['cursor', 'codex', 'zed', 'opencode'] as const;
 
 const REPO_ROOT = resolve(import.meta.dir, '../../');
@@ -138,17 +139,18 @@ const skillDirs = entries
 for (const skillName of skillDirs) {
   const skillDir = join(skillsDir, skillName);
 
-  const cursorFile = join(skillDir, 'SKILL.cursor.md');
-  const codexFile = join(skillDir, 'SKILL.codex.md');
-
-  if (!existsSync(cursorFile) || !statSync(cursorFile).isFile()) {
-    console.log(`FAIL: ${skillName} - required profile missing: SKILL.cursor.md`);
+  // Strategy A (canonical-only): SKILL.md is required; platform variants optional.
+  const canonicalFile = join(skillDir, 'SKILL.md');
+  if (!existsSync(canonicalFile) || !statSync(canonicalFile).isFile()) {
+    console.log(`FAIL: ${skillName} - required file missing: SKILL.md`);
     errors++;
-  }
-
-  if (!existsSync(codexFile) || !statSync(codexFile).isFile()) {
-    console.log(`FAIL: ${skillName} - required profile missing: SKILL.codex.md`);
-    errors++;
+  } else {
+    validated++;
+    const err = validateSkillProfile(canonicalFile, skillName, 'md');
+    if (err !== null) {
+      console.log(err);
+      errors++;
+    }
   }
 
   for (const suffix of PLATFORMS) {

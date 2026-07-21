@@ -3,11 +3,11 @@
 ## Adding a skill
 
 1. Create a directory under `skills/<name>/`
-2. Write the primary definition in `SKILL.md` following the structure in `rules/core/skills-storage-workflow.mdc`
-3. Add platform variants: `SKILL.cursor.md`, `SKILL.codex.md`, `SKILL.zed.md`, `SKILL.opencode.md`
+2. Write the primary definition in `SKILL.md` following the structure in `rules/core/skills-storage-workflow.mdc` (canonical source of truth)
+3. **Optional:** add platform variants (`SKILL.cursor.md`, `SKILL.codex.md`, `SKILL.zed.md`, `SKILL.opencode.md`) **only when** content must differ from `SKILL.md`. Otherwise omit them — `sync-skills` falls back to the canonical file.
 4. Register the skill in `AGENTS.md` under the appropriate category in the Skills Catalog section
 5. Run `cd scripts && bun run generate-skill-catalog` to update `docs/skill-catalog.md`
-6. Run `cd scripts && bun run sync-skills` to verify the skill syncs correctly
+6. Run `cd scripts && bun run validate-skills-before-sync && bun run sync-skills` to verify validation and sync
 
 The CI pipeline regenerates catalogs automatically on merge to `main`.
 

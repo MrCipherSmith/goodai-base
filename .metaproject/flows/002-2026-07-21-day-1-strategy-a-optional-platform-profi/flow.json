@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 2,
+  "id": "002",
+  "slug": "day-1-strategy-a-optional-platform-profi",
+  "title": "Day 1: strategy A — optional platform profiles in validator + docs + PR",
+  "status": "in-progress",
+  "createdAt": "2026-07-21T15:35:37.277Z",
+  "updatedAt": "2026-07-21T15:38:02.260Z",
+  "source": {
+    "type": "description",
+    "ref": null
+  },
+  "acChecksum": "sha256:a30024f753e89ea20c8b09af92fe56d71a8f8cc3527674a565336e7f9d1c6558",
+  "acConfirmed": {
+    "AC1": {
+      "at": "2026-07-21T15:37:57.710Z",
+      "note": "validator no longer requires cursor/codex; canonical SKILL.md required; tests pass for optional platforms"
+    },
+    "AC2": {
+      "at": "2026-07-21T15:37:57.776Z",
+      "note": "bun test validate-skills-before-sync: 18 pass 0 fail"
+    },
+    "AC3": {
+      "at": "2026-07-21T15:37:57.841Z",
+      "note": "bun run validate-skills-before-sync && bun run sync-skills without --skip-validation both exit 0"
+    },
+    "AC4": {
+      "at": "2026-07-21T15:37:57.905Z",
+      "note": "CONTRIBUTING, skills-storage-workflow, scripts/README, docs/onboarding Grok section updated"
+    },
+    "AC5": {
+      "at": "2026-07-21T15:37:57.969Z",
+      "note": "draft PR https://github.com/MrCipherSmith/goodai-base/pull/7 links requirements package"
+    }
+  },
+  "pr": {
+    "url": "https://github.com/MrCipherSmith/goodai-base/pull/7"
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Collect remaining context",
+      "kind": "context",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T2",
+      "title": "Implement per plan",
+      "kind": "implement",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T3",
+      "title": "Add/adjust tests and make them pass",
+      "kind": "test",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T4",
+      "title": "Self-review and prepare draft PR",
+      "kind": "review",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-07-21T15:35:37.277Z",
+      "event": "created"
+    },
+    {
+      "at": "2026-07-21T15:35:50.014Z",
+      "event": "frozen",
+      "detail": "5 criteria; checksum recorded"
+    },
+    {
+      "at": "2026-07-21T15:35:50.083Z",
+      "event": "started"
+    },
+    {
+      "at": "2026-07-21T15:37:57.450Z",
+      "event": "task-done",
+      "detail": "T1: Collect remaining context"
+    },
+    {
+      "at": "2026-07-21T15:37:57.517Z",
+      "event": "task-done",
+      "detail": "T2: Implement per plan"
+    },
+    {
+      "at": "2026-07-21T15:37:57.583Z",
+      "event": "task-done",
+      "detail": "T3: Add/adjust tests and make them pass"
+    },
+    {
+      "at": "2026-07-21T15:37:57.648Z",
+      "event": "task-done",
+      "detail": "T4: Self-review and prepare draft PR"
+    },
+    {
+      "at": "2026-07-21T15:37:57.710Z",
+      "event": "ac-confirmed",
+      "detail": "AC1: validator no longer requires cursor/codex; canonical SKILL.md required; tests pass for optional platforms"
+    },
+    {
+      "at": "2026-07-21T15:37:57.776Z",
+      "event": "ac-confirmed",
+      "detail": "AC2: bun test validate-skills-before-sync: 18 pass 0 fail"
+    },
+    {
+      "at": "2026-07-21T15:37:57.841Z",
+      "event": "ac-confirmed",
+      "detail": "AC3: bun run validate-skills-before-sync && bun run sync-skills without --skip-validation both exit 0"
+    },
+    {
+      "at": "2026-07-21T15:37:57.905Z",
+      "event": "ac-confirmed",
+      "detail": "AC4: CONTRIBUTING, skills-storage-workflow, scripts/README, docs/onboarding Grok section updated"
+    },
+    {
+      "at": "2026-07-21T15:37:57.969Z",
+      "event": "ac-confirmed",
+      "detail": "AC5: draft PR https://github.com/MrCipherSmith/goodai-base/pull/7 links requirements package"
+    },
+    {
+      "at": "2026-07-21T15:38:00.007Z",
+      "event": "implemented",
+      "detail": "draft PR: https://github.com/MrCipherSmith/goodai-base/pull/7"
+    },
+    {
+      "at": "2026-07-21T15:38:00.072Z",
+      "event": "completing"
+    },
+    {
+      "at": "2026-07-21T15:38:02.260Z",
+      "event": "completion-failed",
+      "detail": "pull-request: PR checks not green"
+    }
+  ]
+}

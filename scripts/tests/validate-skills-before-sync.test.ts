@@ -73,7 +73,20 @@ afterAll(() => {
 
 describe('validate-skills-before-sync', () => {
   describe('valid skill directory', () => {
-    it('valid skills directory with all required platform files → exits 0', () => {
+    it('canonical SKILL.md only (no platform variants) → exits 0', () => {
+      const skillsDir = createSkillsDir('canonical-only');
+      createSkill(skillsDir, 'my-skill', {
+        'SKILL.md': VALID_FRONTMATTER,
+      });
+
+      const { stdout, exitCode } = runScript(SCRIPT, [skillsDir, schemaFile]);
+
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain('Validation passed:');
+      expect(stdout).toContain('1 skill profile file(s) checked');
+    });
+
+    it('valid skills directory with platform files → exits 0', () => {
       const skillsDir = createSkillsDir('valid-skills');
       createSkill(skillsDir, 'my-skill', {
         'SKILL.md': VALID_FRONTMATTER,
@@ -101,38 +114,51 @@ describe('validate-skills-before-sync', () => {
       const { stdout, exitCode } = runScript(SCRIPT, [skillsDir, schemaFile]);
 
       expect(exitCode).toBe(0);
-      // 4 platform files (cursor, codex, zed, opencode)
-      expect(stdout).toContain('4 skill profile file(s) checked');
+      // SKILL.md + 4 platform files
+      expect(stdout).toContain('5 skill profile file(s) checked');
     });
   });
 
-  describe('missing required platform files', () => {
-    it('missing SKILL.cursor.md → exits 1 with FAIL message', () => {
+  describe('optional platform files (strategy A)', () => {
+    it('missing SKILL.cursor.md with valid SKILL.md → exits 0', () => {
       const skillsDir = createSkillsDir('missing-cursor');
       createSkill(skillsDir, 'my-skill', {
         'SKILL.md': VALID_FRONTMATTER,
         'SKILL.codex.md': VALID_FRONTMATTER,
-        // No SKILL.cursor.md
       });
 
       const { stdout, exitCode } = runScript(SCRIPT, [skillsDir, schemaFile]);
 
-      expect(exitCode).toBe(1);
-      expect(stdout).toContain('FAIL: my-skill - required profile missing: SKILL.cursor.md');
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain('Validation passed:');
+      expect(stdout).not.toContain('required profile missing: SKILL.cursor.md');
     });
 
-    it('missing SKILL.codex.md → exits 1 with FAIL message', () => {
+    it('missing SKILL.codex.md with valid SKILL.md → exits 0', () => {
       const skillsDir = createSkillsDir('missing-codex');
       createSkill(skillsDir, 'my-skill', {
         'SKILL.md': VALID_FRONTMATTER,
         'SKILL.cursor.md': VALID_FRONTMATTER,
-        // No SKILL.codex.md
+      });
+
+      const { stdout, exitCode } = runScript(SCRIPT, [skillsDir, schemaFile]);
+
+      expect(exitCode).toBe(0);
+      expect(stdout).toContain('Validation passed:');
+      expect(stdout).not.toContain('required profile missing: SKILL.codex.md');
+    });
+
+    it('missing SKILL.md → exits 1 with FAIL message', () => {
+      const skillsDir = createSkillsDir('missing-canonical');
+      createSkill(skillsDir, 'my-skill', {
+        'SKILL.cursor.md': VALID_FRONTMATTER,
+        'SKILL.codex.md': VALID_FRONTMATTER,
       });
 
       const { stdout, exitCode } = runScript(SCRIPT, [skillsDir, schemaFile]);
 
       expect(exitCode).toBe(1);
-      expect(stdout).toContain('FAIL: my-skill - required profile missing: SKILL.codex.md');
+      expect(stdout).toContain('FAIL: my-skill - required file missing: SKILL.md');
     });
   });
 
@@ -264,17 +290,14 @@ Body here.
       mkdirSync(sharedDir, { recursive: true });
       writeFileSync(join(sharedDir, 'some-util.ts'), 'export function util() {}');
 
-      // Also add a valid skill
+      // Also add a valid skill (canonical only is enough under strategy A)
       createSkill(skillsDir, 'real-skill', {
         'SKILL.md': VALID_FRONTMATTER,
-        'SKILL.cursor.md': VALID_FRONTMATTER,
-        'SKILL.codex.md': VALID_FRONTMATTER,
       });
 
       const { stdout, exitCode } = runScript(SCRIPT, [skillsDir, schemaFile]);
 
       expect(exitCode).toBe(0);
-      // Only the real skill's platform files counted
       expect(stdout).toContain('Validation passed:');
       expect(stdout).not.toContain('FAIL: shared');
     });
