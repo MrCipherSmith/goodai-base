@@ -3,9 +3,9 @@
   "id": "001",
   "slug": "day-0-skill-profiles-hygiene-sync-grok-s",
   "title": "Day 0: skill profiles hygiene + sync + Grok smoke (canonical-skill-profiles-and-grok)",
-  "status": "in-progress",
+  "status": "done",
   "createdAt": "2026-07-21T15:28:23.906Z",
-  "updatedAt": "2026-07-21T15:29:40.724Z",
+  "updatedAt": "2026-07-21T15:34:08.720Z",
   "source": {
     "type": "description",
     "ref": null
@@ -30,7 +30,7 @@
     }
   },
   "pr": {
-    "url": null
+    "url": "https://github.com/MrCipherSmith/goodai-base/pull/6"
   },
   "tasks": [
     {
@@ -147,6 +147,39 @@
       "at": "2026-07-21T15:29:40.724Z",
       "event": "ac-confirmed",
       "detail": "AC4: journal.md records validate exit 0, sync command, grok sample table"
+    },
+    {
+      "at": "2026-07-21T15:32:49.950Z",
+      "event": "implemented",
+      "detail": "draft PR: https://github.com/MrCipherSmith/goodai-base/pull/6"
+    },
+    {
+      "at": "2026-07-21T15:32:50.019Z",
+      "event": "completing"
+    },
+    {
+      "at": "2026-07-21T15:32:52.617Z",
+      "event": "completion-failed",
+      "detail": "pull-request: PR checks not green"
+    },
+    {
+      "at": "2026-07-21T15:34:08.586Z",
+      "event": "implemented",
+      "detail": "draft PR: https://github.com/MrCipherSmith/goodai-base/pull/6 (warning: PR is not a draft)"
+    },
+    {
+      "at": "2026-07-21T15:34:08.708Z",
+      "event": "completing"
+    },
+    {
+      "at": "2026-07-21T15:34:08.720Z",
+      "event": "done",
+      "detail": "all gates passed"
     }
-  ]
+  ],
+  "merged": {
+    "commit": "9046a65b2840cd158cf0f31c520b79ea10e9533e",
+    "ref": "origin/main",
+    "at": "2026-07-21T15:34:08.720Z"
+  }
 }
