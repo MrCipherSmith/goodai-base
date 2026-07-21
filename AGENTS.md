@@ -816,6 +816,75 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
   - Asks before overwriting existing content
 - **Version**: v1.0.0
 
+**`skills/pr-review-comments`**
+
+- **Purpose**: Collect and group PR review comments (GitHub MCP or gh); analyze feedback patterns
+- **Use When**: "PR review comments", "parse PR comments", "analyze review feedback by author"
+
+### Legacy / profile review skills
+
+**`skills/code-review`**
+
+- **Purpose**: Comprehensive multi-agent code review (correctness, security, performance, style)
+- **Use When**: thorough PR reviews and pre-merge checks
+
+**`skills/code-ai-review`**
+
+- **Purpose**: Strict AI code review following code-review-ai-assistant.mdc
+- **Use When**: "code-ai review", review --code-ai, optional legacy profile
+
+**`skills/code-boss-review`**
+
+- **Purpose**: Boss-style strict logic/architecture review profile
+- **Use When**: "boss review", review --boss
+
+**`skills/code-style-review`**
+
+- **Purpose**: Style and architecture review using code-style-patterns.mdc
+- **Use When**: style validation, optional legacy style profile
+
+**`skills/code-mobx-store-review`**
+
+- **Purpose**: Targeted MobX store/state review (actions, computed, reactions, boundaries)
+- **Use When**: reviewing MobX stores, review --mobx-store
+
+### gproject phase subagents (orchestrator-only)
+
+**`skills/gproject-discovery`**
+
+- **Purpose**: Collects and structures initial project information (gproject Phase 0)
+- **Use When**: dispatched by gproject-orchestrator Phase 0 (not direct user invocation)
+
+**`skills/gproject-problem-definer`**
+
+- **Purpose**: Defines problems, goals, non-goals, success metrics (gproject Phase 1)
+- **Use When**: dispatched by gproject-orchestrator Phase 1
+
+**`skills/gproject-stack-advisor`**
+
+- **Purpose**: Project level and technology stack recommendation (gproject Phase 2)
+- **Use When**: dispatched by gproject-orchestrator Phase 2
+
+**`skills/gproject-patterns-researcher`**
+
+- **Purpose**: Stack best practices and architecture constraints (gproject Phase 3)
+- **Use When**: dispatched by gproject-orchestrator Phase 3
+
+**`skills/gproject-spec-writer`**
+
+- **Purpose**: PRD/Implementation Plan constrained by decisions (gproject Phase 4)
+- **Use When**: dispatched by gproject-orchestrator Phase 4
+
+**`skills/gproject-consistency-checker`**
+
+- **Purpose**: Adversarial consistency check of PRD vs decisions (gproject Phase 5)
+- **Use When**: dispatched by gproject-orchestrator Phase 5
+
+**`skills/gproject-planner`**
+
+- **Purpose**: Roadmap, milestones, task DAG from PRD (gproject Phase 6)
+- **Use When**: dispatched by gproject-orchestrator Phase 6
+
 ---
 
 ## ⚠️ CRITICAL: How to Use Skills (Step-by-Step)
