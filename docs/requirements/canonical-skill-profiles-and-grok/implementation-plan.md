@@ -162,21 +162,21 @@ failed or is unacceptable for the environment.
 
 ### Day 0
 
-- [ ] 0.1 Inspect untracked profiles; delete only untracked noise
-- [ ] 0.2 Sync (skip-validation only if pre-Day-1 validator blocks)
-- [ ] 0.3 `grok inspect` smoke pass
+- [x] 0.1 Inspect untracked profiles; delete only untracked noise
+- [x] 0.2 Sync (skip-validation only if pre-Day-1 validator blocks)
+- [x] 0.3 `grok inspect` smoke pass
 
 ### Day 1
 
-- [ ] 1.1 Validator strategy A
-- [ ] 1.2 Tests updated and green
-- [ ] 1.3 Docs: CONTRIBUTING, workflow rule, scripts README, onboarding Grok
-- [ ] 1.4 PR opened / merged
+- [x] 1.1 Validator strategy A
+- [x] 1.2 Tests updated and green
+- [x] 1.3 Docs: CONTRIBUTING, workflow rule, scripts README, onboarding Grok
+- [x] 1.4 PR opened / merged
 
 ### Optional
 
-- [ ] 7 Local Grok `paths` (if desired)
-- [ ] 8 Design+implement `grok` sync target (only if justified)
+- [x] 7 Local Grok `paths` (if desired) — deferred; smoke OK via claude
+- [x] 8 Design+implement `grok` sync target (only if justified) — not needed (gate)
 
 ### Follow-ups (not required for Done)
 

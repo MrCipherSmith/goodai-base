@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "id": "003",
+  "slug": "optional-grok-skills-paths-and-or-sync-s",
+  "title": "Optional: Grok skills paths and/or sync-skills grok target",
+  "status": "in-progress",
+  "createdAt": "2026-07-21T15:40:10.030Z",
+  "updatedAt": "2026-07-21T15:40:29.961Z",
+  "source": {
+    "type": "description",
+    "ref": null
+  },
+  "acChecksum": "sha256:7cbe4d1a334be5df9546a275482431782bd534d2da06fb53f94ee7bf2e5dfa93",
+  "acConfirmed": {
+    "AC1": {
+      "at": "2026-07-21T15:40:29.765Z",
+      "note": "plan.md: Decision neither; Option 8 not needed; Option 7 optional tip only"
+    },
+    "AC2": {
+      "at": "2026-07-21T15:40:29.831Z",
+      "note": "N/A Option 7 not applied; smoke already green via claude; snippet in plan.md for user"
+    },
+    "AC3": {
+      "at": "2026-07-21T15:40:29.896Z",
+      "note": "N/A Option 8 not chosen"
+    },
+    "AC4": {
+      "at": "2026-07-21T15:40:29.961Z",
+      "note": "journal smoke: job-orchestrator+brd+spec via ~/.claude/skills ALL_VIA_CLAUDE true; neither"
+    }
+  },
+  "pr": {
+    "url": null
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Collect remaining context",
+      "kind": "context",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T2",
+      "title": "Implement per plan",
+      "kind": "implement",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T3",
+      "title": "Add/adjust tests and make them pass",
+      "kind": "test",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "skipped"
+    },
+    {
+      "id": "T4",
+      "title": "Self-review and prepare draft PR",
+      "kind": "review",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-07-21T15:40:10.030Z",
+      "event": "created"
+    },
+    {
+      "at": "2026-07-21T15:40:29.368Z",
+      "event": "frozen",
+      "detail": "4 criteria; checksum recorded"
+    },
+    {
+      "at": "2026-07-21T15:40:29.436Z",
+      "event": "started"
+    },
+    {
+      "at": "2026-07-21T15:40:29.501Z",
+      "event": "task-done",
+      "detail": "T1: Collect remaining context"
+    },
+    {
+      "at": "2026-07-21T15:40:29.567Z",
+      "event": "task-done",
+      "detail": "T2: Implement per plan"
+    },
+    {
+      "at": "2026-07-21T15:40:29.633Z",
+      "event": "task-done",
+      "detail": "T3: Add/adjust tests and make them pass"
+    },
+    {
+      "at": "2026-07-21T15:40:29.700Z",
+      "event": "task-done",
+      "detail": "T4: Self-review and prepare draft PR"
+    },
+    {
+      "at": "2026-07-21T15:40:29.765Z",
+      "event": "ac-confirmed",
+      "detail": "AC1: plan.md: Decision neither; Option 8 not needed; Option 7 optional tip only"
+    },
+    {
+      "at": "2026-07-21T15:40:29.831Z",
+      "event": "ac-confirmed",
+      "detail": "AC2: N/A Option 7 not applied; smoke already green via claude; snippet in plan.md for user"
+    },
+    {
+      "at": "2026-07-21T15:40:29.896Z",
+      "event": "ac-confirmed",
+      "detail": "AC3: N/A Option 8 not chosen"
+    },
+    {
+      "at": "2026-07-21T15:40:29.961Z",
+      "event": "ac-confirmed",
+      "detail": "AC4: journal smoke: job-orchestrator+brd+spec via ~/.claude/skills ALL_VIA_CLAUDE true; neither"
+    }
+  ]
+}
