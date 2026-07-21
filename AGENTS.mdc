@@ -155,7 +155,7 @@ Reference guidelines for coding standards and workflows:
 
 **Documentation & Planning:**
 - `core/documentation-management.mdc`: Documentation lifecycle and multilingual doc structure in `<PROJECT_DIR>/docs` (default) or `$GOODAI_DOCS_ROOT`.
-- `core/jobs-documentation.mdc`: Job documentation structure and conventions for `~/goodai-base/jobs`. Used by `job-orchestrator` and `job-documenter`.
+- `core/jobs-documentation.mdc`: Job documentation structure and conventions for `<PROJECT_DIR>/jobs` (default) or `$GOODAI_JOBS_ROOT`. Used by `job-orchestrator` and `job-documenter`.
 - `core/implementation-plans.mdc`: Implementation plan format and storage.
 - `core/requirements-management.mdc`: Requirements document workflow and structure.
 
@@ -272,7 +272,7 @@ Intelligent agents for complex analysis and review tasks:
 - **Use When**: Called by `job-orchestrator` — NOT invoked directly by users
 - **Actions**: init (create job folder), add-document, update-readme, finalize
 - **Standards**: `core/jobs-documentation.mdc`
-- **Output**: Persistent documentation in `~/goodai-base/jobs/<job-name>/`
+- **Output**: Persistent documentation in `<JOBS_ROOT>/<job-name>/`
 
 **`skills/context-collector`**
 - **Purpose**: Collects, summarizes, and maintains a unified context document for a job
@@ -440,6 +440,6 @@ Intelligent agents for complex analysis and review tasks:
 ---
 
 ## Job Documentation
-- Job documentation root: `~/goodai-base/jobs/`
+- Job documentation root: `<JOBS_ROOT>` (`$GOODAI_JOBS_ROOT` or `<PROJECT_DIR>/jobs/`)
 - Structure and conventions: `rules/core/jobs-documentation.mdc`
 - Created and maintained by `job-documenter` skill, driven by `job-orchestrator`

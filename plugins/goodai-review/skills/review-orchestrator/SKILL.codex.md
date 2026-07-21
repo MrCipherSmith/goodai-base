@@ -76,7 +76,7 @@ Review Orchestrator Progress:
 | `path` | string | no | File or directory path to review (e.g., `src/stores/`, `src/components/UserCard.tsx`). Activates **path mode** — reviews the files at this path directly, not a git diff. |
 | `commit_range` | string | no | Explicit commit hash or range (e.g., `abc123..HEAD`). Overrides merge-base detection. Ignored in path mode. |
 | `issue_url` | string | no | GitHub issue or task URL. If provided, Stage 1 gate checks spec compliance before dispatching reviewers. |
-| `context_doc` | string | no | Path to job context document (e.g., `~/goodai-base/jobs/<job>/ai/context.md`). |
+| `context_doc` | string | no | Path to job context document (e.g., `<JOBS_ROOT>/<job>/ai/context.md`). |
 | `context_mode` | string | no | `none`, `light`, or `full`. Default: `light` for PR review, `none` for small path reviews. `full` may call `context-collector` before dispatch. |
 | `token_budget` | object | no | Optional budget controls: `{total, per_reviewer, diff_max_chars, file_max_chars}`. |
 | `model_strategy` | string | no | `current`, `ask`, or `adaptive`. Default: `current`; do not switch models unless user or automation allows it. |
@@ -736,7 +736,7 @@ When dispatched by `job-orchestrator` or called with an explicit context path, t
 
 ```
 JOB_NAME:     <job-name>
-CONTEXT_PATH: ~/goodai-base/jobs/<job-name>/ai/context.md
+CONTEXT_PATH: <JOBS_ROOT>/<job-name>/ai/context.md
 ```
 
 If provided and the file exists, read the context document **before** running scope detection.

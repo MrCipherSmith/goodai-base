@@ -32,7 +32,7 @@
       "id": "jobs-documentation",
       "type": "rule",
       "path": "rules/core/jobs-documentation.mdc",
-      "description": "Job documentation structure and conventions for `~/goodai-base/jobs`. Used by `job-orchestrator` and `job-documenter`.",
+      "description": "Job documentation structure and conventions for `<PROJECT_DIR>/jobs` (default) or `$GOODAI_JOBS_ROOT`. Used by `job-orchestrator` and `job-documenter`.",
       "triggers": {
         "keywords": [
           "job documentation",
