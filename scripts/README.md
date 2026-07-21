@@ -23,7 +23,7 @@ cd scripts && bun install
 | `generate-codex-plugins` | Build Codex plugin bundles under `plugins/` from skills + rules |
 | `generate-zcode-plugin` | Build the ZCode plugin bundle under `plugins/goodai-zcode/` from skills + rules |
 | `validate-rules-json` | Validate `rules.json` against AGENTS.md |
-| `validate-skills-before-sync` | Pre-sync gate: checks required platform variants and frontmatter |
+| `validate-skills-before-sync` | Pre-sync gate: requires `SKILL.md` + frontmatter; platform variants optional |
 | `detect-context` | Detect matching rules/skills for stdin text input |
 | `detect-models` | Detect AI tool configs present on this machine |
 | `deploy-skill-hook` | Deploy skill evaluator hook into a target project |
@@ -55,6 +55,19 @@ cd scripts && bun run deploy-skill-hook /path/to/your/project
 
 `~/goodai-base/rules/schemas/skill-workflow-result.schema.json` — orchestrator contract for skill workflow results (status, decision, errors, artifacts, timestamp).
 
+## Validation policy (strategy A)
+
+`validate-skills-before-sync`:
+
+- **Requires** `skills/<name>/SKILL.md` with valid YAML frontmatter (`name`, `description`).
+- **Does not require** platform files (`SKILL.cursor.md`, `SKILL.codex.md`, …).
+- Validates any present `SKILL.<platform>.md` the same way.
+- `sync-skills` falls back to `SKILL.md` when a platform variant is missing.
+
+```bash
+cd scripts && bun run validate-skills-before-sync && bun run sync-skills
+```
+
 ## Sync targets
 
 `sync-skills` syncs to tools selected during setup (`goodai.config.json: sync_tools`). Override with `--tools` or `--all`.
@@ -68,6 +81,10 @@ cd scripts && bun run deploy-skill-hook /path/to/your/project
 | Zed | `~/.config/zed/skills/` | `~/.config/zed/AGENTS.md` | — |
 | Antigravity | `~/.antigravity/skills/` | — | — |
 | ZCode | — *(plugin)* | `~/.zcode/cli/plugins/cache/goodai-base/goodai-zcode/<version>/AGENTS.md` | — |
+
+### Grok
+
+Grok is **not** a `sync_tools` target by default. After syncing to Claude Code, Grok discovers goodai skills from `~/.claude/skills/` via Claude compatibility (`[compat.claude] skills = true`). Smoke: `grok inspect`. Optional: point Grok at the repo with `[skills] paths = ["~/goodai-base/skills"]` in `~/.grok/config.toml`.
 
 > **ZCode is plugin-based.** Unlike the others, ZCode does not scan a plain
 > skills directory — it loads skills only through its plugin/marketplace system.

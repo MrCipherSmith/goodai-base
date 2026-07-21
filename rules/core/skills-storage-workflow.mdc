@@ -27,7 +27,7 @@ Before creating or editing a skill, ask and confirm:
 - `SKILL.zed.md` — Zed-specific variant (optional; falls back to SKILL.md)
 - `SKILL.opencode.md` — OpenCode-specific variant (optional; falls back to SKILL.md)
 
-`SKILL.md` is always required. Platform variants are optional — if absent, `sync-skills.sh` will use `SKILL.md` as fallback.
+`SKILL.md` is always required. Platform variants are optional (strategy A: canonical-only) — if absent, `bun run sync-skills` uses `SKILL.md` as fallback. Do not invent identical platform copies solely to pass validation.
 
 ## Global Sync Mapping
 - `SKILL.cursor.md` (or `SKILL.md`) → `~/.cursor/skills/<skill-name>/SKILL.md`
@@ -66,13 +66,19 @@ Contract requirements:
 Run before syncing skills:
 
 ```bash
-~/goodai-base/scripts/validate-skills-before-sync.sh
+cd ~/goodai-base/scripts && bun run validate-skills-before-sync
 ```
+
+Validator policy (strategy A):
+
+- Requires a valid `SKILL.md` per skill (frontmatter: `name`, `description`).
+- Does **not** require `SKILL.cursor.md` / `SKILL.codex.md`.
+- Validates frontmatter of any present `SKILL.<platform>.md`.
 
 Then run sync:
 
 ```bash
-~/goodai-base/scripts/sync-skills.sh
+cd ~/goodai-base/scripts && bun run sync-skills
 ```
 
 If validation fails, do not sync.
@@ -85,4 +91,4 @@ If validation fails, do not sync.
 - Do not create skills in `~/.cursor/skills-cursor/`.
 
 ## Apply Changes Workflow
-Changes under `~/goodai-base/skills/*` should be synced to tool directories using `sync-skills.sh`.
+Changes under `~/goodai-base/skills/*` should be synced to tool directories using `cd scripts && bun run sync-skills`.
