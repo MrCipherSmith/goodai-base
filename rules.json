@@ -1278,10 +1278,46 @@
       }
     },
     {
+      "id": "pr-review-comments",
+      "type": "skill",
+      "path": "skills/pr-review-comments/SKILL.md",
+      "description": "Collect and group PR review comments (GitHub MCP or gh); analyze feedback patterns",
+      "triggers": {
+        "keywords": [
+          "analyze pr comments",
+          "pr review comments",
+          "what did reviewers say",
+          "reviewer comments"
+        ],
+        "intents": [
+          "analyze pr review comments",
+          "understand reviewer feedback"
+        ]
+      }
+    },
+    {
+      "id": "code-review",
+      "type": "skill",
+      "path": "skills/code-review/SKILL.md",
+      "description": "Comprehensive multi-agent code review (correctness, security, performance, style)",
+      "triggers": {
+        "keywords": [
+          "full review",
+          "review pr",
+          "comprehensive review",
+          "review pull request"
+        ],
+        "intents": [
+          "comprehensive code review",
+          "full pr review"
+        ]
+      }
+    },
+    {
       "id": "code-ai-review",
       "type": "skill",
       "path": "skills/code-ai-review/SKILL.md",
-      "description": "General AI code review — correctness, type safety, security, performance, error handling",
+      "description": "Strict AI code review following code-review-ai-assistant.mdc",
       "triggers": {
         "keywords": [
           "review code",
@@ -1298,10 +1334,27 @@
       }
     },
     {
+      "id": "code-boss-review",
+      "type": "skill",
+      "path": "skills/code-boss-review/SKILL.md",
+      "description": "Boss-style strict logic/architecture review profile",
+      "triggers": {
+        "keywords": [
+          "boss review",
+          "logic review",
+          "boss"
+        ],
+        "intents": [
+          "boss style review",
+          "logic-first code review"
+        ]
+      }
+    },
+    {
       "id": "code-style-review",
       "type": "skill",
       "path": "skills/code-style-review/SKILL.md",
-      "description": "Code style and architecture review — TypeScript strictness, MobX patterns, React structure",
+      "description": "Style and architecture review using code-style-patterns.mdc",
       "triggers": {
         "keywords": [
           "style review",
@@ -1319,7 +1372,7 @@
       "id": "code-mobx-store-review",
       "type": "skill",
       "path": "skills/code-mobx-store-review/SKILL.md",
-      "description": "Targeted MobX store review — member ordering, accessibility modifiers, action binding, bidirectional sync",
+      "description": "Targeted MobX store/state review (actions, computed, reactions, boundaries)",
       "triggers": {
         "keywords": [
           "store review",
@@ -1333,28 +1386,10 @@
       }
     },
     {
-      "id": "code-review",
-      "type": "skill",
-      "path": "skills/code-review/SKILL.md",
-      "description": "Comprehensive code review with 4 parallel agents (correctness, security, performance, style)",
-      "triggers": {
-        "keywords": [
-          "full review",
-          "review pr",
-          "comprehensive review",
-          "review pull request"
-        ],
-        "intents": [
-          "comprehensive code review",
-          "full pr review"
-        ]
-      }
-    },
-    {
       "id": "gproject-discovery",
       "type": "skill",
       "path": "skills/gproject-discovery/SKILL.md",
-      "description": "Collects and structures initial project information from user input, documents, codebase, and web research",
+      "description": "Collects and structures initial project information (gproject Phase 0)",
       "triggers": {
         "keywords": [
           "collects",
@@ -1376,7 +1411,7 @@
       "id": "gproject-problem-definer",
       "type": "skill",
       "path": "skills/gproject-problem-definer/SKILL.md",
-      "description": "Defines core problems, SMART goals, non-goals (min 3), and success metrics from discovery data",
+      "description": "Defines problems, goals, non-goals, success metrics (gproject Phase 1)",
       "triggers": {
         "keywords": [
           "defines",
@@ -1398,7 +1433,7 @@
       "id": "gproject-stack-advisor",
       "type": "skill",
       "path": "skills/gproject-stack-advisor/SKILL.md",
-      "description": "Determines project level (MVP/pet/startup/production) and recommends optimal tech stack with trade-off analysis",
+      "description": "Project level and technology stack recommendation (gproject Phase 2)",
       "triggers": {
         "keywords": [
           "determines",
@@ -1422,7 +1457,7 @@
       "id": "gproject-patterns-researcher",
       "type": "skill",
       "path": "skills/gproject-patterns-researcher/SKILL.md",
-      "description": "Researches per-technology best practices and defines architecture patterns; output becomes binding PRD constraints",
+      "description": "Stack best practices and architecture constraints (gproject Phase 3)",
       "triggers": {
         "keywords": [
           "researches",
@@ -1445,7 +1480,7 @@
       "id": "gproject-spec-writer",
       "type": "skill",
       "path": "skills/gproject-spec-writer/SKILL.md",
-      "description": "Generates PRD (new_project) or Implementation Plan (task_in_project) constrained by all upstream decisions",
+      "description": "PRD/Implementation Plan constrained by decisions (gproject Phase 4)",
       "triggers": {
         "keywords": [
           "generates",
@@ -1466,7 +1501,7 @@
       "id": "gproject-consistency-checker",
       "type": "skill",
       "path": "skills/gproject-consistency-checker/SKILL.md",
-      "description": "Validates PRD against decisions registry, architecture, and best practices — adversarial quality gate",
+      "description": "Adversarial consistency check of PRD vs decisions (gproject Phase 5)",
       "triggers": {
         "keywords": [
           "validates",
@@ -1488,7 +1523,7 @@
       "id": "gproject-planner",
       "type": "skill",
       "path": "skills/gproject-planner/SKILL.md",
-      "description": "Generates roadmap, milestones, task breakdown with dependency DAG and effort estimates",
+      "description": "Roadmap, milestones, task DAG from PRD (gproject Phase 6)",
       "triggers": {
         "keywords": [
           "generates",
@@ -1502,41 +1537,6 @@
           "estimates"
         ],
         "intents": []
-      }
-    },
-    {
-      "id": "pr-review-comments",
-      "type": "skill",
-      "path": "skills/pr-review-comments/SKILL.md",
-      "description": "Analyze PR review comments",
-      "triggers": {
-        "keywords": [
-          "analyze pr comments",
-          "pr review comments",
-          "what did reviewers say",
-          "reviewer comments"
-        ],
-        "intents": [
-          "analyze pr review comments",
-          "understand reviewer feedback"
-        ]
-      }
-    },
-    {
-      "id": "code-boss-review",
-      "type": "skill",
-      "path": "skills/code-boss-review/SKILL.md",
-      "description": "Direct logic-first review in boss style — architecture, layer correctness, no duct-tape code",
-      "triggers": {
-        "keywords": [
-          "boss review",
-          "logic review",
-          "boss"
-        ],
-        "intents": [
-          "boss style review",
-          "logic-first code review"
-        ]
       }
     }
   ]

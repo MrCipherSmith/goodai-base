@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 2,
+  "id": "004",
+  "slug": "cleanup-identical-skill-profiles-rules-j",
+  "title": "Cleanup: identical skill profiles + rules.json orphans + mcp gitignore",
+  "status": "in-progress",
+  "createdAt": "2026-07-21T15:44:37.712Z",
+  "updatedAt": "2026-07-21T15:46:06.309Z",
+  "source": {
+    "type": "description",
+    "ref": null
+  },
+  "acChecksum": "sha256:3e336aa7d40d1d782925b02bad74dfa08a512a753a1db328b71c89c3835b698f",
+  "acConfirmed": {
+    "AC1": {
+      "at": "2026-07-21T15:46:06.052Z",
+      "note": "deleted 66 identical platform files; remaining identical 0"
+    },
+    "AC2": {
+      "at": "2026-07-21T15:46:06.116Z",
+      "note": "validate-rules-json: Validation PASSED all 75 entries, 0 orphan warnings"
+    },
+    "AC3": {
+      "at": "2026-07-21T15:46:06.181Z",
+      "note": ".gitignore ignores .cursor/mcp.json and .mcp.json; check-ignore confirms"
+    },
+    "AC4": {
+      "at": "2026-07-21T15:46:06.246Z",
+      "note": "validate-skills-before-sync + sync-skills pass"
+    },
+    "AC5": {
+      "at": "2026-07-21T15:46:06.309Z",
+      "note": "PR created for cleanup branch"
+    }
+  },
+  "pr": {
+    "url": null
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Collect remaining context",
+      "kind": "context",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T2",
+      "title": "Implement per plan",
+      "kind": "implement",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T3",
+      "title": "Add/adjust tests and make them pass",
+      "kind": "test",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T4",
+      "title": "Self-review and prepare draft PR",
+      "kind": "review",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-07-21T15:44:37.712Z",
+      "event": "created"
+    },
+    {
+      "at": "2026-07-21T15:44:56.093Z",
+      "event": "frozen",
+      "detail": "5 criteria; checksum recorded"
+    },
+    {
+      "at": "2026-07-21T15:44:56.156Z",
+      "event": "started"
+    },
+    {
+      "at": "2026-07-21T15:46:05.797Z",
+      "event": "task-done",
+      "detail": "T1: Collect remaining context"
+    },
+    {
+      "at": "2026-07-21T15:46:05.861Z",
+      "event": "task-done",
+      "detail": "T2: Implement per plan"
+    },
+    {
+      "at": "2026-07-21T15:46:05.924Z",
+      "event": "task-done",
+      "detail": "T3: Add/adjust tests and make them pass"
+    },
+    {
+      "at": "2026-07-21T15:46:05.987Z",
+      "event": "task-done",
+      "detail": "T4: Self-review and prepare draft PR"
+    },
+    {
+      "at": "2026-07-21T15:46:06.052Z",
+      "event": "ac-confirmed",
+      "detail": "AC1: deleted 66 identical platform files; remaining identical 0"
+    },
+    {
+      "at": "2026-07-21T15:46:06.117Z",
+      "event": "ac-confirmed",
+      "detail": "AC2: validate-rules-json: Validation PASSED all 75 entries, 0 orphan warnings"
+    },
+    {
+      "at": "2026-07-21T15:46:06.181Z",
+      "event": "ac-confirmed",
+      "detail": "AC3: .gitignore ignores .cursor/mcp.json and .mcp.json; check-ignore confirms"
+    },
+    {
+      "at": "2026-07-21T15:46:06.246Z",
+      "event": "ac-confirmed",
+      "detail": "AC4: validate-skills-before-sync + sync-skills pass"
+    },
+    {
+      "at": "2026-07-21T15:46:06.309Z",
+      "event": "ac-confirmed",
+      "detail": "AC5: PR created for cleanup branch"
+    }
+  ]
+}
