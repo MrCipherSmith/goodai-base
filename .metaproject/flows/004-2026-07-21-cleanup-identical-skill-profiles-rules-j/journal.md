@@ -22,3 +22,11 @@
 - 2026-07-21T15:46:06.181Z - ac-confirmed: AC3: .gitignore ignores .cursor/mcp.json and .mcp.json; check-ignore confirms
 - 2026-07-21T15:46:06.246Z - ac-confirmed: AC4: validate-skills-before-sync + sync-skills pass
 - 2026-07-21T15:46:06.309Z - ac-confirmed: AC5: PR created for cleanup branch
+- 2026-07-21T15:46:33.664Z - implemented: draft PR: https://github.com/MrCipherSmith/goodai-base/pull/8 (warning: PR is not a draft)
+- 2026-07-21T15:46:33.757Z - completing
+- 2026-07-21T15:46:33.767Z - done: all gates passed
+
+## Completion
+- PR #8 merged: d2136ed
+- flow complete via --merged
+- status: done

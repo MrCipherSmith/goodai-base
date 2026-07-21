@@ -3,9 +3,9 @@
   "id": "004",
   "slug": "cleanup-identical-skill-profiles-rules-j",
   "title": "Cleanup: identical skill profiles + rules.json orphans + mcp gitignore",
-  "status": "in-progress",
+  "status": "done",
   "createdAt": "2026-07-21T15:44:37.712Z",
-  "updatedAt": "2026-07-21T15:46:06.309Z",
+  "updatedAt": "2026-07-21T15:46:33.767Z",
   "source": {
     "type": "description",
     "ref": null
@@ -34,7 +34,7 @@
     }
   },
   "pr": {
-    "url": null
+    "url": "https://github.com/MrCipherSmith/goodai-base/pull/8"
   },
   "tasks": [
     {
@@ -156,6 +156,25 @@
       "at": "2026-07-21T15:46:06.309Z",
       "event": "ac-confirmed",
       "detail": "AC5: PR created for cleanup branch"
+    },
+    {
+      "at": "2026-07-21T15:46:33.664Z",
+      "event": "implemented",
+      "detail": "draft PR: https://github.com/MrCipherSmith/goodai-base/pull/8 (warning: PR is not a draft)"
+    },
+    {
+      "at": "2026-07-21T15:46:33.757Z",
+      "event": "completing"
+    },
+    {
+      "at": "2026-07-21T15:46:33.767Z",
+      "event": "done",
+      "detail": "all gates passed"
     }
-  ]
+  ],
+  "merged": {
+    "commit": "d2136edd5c13b7bad98168216ee201b1744f118f",
+    "ref": "origin/main",
+    "at": "2026-07-21T15:46:33.767Z"
+  }
 }
