@@ -1,6 +1,8 @@
 # Skills Overview
 
-A map of all 62 skills — what they do, how they group, and how they interact.
+A map of skills in goodai-base — what they do, how they group, and how they interact.
+
+> Counts drift as skills are added. Authoritative list: [skill-catalog.md](./skill-catalog.md) (auto-generated, currently **70** skills).
 
 ---
 
@@ -16,8 +18,12 @@ User request
 │  /job-orchestrator   — full autonomous pipeline          │
 │  /feature-dev        — guided single-feature workflow    │
 │  /task-implementer   — implement one atomic task         │
+│  /spec-orchestrator  — BRD→PRD→FSD→TRD pre-impl suite    │
+│  /gproject-orchestrator — project docs → roadmap         │
+│  /plan-gatekeeper    — stress-test design / ADR output   │
 │  /code-review        — standalone review                 │
 │  /commit /push /pr   — git utilities                     │
+│  /caveman            — terse session mode                │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼

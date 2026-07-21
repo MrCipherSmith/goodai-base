@@ -42,6 +42,16 @@ skills:
     version: 1.0.0
     category: ideation
     path: skills/brainstorm
+  - name: brd-creator
+    description: 'Use when a user request needs to be transformed into a Business Requirements Document (BRD) capturing business context, stakeholders, and success metrics.'
+    version: 1.0.0
+    category: planning
+    path: skills/brd-creator
+  - name: caveman-mode
+    description: 'Use when the user wants all AI responses in the current session to be terse and token-efficient. Activates caveman-mode: no preamble, no filler, fragments over sentences, bullets over prose.'
+    version: 1.0.0
+    category: utility
+    path: skills/caveman-mode
   - name: changelog
     description: 'Use when generating a changelog, release notes, or summarizing what changed between tags, versions, or date ranges.'
     version: 1.0.0
@@ -114,9 +124,14 @@ skills:
     path: skills/feature-analyzer
   - name: feature-dev
     description: 'Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided workflow.'
-    version: 2.0.0
+    version: 2.1.0
     category: workflow
     path: skills/feature-dev
+  - name: fsd-creator
+    description: 'Use when PRD and BRD exist and need to be expanded into a Functional Specification Document (FSD) detailing feature behavior, UI states, logic rules, and interface contracts.'
+    version: 1.0.0
+    category: planning
+    path: skills/fsd-creator
   - name: gproject-consistency-checker
     description: 'Validates PRD/Implementation Plan against decisions registry, architecture doc, and best practices constraints. Catches contradictions, gaps, and violations. Use when: dispatched by gproject-orchestrator Phase 5. NOT for: direct user invocation.
 '
@@ -197,7 +212,7 @@ skills:
     path: skills/job-documenter
   - name: job-orchestrator
     description: 'Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-end with sub-agents.'
-    version: 3.2.0
+    version: 3.4.0
     category: orchestration
     path: skills/job-orchestrator
   - name: perf-check
@@ -205,6 +220,11 @@ skills:
     version: 1.0.0
     category: performance
     path: skills/perf-check
+  - name: plan-gatekeeper
+    description: 'Relentless interactive plan gatekeeper. Stress-tests design choices, architecture, API contracts, state management, and edge cases. Proposes Architectural Decisions (ADR) in the final response status block.'
+    version: 1.0.0
+    category: validation
+    path: skills/plan-gatekeeper
   - name: pr
     description: 'Use when opening a pull request for the current branch.'
     version: 1.0.0
@@ -344,7 +364,7 @@ Handles "review", "code review", "review PR", "review --frontend", "review --bac
 consolidates findings into one unified report.
 NOT for: running a single specialized reviewer — invoke it directly by name instead.
 '
-    version: 1.5.0
+    version: 1.6.0
     category: review
     path: skills/review-orchestrator
   - name: review-performance
@@ -406,6 +426,11 @@ Dispatched by review-orchestrator for --testing-practices,
     version: 1.0.0
     category: quality
     path: skills/security-audit
+  - name: spec-orchestrator
+    description: 'Use when a user request needs to be converted into a full pre-implementation documentation suite (BRD → PRD → FSD → TRD) with iterative review at each document stage.'
+    version: 1.1.0
+    category: orchestration
+    path: skills/spec-orchestrator
   - name: task-implementer
     description: 'Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing autonomous code changes from a JSON task object.'
     version: 1.2.0
@@ -421,3 +446,8 @@ Dispatched by review-orchestrator for --testing-practices,
     version: 1.0.0
     category: testing
     path: skills/tests-creator
+  - name: trd-creator
+    description: 'Use when PRD and FSD exist and need to be expanded into a Technical Requirements Document (TRD) covering architecture, tech stack, data models, API contracts, and non-functional requirements.'
+    version: 1.0.0
+    category: planning
+    path: skills/trd-creator

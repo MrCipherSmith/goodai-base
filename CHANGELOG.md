@@ -4,6 +4,36 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.16.0] — Strategy A skill profiles + Grok + plan-gatekeeper + metaproject
+
+> Released: 2026-07-21
+
+### Added
+
+- **`skills/plan-gatekeeper`** — Interactive design gatekeeper: stress-tests implementation plans against codebase constraints and formalizes architectural decisions (ADRs).
+- **Grok integration docs** — Skills are discovered by Grok via Claude Code compatibility after `sync-skills` to `claude` (`~/.claude/skills`). Documented in [docs/onboarding.md](docs/onboarding.md#grok-integration) and [scripts/README.md](scripts/README.md). Optional local `[skills] paths` tip for zero-copy repo source.
+- **Keryx metaproject** — Optional `.metaproject/` workspace (graph, wiki, flows, health, security) when initialized with `keryx init`; agent routing block in `AGENTS.md` / `CLAUDE.md`.
+- **Requirements package** — `docs/requirements/canonical-skill-profiles-and-grok/` (PRD, specification, phased implementation plan, flow-orchestrator prompts) plus `docs/requirements/roadmap.md`.
+- **AGENTS Skills Catalog** — Explicit catalog entries for gproject phase subagents, legacy review profiles, `pr-review-comments`, `plan-gatekeeper`, and `interviewer` so `rules.json` validation has zero orphan warnings.
+
+### Changed
+
+- **Strategy A (canonical-only platform profiles)** — `validate-skills-before-sync` requires only a valid `SKILL.md`. Platform variants (`SKILL.cursor.md`, `SKILL.codex.md`, …) are optional and validated only when present. `sync-skills` continues to fall back to `SKILL.md`.
+- **`CONTRIBUTING.md`**, **`rules/core/skills-storage-workflow.mdc`**, **`scripts/README.md`** — Single policy: do not invent identical platform copies solely for validation.
+- **`README.md`** — Skill/rule counts aligned with the tree (~70 skills, ~30 rules), Grok listed, optional platform files, docs index, updated project layout.
+- **`.gitignore`** — Ignores machine-local `.cursor/mcp.json` and `.mcp.json` (absolute paths).
+
+### Removed
+
+- **66 byte-identical platform skill files** that matched `SKILL.md` exactly (including tactical copies for brd/fsd/trd/spec/caveman and several review/autodoc profiles). Divergent platform files kept.
+
+### Docs / catalogs
+
+- Regenerated `docs/skill-catalog.md` and `docs/rules-catalog.md` / `docs/ai/skill-catalog.yaml`.
+- Updated `docs/skills-overview.md` entry points (`spec-orchestrator`, `plan-gatekeeper`, `caveman`, gproject).
+
+---
+
 ## [1.15.0] — ZCode support
 
 > Released: 2026-07-12

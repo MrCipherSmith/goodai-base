@@ -4,55 +4,54 @@ A curated knowledge base of AI agent skills, coding rules, and orchestration wor
 
 Instead of writing the same prompts over and over, you define **skills** (reusable agent workflows) and **rules** (coding standards), sync them across your AI tools, and get consistent, high-quality output every session.
 
-Works with Claude Code, Cursor, Codex, Zed, OpenCode, and ZCode.
+Works with Claude Code, Cursor, Codex, Zed, OpenCode, ZCode, and **Grok** (via Claude/Cursor skill discovery — see [onboarding](docs/onboarding.md#grok-integration)).
 
 ---
 
 ## What's inside
 
-### 54 Skills
+### 70 Skills
 
-Structured, multi-step agent workflows across 10 categories:
+Structured multi-step agent workflows. Full table: [docs/skill-catalog.md](docs/skill-catalog.md). Highlights by category:
 
-| Category | Skills |
-|----------|--------|
-| **Analysis** | `feature-analyzer`, `issue-analyzer`, `interview`, `interviewer`, `brainstorm` |
-| **Review** | `review-orchestrator`, `review-logic`, `review-architecture`, `review-security-code`, `review-performance`, `review-frontend`, `review-backend`, `review-style`, `review-clean-code`, `review-highload`, `review-greptile`, `review-strict`, `review-pr-feedback` |
-| **Workflow** | `commit`, `push`, `pr`, `feature-dev`, `changelog`, `pr-issue-documenter` |
-| **Orchestration** | `job-orchestrator`, `job-documenter`, `context-collector` |
+| Category | Skills (examples) |
+|----------|-------------------|
+| **Analysis** | `feature-analyzer`, `issue-analyzer`, `interview`, `interviewer`, `brainstorm`, `plan-gatekeeper` |
+| **Review** | `review-orchestrator` + specialized reviewers (`review-logic`, `review-architecture`, `review-security-code`, `review-frontend`, `review-backend`, `review-highload`, `review-greptile`, …), legacy profiles (`code-ai-review`, `code-boss-review`, …) |
+| **Workflow** | `commit`, `push`, `pr`, `feature-dev`, `changelog`, `pr-issue-documenter`, `pr-review-comments` |
+| **Orchestration** | `job-orchestrator`, `job-documenter`, `context-collector`, `code-verifier` |
 | **Implementation** | `task-implementer`, `tests-creator` |
-| **Project Documentation** | `gproject-orchestrator`, `gproject-discovery`, `gproject-problem-definer`, `gproject-stack-advisor`, `gproject-patterns-researcher`, `gproject-spec-writer`, `gproject-consistency-checker`, `gproject-planner`, `prd-creator` |
-| **Code Documentation** | `autodoc-orchestrator`, `autodoc-scanner`, `autodoc-analyst`, `autodoc-architect`, `autodoc-writer`, `autodoc-assembler` |
-| **Quality** | `security-audit`, `perf-check`, `code-verifier`, `test-gen`, `db-migrate`, `dependency-update`, `deploy` |
-| **Configuration** | `hookify`, `claude-md-management` |
+| **Pre-impl specs** | `spec-orchestrator`, `brd-creator`, `prd-creator`, `fsd-creator`, `trd-creator` |
+| **Project Documentation** | `gproject-orchestrator` + phase subagents (`gproject-discovery` … `gproject-planner`) |
+| **Code Documentation** | `autodoc-orchestrator` + phase subagents (`autodoc-scanner` … `autodoc-assembler`) |
+| **Quality / Ops** | `security-audit`, `perf-check`, `test-gen`, `db-migrate`, `dependency-update`, `deploy` |
+| **Configuration / UX** | `hookify`, `claude-md-management`, `caveman-mode` |
 
 Notable examples:
 
-- **`autodoc-orchestrator`** — Autonomous 5-phase reverse-engineering pipeline: scans codebase → analyzes modules in parallel → synthesizes architecture → writes docs in parallel → assembles final package. No human gates, fully autonomous. See [autodoc docs](docs/autodoc-pipeline.md)
-- **`gproject-orchestrator`** — 7-phase project documentation pipeline: discovery → problem definition → stack selection → architecture → PRD → consistency review → roadmap. Decision-driven, with human gates and append-only decisions registry. See [gproject pipeline docs](docs/gproject-pipeline.md)
-- **`job-orchestrator`** — Dynamic implementation orchestrator: collects context, builds an execution plan, dispatches sub-agents, tracks progress in `jobs/` with full traceability
-- **`feature-analyzer`** — Deep cross-repository analysis of feature branches with architectural impact assessment
-- **`issue-analyzer`** — Decomposes a GitHub issue into atomic, implementation-ready tasks for parallel agent execution
-- **`task-implementer`** — Autonomous end-to-end implementation agent: reads the task, researches the codebase, writes code, verifies with lint/tests
-- **`review-orchestrator`** — Routes review requests to 12 specialized subagents (logic, architecture, security, performance, frontend, backend, style, clean-code, highload, greptile, strict) and consolidates findings into one report with unified severity. See [review domain docs](docs/review-domain.md)
-- **`review-greptile`** — Codebase-aware review via Greptile MCP: cross-file impact, downstream breakage, project-wide pattern violations. Free for open-source. See [Greptile integration docs](docs/greptile-integration.md)
-- **`feature-dev`** — Full 7-phase feature development: requirements → design → implement → test → review → fix → PR
-- **`hookify`** — Generates Claude Code / Cursor hook configs from natural language descriptions
+- **`autodoc-orchestrator`** — Autonomous reverse-engineering docs pipeline. See [autodoc docs](docs/autodoc-pipeline.md)
+- **`gproject-orchestrator`** — 7-phase project documentation (discovery → roadmap). See [gproject docs](docs/gproject-pipeline.md)
+- **`spec-orchestrator`** — Pre-implementation suite BRD → PRD → FSD → TRD with review loops
+- **`job-orchestrator`** — Implementation orchestrator with wave isolation, TDD, and `jobs/` traceability
+- **`plan-gatekeeper`** — Interactive design gatekeeper: stress-tests plans and produces ADRs
+- **`review-orchestrator`** — Routes to specialized reviewers and consolidates severity. See [review domain](docs/review-domain.md)
+- **`feature-dev`** — Guided feature development through implement → verify → PR
+- **`caveman-mode`** — Session-level terse responses (`/caveman`) to cut token noise
 
-### 29 Rules
+### ~30 Rules
 
-Reference standards loaded on demand, not always-on:
+Reference standards loaded on demand (see [docs/rules-catalog.md](docs/rules-catalog.md)):
 
-| Area | Rules |
-|------|-------|
+| Area | Examples |
+|------|----------|
 | **Code Review** | `code-review-ai-assistant`, `code-review-boss-profile` |
 | **TypeScript / React** | `code-style-patterns`, `frontend-assistant` |
-| **Backend** | `nestjs-dto` |
-| **State** | `mobx-store-template` |
-| **Testing** | `playwright-testing`, `storybook-guidelines` |
+| **Backend / State** | `nestjs-dto`, `mobx-store-template` |
+| **Testing** | `playwright-testing`, `storybook-guidelines`, `tdd-workflow` |
 | **Git** | `commit-message-formatting`, `git-rules` |
-| **Planning** | `implementation-plans`, `requirements-management` |
-| **AI / Meta** | `model-selection`, `rule-management-workflow`, `skills-storage-workflow` |
+| **Planning** | `implementation-plans`, `requirements-management`, `requirements-package-standard` |
+| **Engineering** | `solid-principles`, `error-handling`, `clean-architecture`, `security-baseline`, … |
+| **AI / Meta** | `model-selection`, `skills-storage-workflow`, `subagent-status-protocol` |
 | **Documentation** | `documentation-management`, `jobs-documentation` |
 
 ---
@@ -127,16 +126,19 @@ verification, and marketplace details.
 
 ### Skills
 
-Each skill lives in `skills/<name>/` and has platform-specific definitions:
+Each skill lives in `skills/<name>/`. **Canonical source is always `SKILL.md`.**
+
+Platform variants (`SKILL.cursor.md`, `SKILL.codex.md`, …) are **optional** — create them only when content must differ. `sync-skills` falls back to `SKILL.md` for every tool (strategy A).
 
 ```
 skills/feature-analyzer/
-├── SKILL.md          # Claude Code
-├── SKILL.cursor.md   # Cursor
-├── SKILL.codex.md    # Codex
-├── SKILL.zed.md      # Zed
-└── SKILL.opencode.md # OpenCode
+├── SKILL.md            # required (canonical)
+├── SKILL.cursor.md     # optional override for Cursor
+├── SKILL.codex.md      # optional override for Codex
+└── …
 ```
+
+Pre-sync gate: `cd scripts && bun run validate-skills-before-sync` (requires valid `SKILL.md` only).
 
 Skills are invoked by name inside your AI tool session. In Claude Code, for example:
 
@@ -144,6 +146,7 @@ Skills are invoked by name inside your AI tool session. In Claude Code, for exam
 /feature-analyzer
 /code-review
 /job-orchestrator
+/plan-gatekeeper
 ```
 
 ### Rules
@@ -167,14 +170,31 @@ The single always-on file that acts as a routing table. It tells the agent:
 ├── AGENTS.mdc             # Same with YAML frontmatter (for Cursor alwaysApply)
 ├── rules/
 │   └── core/              # Coding standards, git rules, review profiles (.mdc)
-├── skills/                # Skill definitions (62 skills, multi-platform)
+├── skills/                # Skill definitions (~70 skills; SKILL.md required)
 │   └── shared/            # Shared prompts reused across skills
-├── plugins/               # Generated Codex plugin bundles
+├── plugins/               # Generated Codex / ZCode plugin bundles
 ├── .agents/plugins/       # Codex marketplace metadata
 ├── scripts/               # Sync, generation, and validation utilities
-├── docs/                  # Auto-generated catalogs (skill-catalog.md, rules-catalog.md)
-└── jobs/                  # Per-session job documentation (gitignored)
+├── docs/                  # Catalogs, onboarding, pipeline docs, requirements packages
+├── .metaproject/          # Optional Keryx metaproject (graph, wiki, flows) when initialized
+└── jobs/                  # Per-session job documentation (often gitignored)
 ```
+
+---
+
+## Docs
+
+| Doc | Description |
+|-----|-------------|
+| [docs/onboarding.md](docs/onboarding.md) | How skills/rules load, sync, **Grok integration** |
+| [docs/skill-catalog.md](docs/skill-catalog.md) | Auto-generated list of all skills |
+| [docs/rules-catalog.md](docs/rules-catalog.md) | Auto-generated list of all rules |
+| [docs/skills-overview.md](docs/skills-overview.md) | Ecosystem map and skill interactions |
+| [docs/review-domain.md](docs/review-domain.md) | Review orchestrator domain |
+| [docs/gproject-pipeline.md](docs/gproject-pipeline.md) | gproject documentation pipeline |
+| [docs/autodoc-pipeline.md](docs/autodoc-pipeline.md) | autodoc reverse-engineering pipeline |
+| [docs/requirements/](docs/requirements/) | Requirements packages (e.g. skill profiles + Grok) |
+| [scripts/README.md](scripts/README.md) | Sync/validation CLI reference |
 
 ---
 
@@ -186,7 +206,7 @@ A GitHub Actions workflow auto-regenerates `docs/skill-catalog.md` and `docs/rul
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). Platform skill files are optional — only add when content differs from `SKILL.md`.
 
 ---
 

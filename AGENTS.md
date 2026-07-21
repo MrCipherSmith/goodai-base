@@ -783,6 +783,18 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 - **Key Features**: 6-rule caveman format; deactivates with `/caveman off`; automated version (`terse-subagent-response.mdc`) is injected by orchestrators into sub-agent dispatch prompts
 - **Version**: v1.0.0
 
+**`skills/plan-gatekeeper`**
+- **Purpose**: Relentless interactive plan gatekeeper — stress-tests design, architecture, APIs, state, and edge cases; proposes ADRs
+- **Use When**: "/plan-gatekeeper", "gatekeep plan", "grill plan", "stress-test plan", "validate this design"
+- **Key Features**: Interrogates proposed plans against codebase constraints; formalizes architectural decisions before implementation
+- **Version**: v1.0.0
+
+**`skills/interviewer`**
+- **Purpose**: Critical requirements interviewer — one question at a time with A/B/C/D options, structured decisions output
+- **Use When**: "/interview", "clarify requirements", orchestrator Phase 0 interviewer gate
+- **Key Features**: Adaptive follow-ups; max question budget; structured `{decisions, constraints, assumptions, risks, refined_goal}`
+- **Version**: v1.0.0
+
 **`skills/hookify`**
 - **Purpose**: Create agent hooks from natural language descriptions
 - **Use When**: "/hookify", "Create hook", "Add hook", "Run lint after edit"

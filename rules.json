@@ -1204,6 +1204,51 @@
       }
     },
     {
+      "id": "plan-gatekeeper",
+      "type": "skill",
+      "path": "skills/plan-gatekeeper/SKILL.md",
+      "description": "Relentless interactive plan gatekeeper — stress-tests design, architecture, APIs, state, and edge cases; proposes ADRs",
+      "triggers": {
+        "keywords": [
+          "relentless",
+          "interactive",
+          "plan",
+          "gatekeeper",
+          "stress-tests",
+          "design",
+          "architecture",
+          "apis",
+          "state",
+          "edge",
+          "cases",
+          "proposes",
+          "adrs"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "interviewer",
+      "type": "skill",
+      "path": "skills/interviewer/SKILL.md",
+      "description": "Critical requirements interviewer — one question at a time with A/B/C/D options, structured decisions output",
+      "triggers": {
+        "keywords": [
+          "critical",
+          "requirements",
+          "interviewer",
+          "one",
+          "question",
+          "time",
+          "options",
+          "structured",
+          "decisions",
+          "output"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "hookify",
       "type": "skill",
       "path": "skills/hookify/SKILL.md",

@@ -2,7 +2,7 @@
 
 _Auto-generated from `skills/*/SKILL.md`. Do not edit manually._
 
-Total: 64 skills
+Total: 70 skills
 
 | Name | Description | Version | Category |
 | ---- | ----------- | ------- | -------- |
@@ -13,6 +13,8 @@ Total: 64 skills
 | `autodoc-scanner` | Phase 1 subagent for autodoc-orchestrator. Scans project structure, detects stack, identifies mod... | — | — |
 | `autodoc-writer` | Phase 4 subagent for autodoc-orchestrator. Writes one documentation section from analysis artifac... | — | — |
 | `brainstorm` | Use when exploring architecture decisions, tech choices, feature ideas, or any open-ended problem... | 1.0.0 | ideation |
+| `brd-creator` | Use when a user request needs to be transformed into a Business Requirements Document (BRD) captu... | 1.0.0 | planning |
+| `caveman-mode` | Use when the user wants all AI responses in the current session to be terse and token-efficient. ... | 1.0.0 | utility |
 | `changelog` | Use when generating a changelog, release notes, or summarizing what changed between tags, version... | 1.0.0 | workflow |
 | `claude-md-management` | Use when saving session learnings, coding patterns, conventions, or commands discovered during wo... | 1.0.0 | configuration |
 | `code-ai-review` | Performs strict AI code review following code-review-ai-assistant.mdc standards. Reviews current ... | 1.0.0 | review |
@@ -27,7 +29,8 @@ Total: 64 skills
 | `dependency-update` | Use when checking for outdated packages or upgrading dependencies with compatibility verification. | 1.0.0 | maintenance |
 | `deploy` | Use when deploying to any environment (staging, production) or when a deployment pipeline needs t... | 1.0.0 | ops |
 | `feature-analyzer` | Use when analyzing feature branch changes across repos, planning implementation, or understanding... | 2.4.0 | analysis |
-| `feature-dev` | Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided... | 2.0.0 | workflow |
+| `feature-dev` | Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided... | 2.1.0 | workflow |
+| `fsd-creator` | Use when PRD and BRD exist and need to be expanded into a Functional Specification Document (FSD)... | 1.0.0 | planning |
 | `gproject-consistency-checker` | Validates PRD/Implementation Plan against decisions registry, architecture doc, and best practice... | — | — |
 | `gproject-discovery` | Collects and structures initial project information from multiple sources. Use when: dispatched b... | — | — |
 | `gproject-orchestrator` | Project documentation orchestrator — builds PRDs, specs, and implementation plans through a phase... | — | — |
@@ -42,8 +45,9 @@ Total: 64 skills
 | `interviewer` | Use when requirements are ambiguous and precise clarification is needed before proceeding with a ... | 1.0.0 | meta |
 | `issue-analyzer` | Use when decomposing a GitHub issue into atomic tasks for AI implementation, planning task breakd... | 1.1.0 | analysis |
 | `job-documenter` | Use when a job folder needs to be initialized, or analysis/report/review documents need to be cre... | 1.0.0 | documentation |
-| `job-orchestrator` | Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-e... | 3.2.0 | orchestration |
+| `job-orchestrator` | Use when a GitHub issue or complex intent needs to be analyzed, planned, and implemented end-to-e... | 3.4.0 | orchestration |
 | `perf-check` | Use when measuring bundle size, detecting performance regressions, auditing slow queries, or inve... | 1.0.0 | performance |
+| `plan-gatekeeper` | Relentless interactive plan gatekeeper. Stress-tests design choices, architecture, API contracts,... | 1.0.0 | validation |
 | `pr` | Use when opening a pull request for the current branch. | 1.0.0 | workflow |
 | `pr-issue-documenter` | Use when documenting PR changes, adding a PR description, creating a linked issue for a PR, or up... | 1.0.0 | documentation |
 | `pr-review-comments` | Собирает комментарии к указанному PR (по ссылке) через GitHub MCP или gh, группирует по авторам, ... | — | — |
@@ -68,7 +72,7 @@ repository i... | 1.0.0 | review |
 race conditions, ... | 1.0.0 | review |
 | `review-logic` | Use when: reviewing code for logic correctness, algorithmic bugs, missing error handling,
 async/a... | 1.0.0 | review |
-| `review-orchestrator` | Use when: a code review is requested and the user does not explicitly name a specialized reviewer... | 1.5.0 | review |
+| `review-orchestrator` | Use when: a code review is requested and the user does not explicitly name a specialized reviewer... | 1.6.0 | review |
 | `review-performance` | Use when a performance review is requested, checking for N+1 queries, unnecessary re-renders, mem... | 1.0.0 | review |
 | `review-pr-feedback` | Use when: a developer has received PR review comments and wants to understand them,
 act on them, ... | 1.0.0 | review |
@@ -80,6 +84,8 @@ without... | 1.0.0 | review |
 | `review-testing-practices` | Use when reviewing unit, integration, Storybook, component, or e2e tests
 against repository-local... | 1.0.0 | review |
 | `security-audit` | Use when checking for dependency vulnerabilities, accidentally committed secrets, or security iss... | 1.0.0 | quality |
+| `spec-orchestrator` | Use when a user request needs to be converted into a full pre-implementation documentation suite ... | 1.1.0 | orchestration |
 | `task-implementer` | Use when implementing a single decomposed task from issue-analyzer end-to-end, or executing auton... | 1.2.0 | implementation |
 | `test-gen` | Use when unit or integration tests need to be written for a specific file or module. | 1.0.0 | testing |
 | `tests-creator` | Use when writing test cases BEFORE implementation — converts acceptance criteria into failing tes... | 1.0.0 | testing |
+| `trd-creator` | Use when PRD and FSD exist and need to be expanded into a Technical Requirements Document (TRD) c... | 1.0.0 | planning |
