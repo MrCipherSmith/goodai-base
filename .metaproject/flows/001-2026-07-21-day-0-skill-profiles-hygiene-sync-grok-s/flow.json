@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "id": "001",
+  "slug": "day-0-skill-profiles-hygiene-sync-grok-s",
+  "title": "Day 0: skill profiles hygiene + sync + Grok smoke (canonical-skill-profiles-and-grok)",
+  "status": "in-progress",
+  "createdAt": "2026-07-21T15:28:23.906Z",
+  "updatedAt": "2026-07-21T15:29:40.724Z",
+  "source": {
+    "type": "description",
+    "ref": null
+  },
+  "acChecksum": "sha256:3625c62439bcd309553931f80c2a2f54b6da7c590b0df84f2d4ed32b74666e82",
+  "acConfirmed": {
+    "AC1": {
+      "at": "2026-07-21T15:29:40.530Z",
+      "note": "git status skills/: no untracked SKILL.cursor/codex/opencode/zed.md"
+    },
+    "AC2": {
+      "at": "2026-07-21T15:29:40.592Z",
+      "note": "bun run sync-skills exit 0; tools claude,cursor,codex,opencode,zed; sync_tools includes claude"
+    },
+    "AC3": {
+      "at": "2026-07-21T15:29:40.661Z",
+      "note": "grok inspect: job-orchestrator, brd-creator, spec-orchestrator under ~/.claude/skills vendor claude enabled"
+    },
+    "AC4": {
+      "at": "2026-07-21T15:29:40.724Z",
+      "note": "journal.md records validate exit 0, sync command, grok sample table"
+    }
+  },
+  "pr": {
+    "url": null
+  },
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Collect remaining context",
+      "kind": "context",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T2",
+      "title": "Implement per plan",
+      "kind": "implement",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    },
+    {
+      "id": "T3",
+      "title": "Add/adjust tests and make them pass",
+      "kind": "test",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "skipped"
+    },
+    {
+      "id": "T4",
+      "title": "Self-review and prepare draft PR",
+      "kind": "review",
+      "status": "done",
+      "dependsOn": [],
+      "attempts": {
+        "count": 0,
+        "log": []
+      },
+      "acRefs": [],
+      "evidenceRefs": [],
+      "budget": {},
+      "disposition": "completed"
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-07-21T15:28:23.906Z",
+      "event": "created"
+    },
+    {
+      "at": "2026-07-21T15:29:09.899Z",
+      "event": "frozen",
+      "detail": "4 criteria; checksum recorded"
+    },
+    {
+      "at": "2026-07-21T15:29:09.962Z",
+      "event": "started"
+    },
+    {
+      "at": "2026-07-21T15:29:40.275Z",
+      "event": "task-done",
+      "detail": "T1: Collect remaining context"
+    },
+    {
+      "at": "2026-07-21T15:29:40.338Z",
+      "event": "task-done",
+      "detail": "T2: Implement per plan"
+    },
+    {
+      "at": "2026-07-21T15:29:40.400Z",
+      "event": "task-done",
+      "detail": "T3: Add/adjust tests and make them pass"
+    },
+    {
+      "at": "2026-07-21T15:29:40.465Z",
+      "event": "task-done",
+      "detail": "T4: Self-review and prepare draft PR"
+    },
+    {
+      "at": "2026-07-21T15:29:40.530Z",
+      "event": "ac-confirmed",
+      "detail": "AC1: git status skills/: no untracked SKILL.cursor/codex/opencode/zed.md"
+    },
+    {
+      "at": "2026-07-21T15:29:40.592Z",
+      "event": "ac-confirmed",
+      "detail": "AC2: bun run sync-skills exit 0; tools claude,cursor,codex,opencode,zed; sync_tools includes claude"
+    },
+    {
+      "at": "2026-07-21T15:29:40.661Z",
+      "event": "ac-confirmed",
+      "detail": "AC3: grok inspect: job-orchestrator, brd-creator, spec-orchestrator under ~/.claude/skills vendor claude enabled"
+    },
+    {
+      "at": "2026-07-21T15:29:40.724Z",
+      "event": "ac-confirmed",
+      "detail": "AC4: journal.md records validate exit 0, sync command, grok sample table"
+    }
+  ]
+}
