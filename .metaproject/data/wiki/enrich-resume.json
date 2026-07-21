@@ -1,0 +1,26 @@
+{
+  "updatedAt": "2026-07-21T15:13:42.017Z",
+  "provider": "deepseek",
+  "model": "deepseek-v4-flash",
+  "completed": [
+    "architecture/testing-map.md",
+    "components/hooks.md",
+    "components/scripts-src-shared.md",
+    "components/scripts-tests-shared.md",
+    "architecture/project-map.md"
+  ],
+  "failed": [
+    {
+      "path": "architecture/project-map.md",
+      "reason": "validation: missing YAML frontmatter (must start with ---)"
+    },
+    {
+      "path": "components/scripts-src.md",
+      "reason": "validation: missing YAML frontmatter (must start with ---)"
+    },
+    {
+      "path": "components/scripts-tests.md",
+      "reason": "validation: missing YAML frontmatter (must start with ---)"
+    }
+  ]
+}

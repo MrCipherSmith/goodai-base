@@ -1,0 +1,55 @@
+{
+  "bin": [
+    "bin/cli.js"
+  ],
+  "hooks": [
+    "hooks/skill-eval.js",
+    "hooks/skill-eval.test.js"
+  ],
+  "scripts": [
+    "scripts/src/deploy-skill-hook.ts",
+    "scripts/src/detect-context.ts",
+    "scripts/src/detect-models.ts",
+    "scripts/src/generate-agents.ts",
+    "scripts/src/generate-codex-plugins.ts",
+    "scripts/src/generate-rules-catalog.ts",
+    "scripts/src/generate-rules-json.ts",
+    "scripts/src/generate-skill-catalog.ts",
+    "scripts/src/generate-skill-registry.ts",
+    "scripts/src/generate-zcode-plugin.ts",
+    "scripts/src/shared/agents-md.ts",
+    "scripts/src/shared/args.ts",
+    "scripts/src/shared/checksum.ts",
+    "scripts/src/shared/frontmatter.ts",
+    "scripts/src/shared/fs-utils.ts",
+    "scripts/src/shared/keywords.ts",
+    "scripts/src/sync-agents.ts",
+    "scripts/src/sync-skills.ts",
+    "scripts/src/sync-zcode.ts",
+    "scripts/src/validate-rules-json.ts",
+    "scripts/src/validate-skills-before-sync.ts",
+    "scripts/tests/deploy-skill-hook.test.ts",
+    "scripts/tests/detect-context.test.ts",
+    "scripts/tests/detect-models.test.ts",
+    "scripts/tests/generate-agents.test.ts",
+    "scripts/tests/generate-codex-plugins.test.ts",
+    "scripts/tests/generate-rules-catalog.test.ts",
+    "scripts/tests/generate-rules-json.test.ts",
+    "scripts/tests/generate-skill-catalog.test.ts",
+    "scripts/tests/generate-skill-registry.test.ts",
+    "scripts/tests/generate-zcode-plugin.test.ts",
+    "scripts/tests/shared/agents-md.test.ts",
+    "scripts/tests/shared/args.test.ts",
+    "scripts/tests/shared/checksum.test.ts",
+    "scripts/tests/shared/frontmatter.test.ts",
+    "scripts/tests/shared/fs-utils.test.ts",
+    "scripts/tests/shared/keywords.test.ts",
+    "scripts/tests/sync-agents.test.ts",
+    "scripts/tests/sync-skills.test.ts",
+    "scripts/tests/validate-rules-json.test.ts",
+    "scripts/tests/validate-skills-before-sync.test.ts"
+  ],
+  "setup.ts": [
+    "setup.ts"
+  ]
+}

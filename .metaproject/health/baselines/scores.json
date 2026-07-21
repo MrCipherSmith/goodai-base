@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-07-21T15:11:32.434Z",
+  "scopes": {
+    "component:scripts/src": {
+      "health_score": 84,
+      "risk_score": 35
+    },
+    "component:scripts/src/shared": {
+      "health_score": 100,
+      "risk_score": 0
+    },
+    "component:scripts/tests": {
+      "health_score": 100,
+      "risk_score": 0
+    },
+    "component:scripts/tests/shared": {
+      "health_score": 100,
+      "risk_score": 0
+    },
+    "file:bin/cli.js": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "file:hooks/skill-eval.js": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "file:scripts/src/deploy-skill-hook.ts": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "file:scripts/src/detect-context.ts": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "file:scripts/src/generate-rules-catalog.ts": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "file:scripts/src/generate-rules-json.ts": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "file:scripts/src/generate-skill-catalog.ts": {
+      "health_score": 91,
+      "risk_score": 5
+    },
+    "file:scripts/src/generate-skill-registry.ts": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "file:scripts/src/validate-skills-before-sync.ts": {
+      "health_score": 91,
+      "risk_score": 5
+    },
+    "file:setup.ts": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "module:bin": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "module:hooks": {
+      "health_score": 93,
+      "risk_score": 5
+    },
+    "module:scripts": {
+      "health_score": 92,
+      "risk_score": 35
+    },
+    "project": {
+      "health_score": 91,
+      "risk_score": 50
+    }
+  }
+}

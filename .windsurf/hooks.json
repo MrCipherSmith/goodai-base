@@ -1,0 +1,17 @@
+{
+  "hooks": [
+    {
+      "on": "input",
+      "command": "keryx security check-input --source untrusted-external",
+      "_keryxManaged": "security-agent-hooks"
+    },
+    {
+      "on": "output",
+      "command": "keryx security check-output",
+      "_keryxManaged": "security-agent-hooks"
+    }
+  ],
+  "_keryxManaged": [
+    "security-agent-hooks"
+  ]
+}
