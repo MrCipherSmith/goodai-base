@@ -3,9 +3,9 @@
   "id": "002",
   "slug": "day-1-strategy-a-optional-platform-profi",
   "title": "Day 1: strategy A — optional platform profiles in validator + docs + PR",
-  "status": "in-progress",
+  "status": "done",
   "createdAt": "2026-07-21T15:35:37.277Z",
-  "updatedAt": "2026-07-21T15:38:02.260Z",
+  "updatedAt": "2026-07-21T15:38:29.113Z",
   "source": {
     "type": "description",
     "ref": null
@@ -170,6 +170,25 @@
       "at": "2026-07-21T15:38:02.260Z",
       "event": "completion-failed",
       "detail": "pull-request: PR checks not green"
+    },
+    {
+      "at": "2026-07-21T15:38:29.032Z",
+      "event": "implemented",
+      "detail": "draft PR: https://github.com/MrCipherSmith/goodai-base/pull/7 (warning: PR is not a draft)"
+    },
+    {
+      "at": "2026-07-21T15:38:29.102Z",
+      "event": "completing"
+    },
+    {
+      "at": "2026-07-21T15:38:29.113Z",
+      "event": "done",
+      "detail": "all gates passed"
     }
-  ]
+  ],
+  "merged": {
+    "commit": "d4f5b272c8c567af8404cd0ccb8e426ef3af6f00",
+    "ref": "origin/main",
+    "at": "2026-07-21T15:38:29.113Z"
+  }
 }
