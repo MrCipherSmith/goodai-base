@@ -1228,6 +1228,58 @@
       }
     },
     {
+      "id": "doubt-driven-development",
+      "type": "skill",
+      "path": "skills/doubt-driven-development/SKILL.md",
+      "description": "In-flight adversarial reviewer for a single non-trivial decision — catches a wrong direction while correction is still cheap (per-decision counterpart to `review-orchestrator` and `plan-gatekeeper`)",
+      "triggers": {
+        "keywords": [
+          "in-flight",
+          "adversarial",
+          "reviewer",
+          "single",
+          "non-trivial",
+          "decision",
+          "catches",
+          "wrong",
+          "direction",
+          "while",
+          "correction",
+          "still",
+          "cheap",
+          "per-decision",
+          "counterpart",
+          "review-orchestrator",
+          "plan-gatekeeper"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "constraint-driven-development",
+      "type": "skill",
+      "path": "skills/constraint-driven-development/SKILL.md",
+      "description": "Produces a persistent, measurable quality bar (`CONSTRAINTS.md`) with enforced thresholds, ratchets, and a guard against silent weakening",
+      "triggers": {
+        "keywords": [
+          "produces",
+          "persistent",
+          "measurable",
+          "quality",
+          "bar",
+          "constraints",
+          "enforced",
+          "thresholds",
+          "ratchets",
+          "guard",
+          "against",
+          "silent",
+          "weakening"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "interviewer",
       "type": "skill",
       "path": "skills/interviewer/SKILL.md",

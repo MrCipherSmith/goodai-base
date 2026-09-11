@@ -2,7 +2,7 @@
 
 A map of skills in goodai-base — what they do, how they group, and how they interact.
 
-> Counts drift as skills are added. Authoritative list: [skill-catalog.md](./skill-catalog.md) (auto-generated, currently **70** skills).
+> Counts drift as skills are added. Authoritative list: [skill-catalog.md](./skill-catalog.md) (auto-generated, currently **72** skills).
 
 ---
 

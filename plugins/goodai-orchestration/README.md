@@ -18,6 +18,7 @@ cd scripts && bun run generate-codex-plugins
 - `issue-analyzer`
 - `job-documenter`
 - `job-orchestrator`
+- `plan-gatekeeper`
 - `pr-issue-documenter`
 - `task-implementer`
 - `tests-creator`

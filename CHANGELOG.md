@@ -4,6 +4,27 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.17.0] — Agent-discipline skills (doubt / constraints) + anti-rationalization template
+
+> Released: 2026-09-11
+
+Adapted from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills); fulfils
+[agent-discipline phase 2 (anti-rationalization)](docs/agent-discipline/phase-2-anti-rationalization.md).
+
+### Added
+
+- **`skills/doubt-driven-development`** — In-flight adversarial reviewer for a single non-trivial decision (CLAIM→EXTRACT→DOUBT→RECONCILE→STOP). Reviewer receives artifact + contract only (never your conclusion), issues-only framing, optional cross-model, bounded to 3 cycles. Per-decision counterpart to `review-orchestrator` (post-hoc) and `plan-gatekeeper` (whole-plan).
+- **`skills/constraint-driven-development`** — Produces a persistent, measurable quality bar (`CONSTRAINTS.md`): floor / enforced-with-numbers / ratchets / dated exceptions, sane defaults, and a guard against silent bar-lowering.
+- **`docs/skill-authoring-template.md`** — Canonical SKILL.md template codifying the required **Rationalizations** table, **Red Flags / Iron Law**, and **Verification Checklist** sections.
+
+### Changed
+
+- **`skills/code-verifier`** (v1.0.0 → v1.1.0) — Detects `CONSTRAINTS.md` and enforces its thresholds in the gate; adds a `constraints` block to `VERIFICATION_RESULT`; expired exceptions no longer suppress findings.
+- **`skills/review-orchestrator`** (v1.6.0 → v1.7.0) — Added a **Constraint Guard** pass that flags the five constraint-weakening moves in a diff (lowered thresholds, weakened tests, silenced checkers, unfinished work, undiscussed exceptions), plus two new Red Flags rows.
+- **`docs/agent-discipline/README.md`** — Phase 2 marked IN PROGRESS with reference implementations.
+
+---
+
 ## [1.16.0] — Strategy A skill profiles + Grok + plan-gatekeeper + metaproject
 
 > Released: 2026-07-21

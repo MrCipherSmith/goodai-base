@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://goodai-base.local/schemas/plan-gatekeeper/output-contract.schema.json",
+  "title": "Plan Gatekeeper Output Contract",
+  "description": "Output schema for plan-gatekeeper skill matching Subagent Status Protocol.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "decisions", "refined_plan"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["DONE", "DONE_WITH_CONCERNS", "BLOCKED", "NEEDS_CONTEXT"],
+      "description": "Subagent response status"
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["question", "answer", "impact"],
+        "properties": {
+          "question": { "type": "string" },
+          "answer": { "type": "string" },
+          "impact": { "type": "string", "enum": ["high", "medium"] }
+        }
+      },
+      "description": "Decisions collected during the gatekeeping interview"
+    },
+    "adr_proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "status", "context", "decision", "consequences"],
+        "properties": {
+          "title": { "type": "string" },
+          "status": { "type": "string", "enum": ["Proposed", "Accepted", "Superseded"] },
+          "context": { "type": "string" },
+          "decision": { "type": "string" },
+          "consequences": { "type": "string" }
+        }
+      },
+      "description": "ADRs generated as a result of decisions"
+    },
+    "refined_plan": {
+      "type": "string",
+      "description": "Refined and validated version of the plan"
+    }
+  }
+}
