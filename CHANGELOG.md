@@ -22,6 +22,7 @@ Adapted from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skill
 - **`skills/code-verifier`** (v1.0.0 → v1.1.0) — Detects `CONSTRAINTS.md` and enforces its thresholds in the gate; adds a `constraints` block to `VERIFICATION_RESULT`; expired exceptions no longer suppress findings.
 - **`skills/review-orchestrator`** (v1.6.0 → v1.7.0) — Added a **Constraint Guard** pass that flags the five constraint-weakening moves in a diff (lowered thresholds, weakened tests, silenced checkers, unfinished work, undiscussed exceptions), plus two new Red Flags rows.
 - **`docs/agent-discipline/README.md`** — Phase 2 marked IN PROGRESS with reference implementations.
+- **`README.md`** and **`docs/skills-overview.md`** — document the new **Validation & Standards** skill group (`plan-gatekeeper`, `doubt-driven-development`, `constraint-driven-development`) and the `/doubt` + `/constraints` entry points.
 
 ---
 

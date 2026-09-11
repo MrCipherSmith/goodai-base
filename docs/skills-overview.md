@@ -21,6 +21,8 @@ User request
 │  /spec-orchestrator  — BRD→PRD→FSD→TRD pre-impl suite    │
 │  /gproject-orchestrator — project docs → roadmap         │
 │  /plan-gatekeeper    — stress-test design / ADR output   │
+│  /doubt              — in-flight adversarial decision check│
+│  /constraints        — write CONSTRAINTS.md quality bar   │
 │  /code-review        — standalone review                 │
 │  /commit /push /pr   — git utilities                     │
 │  /caveman            — terse session mode                │
@@ -131,6 +133,25 @@ All return findings with severity (CRITICAL / WARNING / SUGGESTION) and location
 | `security-audit` | auth/, api/, migrations, .env touched | Dependency CVEs, secrets scan, injection patterns |
 | `perf-check` | *.tsx, *.jsx, *.css, dist/, build/ touched | Bundle size, slow queries, async patterns |
 | `test-gen` | No tests in diff after implement | Generates unit/integration tests for uncovered modules |
+
+---
+
+### Validation & Standards
+
+Discipline skills that catch a wrong direction or a slipping quality bar *before* code merges.
+They follow the [skill authoring template](./skill-authoring-template.md) (Rationalizations / Red
+Flags + Iron Law / Verification) and fulfil [agent-discipline phase 2](./agent-discipline/phase-2-anti-rationalization.md).
+
+| Skill | Scope | What it does |
+|---|---|---|
+| `plan-gatekeeper` | whole plan, interactive | Interrogates an implementation plan against codebase constraints; emits ADRs |
+| `doubt-driven-development` | single decision, in-flight | Spawns a fresh-context adversarial reviewer over artifact + contract (never your conclusion), issues-only framing, cross-model optional, bounded to 3 cycles |
+| `constraint-driven-development` | whole project, persistent | Produces `CONSTRAINTS.md` — floor / enforced-with-numbers / ratchets / dated exceptions — the standing, measurable quality bar |
+
+**How they compose with review/verify:**
+
+- `constraint-driven-development` writes the bar → `code-verifier` **enforces** the numbers in its gate → `review-orchestrator` runs a **guard-the-bar** pass that flags any diff lowering the bar (weakened tests, silenced checkers, dropped thresholds).
+- `doubt-driven-development` is the per-decision counterpart to `review-orchestrator` (post-hoc, whole-diff) and `plan-gatekeeper` (whole-plan): use it in-flight when a single decision is non-trivial (branching, boundary crossing, unverifiable invariant, irreversible blast radius).
 
 ---
 
