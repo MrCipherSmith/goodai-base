@@ -35,10 +35,12 @@ cd scripts && bun run sync-zcode
 - `code-style-review`
 - `code-verifier`
 - `commit`
+- `constraint-driven-development`
 - `context-collector`
 - `db-migrate`
 - `dependency-update`
 - `deploy`
+- `doubt-driven-development`
 - `feature-analyzer`
 - `feature-dev`
 - `fsd-creator`
@@ -58,6 +60,7 @@ cd scripts && bun run sync-zcode
 - `job-documenter`
 - `job-orchestrator`
 - `perf-check`
+- `plan-gatekeeper`
 - `pr`
 - `pr-issue-documenter`
 - `pr-review-comments`

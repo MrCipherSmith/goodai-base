@@ -10,7 +10,7 @@ triggers:
   - "Run checks"
 metadata:
   author: "MrCipherSmith"
-  version: "1.0.0"
+  version: "1.1.0"
   category: "verification"
   agent_worthy: true
 license: "MIT"
@@ -104,6 +104,17 @@ IF scope = "full":
   Run all checks on full project
 ```
 
+**1.4 Detect CONSTRAINTS.md:**
+
+```bash
+# Project quality bar produced by constraint-driven-development
+[ -f CONSTRAINTS.md ] && echo "constraints: present" || echo "constraints: absent"
+```
+
+If present, parse the **Enforced with numbers** and **Measured, not yet enforced (ratchets)**
+tables — each row gives a dimension, tool, threshold, and phase. These augment the gate in
+Phase 3. If absent, run the standard gate unchanged (constraint enforcement is a no-op).
+
 **Output of Phase 1:**
 ```
 TOOLING:
@@ -113,6 +124,7 @@ TOOLING:
   checks_skipped: [<reason>]
   scope: changed | full
   changed_files: [<paths>]
+  constraints: present | absent
 ```
 
 ---
@@ -275,6 +287,51 @@ STATUS: BLOCKED       — could not run checks (missing tooling, wrong directory
 ```
 
 > If `gate: FAIL` → STATUS is still `DONE` (the gate result, not the skill's execution). The orchestrator reads `gate: FAIL` and decides to trigger fix.
+
+---
+
+## Constraint Enforcement (CONSTRAINTS.md)
+
+When `CONSTRAINTS.md` is present (produced by `constraint-driven-development`), the gate is
+extended with the project's own measurable thresholds. This runs **in addition to** the
+standard lint/type/test checks, never instead of them.
+
+**For each row in "Enforced with numbers":**
+1. Run the row's tool, scoped to the row's phase (BUILD/VERIFY → changed files; SHIP → full).
+2. Compare the measured value to the threshold.
+3. A breach is a finding: severity **CRITICAL** if the row is marked `block`, **LOW** if `warn`.
+
+**For each row in "Measured, not yet enforced (ratchets)":**
+- Compare the measured value to the recorded baseline. A regression against the direction
+  ("must not fall") is a **HIGH** finding. Non-regression passes silently.
+
+**Exceptions:** if a breached dimension has a matching row in the **Exceptions** table with an
+unexpired date, downgrade the finding to **INFO** and note the owner + expiry. An **expired**
+exception does not suppress the finding — report it CRITICAL/HIGH as normal and flag the stale
+exception.
+
+Add a `constraints` block to `VERIFICATION_RESULT`:
+
+```
+  constraints:
+    source: CONSTRAINTS.md
+    enforced:
+      - dimension: coverage-changed-lines
+        threshold: ">= 80%"
+        measured: "72%"
+        status: fail
+        block: true
+    ratchets:
+      - metric: project-coverage
+        baseline: "63%"
+        measured: "63%"
+        status: pass
+    expired_exceptions: []
+```
+
+A breached `block` threshold sets `gate: FAIL`, exactly like a type error or test failure.
+**Do not** propose lowering a threshold to make the gate pass — that is a constraint-weakening
+move for `review-orchestrator` to flag, not a fix.
 
 ---
 

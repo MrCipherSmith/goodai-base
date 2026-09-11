@@ -7,7 +7,7 @@ description: |
   "review --strict", "review --project-conventions", "review --legacy-profiles", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.6.0"
+version: "1.7.0"
 triggers:
   - "review"
   - "code review"
@@ -35,7 +35,7 @@ triggers:
   - "review --mobx-store"
 metadata:
   author: "MrCipherSmith"
-  version: "1.6.0"
+  version: "1.7.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -271,6 +271,30 @@ If the user chooses B, list only detected reviewers and ask for names to include
 If the user does not answer and the review is part of an automated `job-orchestrator` pipeline,
 use the job setting `convention_reviewers` (default: `"ask"`; if still unresolved, include all
 detected reviewers and record that choice in the review scope).
+
+---
+
+## Constraint Guard (CONSTRAINTS.md)
+
+If the repository has a `CONSTRAINTS.md` (produced by `constraint-driven-development`), run a
+**guard-the-bar** pass over the diff before consolidating findings. It is additive to the
+selected reviewers and never replaces them.
+
+Scan the diff for the five constraint-weakening moves. Any match is a **Blocker**-severity
+finding unless the same diff also raises the bar or documents an owned, dated exception:
+
+| Weakening move | What to look for in the diff |
+|---|---|
+| Threshold lowered | edits to `CONSTRAINTS.md` numbers, coverage/perf/a11y config thresholds reduced |
+| Tests made easier | `.skip` / `.only` added, test files deleted, assertions removed |
+| Checkers silenced | new `eslint-disable`, `@ts-ignore`/`@ts-expect-error`, `# noqa`, `# type: ignore`, suppress configs |
+| Unfinished work | new stubs, empty `catch {}`, `TODO`/`FIXME` on error paths |
+| Exception added without discussion | new rows in the Exceptions table, especially in a feature commit |
+
+**Loudest signal:** a weakening move landing in the **same commit** as a feature change.
+Report it with the file/line and name which of the five moves it is. This mirrors the
+`code-verifier` gate: the verifier enforces the numbers, this guard catches attempts to move
+the numbers.
 
 ---
 
@@ -762,3 +786,5 @@ If absent, proceed normally — context is optional and non-blocking.
 | "No flags means no reviewers" | No flags → run auto-detection; never produce an empty review |
 | "User named a module so I'll use diff mode" | Named module/component/store → path mode; diff mode is only for branch changes |
 | "Path mode should only show lines I'd flag in diff mode" | Path mode reviews the entire file — all findings apply, not just added lines |
+| "There's a CONSTRAINTS.md but the diff looks fine, skip the guard" | The guard exists to catch bar-lowering that "looks fine" — run it whenever CONSTRAINTS.md is present |
+| "Lowering a threshold to unblock the PR is a reasonable fix" | Moving the bar to pass is the weakening move to flag, not a fix; require an owned, dated exception instead |

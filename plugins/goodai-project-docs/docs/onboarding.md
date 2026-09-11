@@ -174,6 +174,39 @@ These rules prevent silent failures and context drift in multi-step pipelines.
 
 ---
 
+## Grok integration
+
+Grok is **not** listed in `goodai.config.json` `sync_tools` by default. It still
+loads goodai skills after a normal multi-tool sync:
+
+1. **Primary path:** `cd scripts && bun run sync-skills` with `claude` in
+   `sync_tools` → skills land in `~/.claude/skills/<name>/SKILL.md`.
+2. Grok discovers them via Claude Code compatibility
+   (`[compat.claude] skills = true` in `~/.grok/config.toml`, enabled by default).
+3. **Smoke:** `grok inspect` (or `grok inspect --json`) should list skills such as
+   `job-orchestrator` with source under `~/.claude/skills/`.
+
+**Optional (local only):** point Grok at the repo source without copying:
+
+```toml
+# ~/.grok/config.toml
+[skills]
+paths = ["~/goodai-base/skills"]
+
+[compat.claude]
+skills = true
+```
+
+Do not commit machine-absolute MCP/config paths. A dedicated `grok` target in
+`sync-skills` is optional and only needed if Claude-compat and `paths` are
+insufficient (see `docs/requirements/canonical-skill-profiles-and-grok/`).
+
+**Skill profiles:** `SKILL.md` is the only required file. Platform variants are
+optional; see [skills-storage-workflow](../rules/core/skills-storage-workflow.mdc)
+and strategy A in the requirements package above.
+
+---
+
 ## Quick Reference
 
 | Resource | Location |
