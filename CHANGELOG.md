@@ -4,6 +4,27 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.18.0] — Opus 5.5 prompting standards
+
+> Released: 2026-09-25
+
+Claude Opus 5.5 reasons before every reply, so prompt patterns written for models that had to be
+*told* to reason are now dead weight: they spend context, add no capability, and can degrade output
+by over-constraining the model's own decomposition. Source:
+[Getting the most out of Claude Opus 5.5](https://claude.dev/blog/getting-the-most-out-of-opus-5-5/).
+
+### Added
+
+- **`rules/core/opus-5-5-prompting.mdc`** — Prompting and workflow standards for Claude Opus 5.5+: delete reasoning instructions (`think carefully`, `think step by step`, `<thinking>` tags, fixed thinking budgets) in favour of explicit completion criteria; frame tasks by finish line rather than hand-written steps, decomposing only where a step encodes a real ordering constraint or gate; name the concrete patterns to avoid instead of directing in the abstract; encode stopping rules in `CLAUDE.md` and keep permission prompts on destructive commands; externalize long-run state because the early context is summarized away; verify a subagent's evidence rather than its claim; accept results blockers-first and require unconfirmed findings to be marked; attach finished artifacts instead of paraphrasing them; declare earlier answers settled in long-lived projects. Its **Output Contract** puts output-format instructions and safety/permission rules explicitly out of scope, so a cleanup pass driven by the rule cannot strip them.
+
+### Changed
+
+- **`AGENTS.md` / `AGENTS.mdc`** — the new rule is listed under **System Management**.
+- **`rules.json`** — regenerated via `bun run generate-rules-json`; the entry's triggers are hand-tuned so it does not match on generic words. `validate-rules-json` passes at 80 entries (29 rules, 51 skills).
+- **`package.json`** — version realigned to the changelog: it read `1.16.0` while the changelog had already published `1.17.0`.
+
+---
+
 ## [1.17.0] — Agent-discipline skills (doubt / constraints) + anti-rationalization template
 
 > Released: 2026-09-11
