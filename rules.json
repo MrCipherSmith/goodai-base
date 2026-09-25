@@ -589,6 +589,34 @@
       }
     },
     {
+      "id": "opus-5-5-prompting",
+      "type": "rule",
+      "path": "rules/core/opus-5-5-prompting.mdc",
+      "description": "Prompting and workflow standards for Claude Opus 5.5+ — no reasoning instructions, finish-line task framing, stopping rules, long-run state, blockers-first acceptance.",
+      "triggers": {
+        "keywords": [
+          "prompting",
+          "prompt engineering",
+          "write a prompt",
+          "improve prompt",
+          "think carefully",
+          "think step by step",
+          "рассуждай пошагово",
+          "opus 5.5",
+          "reasoning instructions",
+          "prompt cruft",
+          "stopping rules",
+          "claude.md"
+        ],
+        "intents": [
+          "how to prompt opus 5.5",
+          "clean up outdated prompt instructions",
+          "how to frame a task for claude",
+          "how to run long agentic tasks"
+        ]
+      }
+    },
+    {
       "id": "feature-analyzer",
       "type": "skill",
       "path": "skills/feature-analyzer/SKILL.md",

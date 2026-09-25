@@ -181,6 +181,7 @@ Reference guidelines for coding standards and workflows:
 - `core/rule-management-workflow.mdc`: Add/edit/sync workflow for rule files and rule metadata.
 - `core/skills-storage-workflow.mdc`: Skill authoring best practices and sync workflow for Cursor, Codex, Zed, OpenCode.
 - `core/model-selection.mdc`: Model selection workflow for sub-agents. Run `detect-models.sh` to see available models.
+- `core/opus-5-5-prompting.mdc`: Prompting and workflow standards for Claude Opus 5.5+ — no reasoning instructions, finish-line task framing, stopping rules, long-run state, blockers-first acceptance.
 
 ---
 
