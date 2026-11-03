@@ -17,7 +17,7 @@ All notable changes to goodai-base are documented here.
 
 ### Changed
 
-- **`review-orchestrator`** — `--ui-ux` flag; `review-ui-ux` auto-added for `*.tsx`/`*.jsx`/`*.css`/`*.scss`/`*.html` diffs.
+- **`review-orchestrator`** (1.8.0) — `--ui-ux` flag; `review-ui-ux` auto-added for `*.tsx`/`*.jsx`/`*.css`/`*.scss`/`*.html` diffs.
 - **`AGENTS.md`**, **`rules.json`** — Routing, catalog, and reviewer entries for the new rule and skills.
 
 ---

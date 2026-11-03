@@ -7,7 +7,7 @@ description: |
   "review --strict", "review --project-conventions", "review --legacy-profiles", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.7.0"
+version: "1.8.0"
 triggers:
   - "review"
   - "code review"
@@ -36,7 +36,7 @@ triggers:
   - "review --mobx-store"
 metadata:
   author: "MrCipherSmith"
-  version: "1.7.0"
+  version: "1.8.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
