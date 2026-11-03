@@ -4,7 +4,7 @@ All notable changes to goodai-base are documented here.
 
 ---
 
-## [1.17.0] — UI design skills and anti-slop reviewer
+## [1.19.0] — UI design skills and anti-slop reviewer
 
 > Released: 2026-11-03
 
@@ -19,6 +19,49 @@ All notable changes to goodai-base are documented here.
 
 - **`review-orchestrator`** — `--ui-ux` flag; `review-ui-ux` auto-added for `*.tsx`/`*.jsx`/`*.css`/`*.scss`/`*.html` diffs.
 - **`AGENTS.md`**, **`rules.json`** — Routing, catalog, and reviewer entries for the new rule and skills.
+
+---
+
+## [1.18.0] — Opus 5.5 prompting standards
+
+> Released: 2026-09-25
+
+Claude Opus 5.5 reasons before every reply, so prompt patterns written for models that had to be
+*told* to reason are now dead weight: they spend context, add no capability, and can degrade output
+by over-constraining the model's own decomposition. Source:
+[Getting the most out of Claude Opus 5.5](https://claude.dev/blog/getting-the-most-out-of-opus-5-5/).
+
+### Added
+
+- **`rules/core/opus-5-5-prompting.mdc`** — Prompting and workflow standards for Claude Opus 5.5+: delete reasoning instructions (`think carefully`, `think step by step`, `<thinking>` tags, fixed thinking budgets) in favour of explicit completion criteria; frame tasks by finish line rather than hand-written steps, decomposing only where a step encodes a real ordering constraint or gate; name the concrete patterns to avoid instead of directing in the abstract; encode stopping rules in `CLAUDE.md` and keep permission prompts on destructive commands; externalize long-run state because the early context is summarized away; verify a subagent's evidence rather than its claim; accept results blockers-first and require unconfirmed findings to be marked; attach finished artifacts instead of paraphrasing them; declare earlier answers settled in long-lived projects. Its **Output Contract** puts output-format instructions and safety/permission rules explicitly out of scope, so a cleanup pass driven by the rule cannot strip them.
+
+### Changed
+
+- **`AGENTS.md` / `AGENTS.mdc`** — the new rule is listed under **System Management**.
+- **`rules.json`** — regenerated via `bun run generate-rules-json`; the entry's triggers are hand-tuned so it does not match on generic words. `validate-rules-json` passes at 80 entries (29 rules, 51 skills).
+- **`package.json`** — version realigned to the changelog: it read `1.16.0` while the changelog had already published `1.17.0`.
+
+---
+
+## [1.17.0] — Agent-discipline skills (doubt / constraints) + anti-rationalization template
+
+> Released: 2026-09-11
+
+Adapted from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills); fulfils
+[agent-discipline phase 2 (anti-rationalization)](docs/agent-discipline/phase-2-anti-rationalization.md).
+
+### Added
+
+- **`skills/doubt-driven-development`** — In-flight adversarial reviewer for a single non-trivial decision (CLAIM→EXTRACT→DOUBT→RECONCILE→STOP). Reviewer receives artifact + contract only (never your conclusion), issues-only framing, optional cross-model, bounded to 3 cycles. Per-decision counterpart to `review-orchestrator` (post-hoc) and `plan-gatekeeper` (whole-plan).
+- **`skills/constraint-driven-development`** — Produces a persistent, measurable quality bar (`CONSTRAINTS.md`): floor / enforced-with-numbers / ratchets / dated exceptions, sane defaults, and a guard against silent bar-lowering.
+- **`docs/skill-authoring-template.md`** — Canonical SKILL.md template codifying the required **Rationalizations** table, **Red Flags / Iron Law**, and **Verification Checklist** sections.
+
+### Changed
+
+- **`skills/code-verifier`** (v1.0.0 → v1.1.0) — Detects `CONSTRAINTS.md` and enforces its thresholds in the gate; adds a `constraints` block to `VERIFICATION_RESULT`; expired exceptions no longer suppress findings.
+- **`skills/review-orchestrator`** (v1.6.0 → v1.7.0) — Added a **Constraint Guard** pass that flags the five constraint-weakening moves in a diff (lowered thresholds, weakened tests, silenced checkers, unfinished work, undiscussed exceptions), plus two new Red Flags rows.
+- **`docs/agent-discipline/README.md`** — Phase 2 marked IN PROGRESS with reference implementations.
+- **`README.md`** and **`docs/skills-overview.md`** — document the new **Validation & Standards** skill group (`plan-gatekeeper`, `doubt-driven-development`, `constraint-driven-development`) and the `/doubt` + `/constraints` entry points.
 
 ---
 

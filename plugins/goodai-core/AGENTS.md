@@ -1,5 +1,42 @@
 # AGENTS Rule Index
 
+<!-- keryx:index -->
+## Metaproject
+
+**HARD GATE:** Before the first shell command, search, grep, file read, code navigation, planning step, implementation, review, analysis, or subagent dispatch in this repository, explicitly read `.metaproject/index.md`. Do not treat it as a referenced/on-demand file; load it immediately when present.
+
+This Metaproject block is optional project-local routing. If `.metaproject/index.md` or referenced Metaproject files are absent, state `metaproject: unavailable` and continue with the main contents of this AGENTS.md/CLAUDE.md file.
+
+If you create or switch to a git worktree, repeat the hard gate in that worktree root before any repository action there.
+
+The user does not need to know Metaproject command names. Treat natural-language requests as intents, route through `.metaproject/index.md`, then choose the right skill, rule, MCP tool/resource, or `keryx` CLI command yourself.
+
+Do not dispatch subagents until the Metaproject hard gate is complete. Every subagent prompt must include the exact project/worktree root and require reading `<project-root>/.metaproject/index.md` before searching or reading code.
+
+If MCP tools/resources are available for this project, prefer them for Metaproject capabilities because they provide structured tool calls. If MCP is unavailable or lacks a needed capability, fall back to the corresponding project-local skill and CLI command.
+
+For project navigation, file discovery, and code-related tasks, use the Metaproject gdgraph skill by default before raw file search.
+
+Any text, symbol, or pattern search over project code goes through `keryx ctx rg`, never a bare `rg`/`grep` — even a single targeted search, and even when gdgraph/gdwiki are skipped. Raw `rg`/`grep` is a last resort only, with a stated reason recorded in the routing audit.
+
+`keryx ctx rg` and the agent's `search_code` tool require ripgrep (`rg`) on PATH — install it with `brew install ripgrep` (macOS) or `apt install ripgrep` (Debian/Ubuntu). Without it, code search is unavailable; fall back to reading files directly.
+
+For architecture, domain models, business rules, user scenarios, auth and other flows, integrations, and known decisions, consult the Metaproject gdwiki skill and read the wiki index before deep code reads; use gdgraph to move from a wiki concept to code.
+
+For commands, search, diff, test logs, lint/build output, and large file reads that can produce long output, use the Metaproject gdctx skill by default before loading raw command output into context.
+
+For a non-trivial navigation, debugging, review, or investigation task, end with a short routing audit: `graph_used`, `wiki_used`, `ctx_used`, and `raw_rg_used: yes/no`. An omitted layer must be justified (`not-relevant`/`unavailable`), not silently skipped.
+
+For implementation, review, refactoring, planning, documentation, or quality tasks, use project-local Metaproject skills first: .metaproject/skills/catalog.md, .metaproject/project-skills/, then .metaproject/skills/gdskills/. External/global skills are fallback only when explicitly needed.
+
+For creating, changing, debugging, reviewing, or running tests, use the Metaproject testing skill and read .metaproject/data/testing/context.md before broad test search or raw logs.
+
+For lessons learned, decisions, constraints, repeated mistakes, and historical project context, use the Metaproject memory skill before broad documentation search.
+
+For starting, tracking, or finishing a managed piece of work (a flow), use the Metaproject flow skill for state/status commands. For non-trivial implementation through Task Manager, use the local gdskills flow-orchestrator first: .metaproject/skills/gdskills/orchestration/flow-orchestrator/SKILL.md. All flow state changes go through the keryx flow CLI.
+
+<!-- /keryx:index -->
+
 ## Purpose
 
 This file is the single always-on rule for the repository rule system.
@@ -27,6 +64,8 @@ It defines global behavior and tells the agent how to select the required rule f
 | "Create...", "Add..." (with specific type)                 | **Check Core Rule Catalog**        | "Create documentation", "Add pipeline step"    |
 | "Change model", "Use different model", "Switch model"      | **Check Model Selection**          | "Use GPT-5 for sub-agent", "Switch to claude"  |
 | "/caveman", "terse mode", "short responses", "minimize tokens" | **`caveman-mode` skill directly** | "Short responses please", "Enable caveman mode" |
+| "/doubt", "stress-test this decision", "adversarial review", "am I sure" | **`doubt-driven-development` skill directly** | In-flight skeptic before a non-trivial decision stands |
+| "/constraints", "set up constraints", "quality bar", "CONSTRAINTS.md" | **`constraint-driven-development` skill directly** | Write measurable, enforced quality thresholds |
 
 > **Orchestrator Routing Rule:** When the user does NOT explicitly name a specific skill
 > (e.g., "run review-logic", "use feature-analyzer"), and the request CAN be handled
@@ -209,7 +248,6 @@ Reference guidelines for coding standards and workflows:
 - `rules/core/subagent-context-construction.md` — Explicit context construction for orchestrator→subagent dispatches: required fields, minimality principle, dispatch template
 - `rules/core/terse-subagent-response.mdc` — 6-rule terse response format for sub-agents in orchestrators: no preamble, no filler, fragments over sentences, bullets over prose, code unchanged. Injected by orchestrators into sub-agent dispatch prompts to reduce inter-agent token flow.
 
-
 **System Management:**
 
 - `core/rule-management-workflow.mdc`: Add/edit/sync workflow for rule files and rule metadata.
@@ -362,7 +400,7 @@ already set in automation settings.
 - **Use When**: Called by `job-orchestrator` — NOT invoked directly by users
 - **Actions**: init (create job folder), add-document, update-readme, finalize
 - **Standards**: `core/jobs-documentation.mdc`
-- **Output**: Persistent documentation in `<JOBS_ROOT>/<job-name>/`
+- **Output**: Persistent documentation in `<JOBS_ROOT>/<job-name>/` (resolved as `$GOODAI_JOBS_ROOT` or `<PROJECT_DIR>/jobs`)
 
 **`skills/context-collector`**
 
@@ -749,6 +787,30 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 - **Key Features**: 6-rule caveman format; deactivates with `/caveman off`; automated version (`terse-subagent-response.mdc`) is injected by orchestrators into sub-agent dispatch prompts
 - **Version**: v1.0.0
 
+**`skills/plan-gatekeeper`**
+- **Purpose**: Relentless interactive plan gatekeeper — stress-tests design, architecture, APIs, state, and edge cases; proposes ADRs
+- **Use When**: "/plan-gatekeeper", "gatekeep plan", "grill plan", "stress-test plan", "validate this design"
+- **Key Features**: Interrogates proposed plans against codebase constraints; formalizes architectural decisions before implementation
+- **Version**: v1.0.0
+
+**`skills/doubt-driven-development`**
+- **Purpose**: In-flight adversarial reviewer for a single non-trivial decision — catches a wrong direction while correction is still cheap (per-decision counterpart to `review-orchestrator` and `plan-gatekeeper`)
+- **Use When**: "/doubt", "stress-test this decision", "adversarial review", "am I sure about this"
+- **Key Features**: CLAIM→EXTRACT→DOUBT→RECONCILE→STOP; reviewer gets artifact+contract only (never your conclusion), issues-only framing, optional cross-model, bounded to 3 cycles
+- **Version**: v1.0.0
+
+**`skills/constraint-driven-development`**
+- **Purpose**: Produces a persistent, measurable quality bar (`CONSTRAINTS.md`) with enforced thresholds, ratchets, and a guard against silent weakening
+- **Use When**: "/constraints", "set up constraints", "define our standards", "quality bar", "CONSTRAINTS.md"
+- **Key Features**: detect-before-asking, four-questions interview, floor/enforced/ratchet/exception structure; enforced by `code-verifier`, guarded by `review-orchestrator`
+- **Version**: v1.0.0
+
+**`skills/interviewer`**
+- **Purpose**: Critical requirements interviewer — one question at a time with A/B/C/D options, structured decisions output
+- **Use When**: "/interview", "clarify requirements", orchestrator Phase 0 interviewer gate
+- **Key Features**: Adaptive follow-ups; max question budget; structured `{decisions, constraints, assumptions, risks, refined_goal}`
+- **Version**: v1.0.0
+
 **`skills/hookify`**
 - **Purpose**: Create agent hooks from natural language descriptions
 - **Use When**: "/hookify", "Create hook", "Add hook", "Run lint after edit"
@@ -781,6 +843,75 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
   - Sub-issue creation under parent issues
   - Asks before overwriting existing content
 - **Version**: v1.0.0
+
+**`skills/pr-review-comments`**
+
+- **Purpose**: Collect and group PR review comments (GitHub MCP or gh); analyze feedback patterns
+- **Use When**: "PR review comments", "parse PR comments", "analyze review feedback by author"
+
+### Legacy / profile review skills
+
+**`skills/code-review`**
+
+- **Purpose**: Comprehensive multi-agent code review (correctness, security, performance, style)
+- **Use When**: thorough PR reviews and pre-merge checks
+
+**`skills/code-ai-review`**
+
+- **Purpose**: Strict AI code review following code-review-ai-assistant.mdc
+- **Use When**: "code-ai review", review --code-ai, optional legacy profile
+
+**`skills/code-boss-review`**
+
+- **Purpose**: Boss-style strict logic/architecture review profile
+- **Use When**: "boss review", review --boss
+
+**`skills/code-style-review`**
+
+- **Purpose**: Style and architecture review using code-style-patterns.mdc
+- **Use When**: style validation, optional legacy style profile
+
+**`skills/code-mobx-store-review`**
+
+- **Purpose**: Targeted MobX store/state review (actions, computed, reactions, boundaries)
+- **Use When**: reviewing MobX stores, review --mobx-store
+
+### gproject phase subagents (orchestrator-only)
+
+**`skills/gproject-discovery`**
+
+- **Purpose**: Collects and structures initial project information (gproject Phase 0)
+- **Use When**: dispatched by gproject-orchestrator Phase 0 (not direct user invocation)
+
+**`skills/gproject-problem-definer`**
+
+- **Purpose**: Defines problems, goals, non-goals, success metrics (gproject Phase 1)
+- **Use When**: dispatched by gproject-orchestrator Phase 1
+
+**`skills/gproject-stack-advisor`**
+
+- **Purpose**: Project level and technology stack recommendation (gproject Phase 2)
+- **Use When**: dispatched by gproject-orchestrator Phase 2
+
+**`skills/gproject-patterns-researcher`**
+
+- **Purpose**: Stack best practices and architecture constraints (gproject Phase 3)
+- **Use When**: dispatched by gproject-orchestrator Phase 3
+
+**`skills/gproject-spec-writer`**
+
+- **Purpose**: PRD/Implementation Plan constrained by decisions (gproject Phase 4)
+- **Use When**: dispatched by gproject-orchestrator Phase 4
+
+**`skills/gproject-consistency-checker`**
+
+- **Purpose**: Adversarial consistency check of PRD vs decisions (gproject Phase 5)
+- **Use When**: dispatched by gproject-orchestrator Phase 5
+
+**`skills/gproject-planner`**
+
+- **Purpose**: Roadmap, milestones, task DAG from PRD (gproject Phase 6)
+- **Use When**: dispatched by gproject-orchestrator Phase 6
 
 ---
 
@@ -955,6 +1086,7 @@ Six improvements govern how agents and orchestrators behave in this system:
 ---
 
 ## Job Documentation
-- Job documentation root: `<JOBS_ROOT>` (`$GOODAI_JOBS_ROOT` or `<PROJECT_DIR>/jobs/`)
+- Job documentation root: `<JOBS_ROOT>` — resolve as `JOBS_ROOT` from orchestrator dispatch, else `$GOODAI_JOBS_ROOT`, else `<PROJECT_DIR>/jobs/`
+- Do **not** hardcode `~/goodai-base/jobs/` — that path is only correct when the *project under work* is goodai-base itself
 - Structure and conventions: `rules/core/jobs-documentation.mdc`
 - Created and maintained by `job-documenter` skill, driven by `job-orchestrator`

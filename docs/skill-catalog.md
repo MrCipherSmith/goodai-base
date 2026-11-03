@@ -2,7 +2,7 @@
 
 _Auto-generated from `skills/*/SKILL.md`. Do not edit manually._
 
-Total: 70 skills
+Total: 72 skills
 
 | Name | Description | Version | Category |
 | ---- | ----------- | ------- | -------- |
@@ -22,12 +22,14 @@ Total: 70 skills
 | `code-mobx-store-review` | Targeted MobX store and state logic review. Checks store/actions/computed/reactions, async runInA... | 1.1.0 | review |
 | `code-review` | Comprehensive code review with 4 parallel agents: correctness/logic, security, performance, style... | 1.0.0 | review |
 | `code-style-review` | Detailed code style and architecture review using code-style-patterns.mdc. Reviews current branch... | 1.0.0 | review |
-| `code-verifier` | Use when running a full quality gate after implementation — lint, type-check, tests, and import v... | 1.0.0 | verification |
+| `code-verifier` | Use when running a full quality gate after implementation — lint, type-check, tests, and import v... | 1.1.0 | verification |
 | `commit` | Use when committing code changes and a well-structured conventional commit message is needed, wit... | 1.0.0 | workflow |
+| `constraint-driven-development` | Use when a project needs a persistent, measurable quality bar — starting a project without docume... | 1.0.0 | quality |
 | `context-collector` | Use when a job needs a unified context document — gathering docs, libraries, and references for s... | 1.1.0 | context |
 | `db-migrate` | Use when creating, applying, rolling back, or checking the status of database migrations. | 1.0.0 | database |
 | `dependency-update` | Use when checking for outdated packages or upgrading dependencies with compatibility verification. | 1.0.0 | maintenance |
 | `deploy` | Use when deploying to any environment (staging, production) or when a deployment pipeline needs t... | 1.0.0 | ops |
+| `doubt-driven-development` | Use when a non-trivial decision is about to stand — branching logic, cross-boundary change, unver... | 1.0.0 | validation |
 | `feature-analyzer` | Use when analyzing feature branch changes across repos, planning implementation, or understanding... | 2.4.0 | analysis |
 | `feature-dev` | Use when taking a feature from idea or GitHub issue all the way to a merge-ready PR in one guided... | 2.1.0 | workflow |
 | `fsd-creator` | Use when PRD and BRD exist and need to be expanded into a Functional Specification Document (FSD)... | 1.0.0 | planning |
@@ -72,7 +74,7 @@ repository i... | 1.0.0 | review |
 race conditions, ... | 1.0.0 | review |
 | `review-logic` | Use when: reviewing code for logic correctness, algorithmic bugs, missing error handling,
 async/a... | 1.0.0 | review |
-| `review-orchestrator` | Use when: a code review is requested and the user does not explicitly name a specialized reviewer... | 1.6.0 | review |
+| `review-orchestrator` | Use when: a code review is requested and the user does not explicitly name a specialized reviewer... | 1.7.0 | review |
 | `review-performance` | Use when a performance review is requested, checking for N+1 queries, unnecessary re-renders, mem... | 1.0.0 | review |
 | `review-pr-feedback` | Use when: a developer has received PR review comments and wants to understand them,
 act on them, ... | 1.0.0 | review |

@@ -89,7 +89,7 @@ skills:
     path: skills/code-style-review
   - name: code-verifier
     description: 'Use when running a full quality gate after implementation — lint, type-check, tests, and import validation. Mandatory step in job-orchestrator after task-implementer and after fix iterations. Use standalone when you need a structured verification report.'
-    version: 1.0.0
+    version: 1.1.0
     category: verification
     path: skills/code-verifier
   - name: commit
@@ -97,6 +97,11 @@ skills:
     version: 1.0.0
     category: workflow
     path: skills/commit
+  - name: constraint-driven-development
+    description: 'Use when a project needs a persistent, measurable quality bar — starting a project without documented standards, ''set up constraints'', or when coverage/perf/a11y thresholds get re-debated per-PR. Produces CONSTRAINTS.md with enforceable numbers, ratchets, and a guard against silent weakening. NOT for throwaway prototypes or a one-off CI setup.'
+    version: 1.0.0
+    category: quality
+    path: skills/constraint-driven-development
   - name: context-collector
     description: 'Use when a job needs a unified context document — gathering docs, libraries, and references for sub-agents before execution.'
     version: 1.1.0
@@ -117,6 +122,11 @@ skills:
     version: 1.0.0
     category: ops
     path: skills/deploy
+  - name: doubt-driven-development
+    description: 'Use when a non-trivial decision is about to stand — branching logic, cross-boundary change, unverifiable invariant, or irreversible blast radius — and you want a fresh-context adversarial reviewer to catch a wrong direction in-flight, while correction is still cheap. NOT for mechanical edits, one-liners, or explicit user instructions.'
+    version: 1.0.0
+    category: validation
+    path: skills/doubt-driven-development
   - name: feature-analyzer
     description: 'Use when analyzing feature branch changes across repos, planning implementation, or understanding backend→frontend contracts. NEVER start without explicit user confirmation of source, target, and branch.'
     version: 2.4.0
@@ -364,7 +374,7 @@ Handles "review", "code review", "review PR", "review --frontend", "review --bac
 consolidates findings into one unified report.
 NOT for: running a single specialized reviewer — invoke it directly by name instead.
 '
-    version: 1.6.0
+    version: 1.7.0
     category: review
     path: skills/review-orchestrator
   - name: review-performance

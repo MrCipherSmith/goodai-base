@@ -19,6 +19,8 @@ For project navigation, file discovery, and code-related tasks, use the Metaproj
 
 Any text, symbol, or pattern search over project code goes through `keryx ctx rg`, never a bare `rg`/`grep` — even a single targeted search, and even when gdgraph/gdwiki are skipped. Raw `rg`/`grep` is a last resort only, with a stated reason recorded in the routing audit.
 
+`keryx ctx rg` and the agent's `search_code` tool require ripgrep (`rg`) on PATH — install it with `brew install ripgrep` (macOS) or `apt install ripgrep` (Debian/Ubuntu). Without it, code search is unavailable; fall back to reading files directly.
+
 For architecture, domain models, business rules, user scenarios, auth and other flows, integrations, and known decisions, consult the Metaproject gdwiki skill and read the wiki index before deep code reads; use gdgraph to move from a wiki concept to code.
 
 For commands, search, diff, test logs, lint/build output, and large file reads that can produce long output, use the Metaproject gdctx skill by default before loading raw command output into context.
@@ -62,6 +64,8 @@ It defines global behavior and tells the agent how to select the required rule f
 | "Create...", "Add..." (with specific type)                 | **Check Core Rule Catalog**        | "Create documentation", "Add pipeline step"    |
 | "Change model", "Use different model", "Switch model"      | **Check Model Selection**          | "Use GPT-5 for sub-agent", "Switch to claude"  |
 | "/caveman", "terse mode", "short responses", "minimize tokens" | **`caveman-mode` skill directly** | "Short responses please", "Enable caveman mode" |
+| "/doubt", "stress-test this decision", "adversarial review", "am I sure" | **`doubt-driven-development` skill directly** | In-flight skeptic before a non-trivial decision stands |
+| "/constraints", "set up constraints", "quality bar", "CONSTRAINTS.md" | **`constraint-driven-development` skill directly** | Write measurable, enforced quality thresholds |
 
 > **Orchestrator Routing Rule:** When the user does NOT explicitly name a specific skill
 > (e.g., "run review-logic", "use feature-analyzer"), and the request CAN be handled
@@ -253,6 +257,7 @@ Reference guidelines for coding standards and workflows:
 - `core/rule-management-workflow.mdc`: Add/edit/sync workflow for rule files and rule metadata.
 - `core/skills-storage-workflow.mdc`: Skill authoring best practices and sync workflow for Cursor, Codex, Zed, OpenCode.
 - `core/model-selection.mdc`: Model selection workflow for sub-agents. Run `detect-models.sh` to see available models.
+- `core/opus-5-5-prompting.mdc`: Prompting and workflow standards for Claude Opus 5.5+ — no reasoning instructions, finish-line task framing, stopping rules, long-run state, blockers-first acceptance.
 
 ---
 
@@ -812,6 +817,18 @@ All three read `core/ui-anti-slop.mdc` and share `DESIGN.md` as the persistent d
 - **Purpose**: Relentless interactive plan gatekeeper — stress-tests design, architecture, APIs, state, and edge cases; proposes ADRs
 - **Use When**: "/plan-gatekeeper", "gatekeep plan", "grill plan", "stress-test plan", "validate this design"
 - **Key Features**: Interrogates proposed plans against codebase constraints; formalizes architectural decisions before implementation
+- **Version**: v1.0.0
+
+**`skills/doubt-driven-development`**
+- **Purpose**: In-flight adversarial reviewer for a single non-trivial decision — catches a wrong direction while correction is still cheap (per-decision counterpart to `review-orchestrator` and `plan-gatekeeper`)
+- **Use When**: "/doubt", "stress-test this decision", "adversarial review", "am I sure about this"
+- **Key Features**: CLAIM→EXTRACT→DOUBT→RECONCILE→STOP; reviewer gets artifact+contract only (never your conclusion), issues-only framing, optional cross-model, bounded to 3 cycles
+- **Version**: v1.0.0
+
+**`skills/constraint-driven-development`**
+- **Purpose**: Produces a persistent, measurable quality bar (`CONSTRAINTS.md`) with enforced thresholds, ratchets, and a guard against silent weakening
+- **Use When**: "/constraints", "set up constraints", "define our standards", "quality bar", "CONSTRAINTS.md"
+- **Key Features**: detect-before-asking, four-questions interview, floor/enforced/ratchet/exception structure; enforced by `code-verifier`, guarded by `review-orchestrator`
 - **Version**: v1.0.0
 
 **`skills/interviewer`**

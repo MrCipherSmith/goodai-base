@@ -2,7 +2,7 @@
 
 _Auto-generated from `rules/core/*.mdc`. Do not edit manually._
 
-Total: 29 rules
+Total: 30 rules
 
 | Rule | Description | Area | Always Applied |
 | ---- | ----------- | ---- | -------------- |
@@ -35,3 +35,4 @@ Total: 29 rules
 | `solid-principles` | SOLID principles for agent-generated code — focus on Single Responsibility, Open/Closed, and Depe... | General | No |
 | `storybook-guidelines` | Storybook setup, story authoring, and review checklist. | Storybook | No |
 | `tdd-workflow` | TDD workflow rules: red-green-refactor cycle, test-first mandate, no-done-without-green invariant... | General | No |
+| `terse-subagent-response` | Response format for sub-agents running inside orchestrators. Apply when an orchestrator dispatch ... | General | No |

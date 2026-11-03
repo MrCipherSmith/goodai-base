@@ -16,6 +16,8 @@ cd scripts && bun run generate-codex-plugins
 - `code-mobx-store-review`
 - `code-review`
 - `code-style-review`
+- `constraint-driven-development`
+- `doubt-driven-development`
 - `iago`
 - `pr-review-comments`
 - `review-architecture`

@@ -17,6 +17,7 @@ Structured multi-step agent workflows. Full table: [docs/skill-catalog.md](docs/
 | Category | Skills (examples) |
 |----------|-------------------|
 | **Analysis** | `feature-analyzer`, `issue-analyzer`, `interview`, `interviewer`, `brainstorm`, `plan-gatekeeper` |
+| **Validation & Standards** | `plan-gatekeeper`, `doubt-driven-development`, `constraint-driven-development` |
 | **Review** | `review-orchestrator` + specialized reviewers (`review-logic`, `review-architecture`, `review-security-code`, `review-frontend`, `review-backend`, `review-highload`, `review-greptile`, …), legacy profiles (`code-ai-review`, `code-boss-review`, …) |
 | **Workflow** | `commit`, `push`, `pr`, `feature-dev`, `changelog`, `pr-issue-documenter`, `pr-review-comments` |
 | **Orchestration** | `job-orchestrator`, `job-documenter`, `context-collector`, `code-verifier` |
@@ -34,6 +35,8 @@ Notable examples:
 - **`spec-orchestrator`** — Pre-implementation suite BRD → PRD → FSD → TRD with review loops
 - **`job-orchestrator`** — Implementation orchestrator with wave isolation, TDD, and `jobs/` traceability
 - **`plan-gatekeeper`** — Interactive design gatekeeper: stress-tests plans and produces ADRs
+- **`doubt-driven-development`** — In-flight adversarial reviewer for a single non-trivial decision (`/doubt`); reviewer sees artifact + contract only, refutes rather than approves
+- **`constraint-driven-development`** — Writes a persistent, measurable quality bar (`CONSTRAINTS.md`, `/constraints`); enforced by `code-verifier`, guarded by `review-orchestrator`
 - **`review-orchestrator`** — Routes to specialized reviewers and consolidates severity. See [review domain](docs/review-domain.md)
 - **`feature-dev`** — Guided feature development through implement → verify → PR
 - **`caveman-mode`** — Session-level terse responses (`/caveman`) to cut token noise
@@ -147,6 +150,8 @@ Skills are invoked by name inside your AI tool session. In Claude Code, for exam
 /code-review
 /job-orchestrator
 /plan-gatekeeper
+/doubt
+/constraints
 ```
 
 ### Rules
@@ -170,7 +175,7 @@ The single always-on file that acts as a routing table. It tells the agent:
 ├── AGENTS.mdc             # Same with YAML frontmatter (for Cursor alwaysApply)
 ├── rules/
 │   └── core/              # Coding standards, git rules, review profiles (.mdc)
-├── skills/                # Skill definitions (~70 skills; SKILL.md required)
+├── skills/                # Skill definitions (~72 skills; SKILL.md required)
 │   └── shared/            # Shared prompts reused across skills
 ├── plugins/               # Generated Codex / ZCode plugin bundles
 ├── .agents/plugins/       # Codex marketplace metadata

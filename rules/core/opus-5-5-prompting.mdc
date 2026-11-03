@@ -1,0 +1,129 @@
+---
+description: "Prompting and workflow standards for Claude Opus 5.5 and newer reasoning-by-default Claude models. Removes obsolete reasoning instructions, defines finish-line task framing, long-run discipline, and result acceptance."
+alwaysApply: false
+---
+
+# Opus 5.5 Prompting Standards
+
+## Purpose
+
+Claude Opus 5.5 reasons before every reply. Prompt patterns written for models that had to be *told* to reason are now dead weight: they consume context, add no capability, and in some cases degrade output by over-constraining the model's own decomposition.
+
+This rule defines how to write prompts, project instruction files, and long-run workflows for Opus 5.5 and newer reasoning-by-default Claude models.
+
+Source: Anthropic, *Getting the most out of Claude Opus 5.5* — https://claude.dev/blog/getting-the-most-out-of-opus-5-5/
+
+## When To Apply
+
+- Writing or reviewing any prompt, system prompt, or tool description aimed at Claude Opus 5.5 or newer.
+- Authoring or editing `CLAUDE.md`, `AGENTS.md`, rule files, or skill instructions.
+- Designing long-running or agentic workflows (migrations, audits, multi-step implementation).
+- Auditing existing instructions for patterns written against older models.
+
+Do **not** apply to prompts targeting non-Anthropic models or pre-4.6 Claude models — those may still require explicit reasoning instructions.
+
+## Mandatory Behavior
+
+### 1. Delete reasoning instructions
+
+The model always thinks before replying. Remove, do not soften:
+
+- `think carefully`, `think step by step`, `let's think about this`
+- `рассуждай пошагово`, `подумай внимательно`
+- requests to show, explain, or narrate the reasoning process as a way of improving quality
+- instructions referencing `<thinking>` tags or a fixed thinking budget
+
+Replace each with an explicit completion criterion.
+
+### 2. Frame tasks by finish line, not by steps
+
+Give the whole task in one message with a stated definition of done. Do not hand-decompose work the model decomposes better with full context.
+
+Acceptable decomposition: when steps encode a **constraint** (ordering that matters, a gate that must pass before the next action), not when they merely restate the task.
+
+### 3. Be specific about what to avoid
+
+For design, writing, and API-shape work, name the concrete patterns to avoid. Generic negative direction ("don't make it generic", "avoid boilerplate") does not constrain output.
+
+### 4. Encode stopping rules in `CLAUDE.md`
+
+Every project instruction file must state where the agent proceeds autonomously and where it stops and asks. Destructive operations keep their permission prompts — never disable confirmations to reduce friction.
+
+### 5. Externalize state on long runs
+
+A long run fills the context window and the early portion is summarized away. Maintain progress in a file (e.g. `TASKS.md`) so state survives compaction. Never rely on in-context memory as the record of what is done.
+
+### 6. Delegate breadth, verify evidence
+
+For codebase-wide audits and migrations, dispatch parallel subagents and have the coordinating model verify the evidence each returns before accepting it. A subagent's claim is not a result.
+
+### 7. Accept results blockers-first
+
+On receiving a long-run result:
+
+1. Look first for anything the agent is waiting on — blockers outrank the summary.
+2. Request a review pass before reading the diff yourself.
+3. For research and investigation tasks, require the model to mark what it could not confirm.
+
+### 8. Feed finished artifacts
+
+Attach images, spreadsheets, and documents directly rather than describing or summarizing them. Opus 5.5 reads charts, diagrams, and screenshots more accurately than its predecessor; a paraphrase discards information the model could have used.
+
+### 9. Settle earlier answers in long projects
+
+In long-lived projects, state that previously agreed answers are settled. Without it the model re-litigates decisions during follow-up questions.
+
+## Output Contract
+
+When this rule drives an edit to prompts or instruction files:
+
+- Report each change as `file:line`, the pattern removed, and what replaced it.
+- Instructions that control **output format** are out of scope — do not remove them while stripping reasoning instructions.
+- Safety, permission, and confirmation rules are out of scope — never removed under this rule.
+
+## Examples
+
+### Reasoning instruction → completion criterion
+
+```
+# Before
+Think carefully step by step, then migrate the auth endpoints.
+
+# After
+Migrate every auth endpoint to the v2 contract. Done when `bun test auth` passes
+and no route still imports `legacy-auth`.
+```
+
+### Hand-decomposition → finish line
+
+```
+# Before
+1. Read the schema. 2. List the affected models. 3. Write the migration.
+4. Update the types. 5. Run the tests.
+
+# After
+Migrate the schema to add `tenant_id` across all affected models.
+Done when migrations apply cleanly on a fresh database and the type check passes.
+```
+
+### Generic direction → named patterns
+
+```
+# Before
+Design the settings page, avoid a generic look.
+
+# After
+Design the settings page. Avoid: centered hero headings, three-column feature
+grids, gradient-on-card backgrounds, and full-width primary buttons.
+```
+
+### Stopping rule in `CLAUDE.md`
+
+```markdown
+## Stopping rules
+
+- Proceed without asking: reads, searches, test runs, local commits on a feature branch.
+- Stop and ask: force-push, branch deletion, schema migration against a shared database,
+  publishing a package, any change under `infra/`.
+- Keep permission prompts enabled for destructive commands.
+```

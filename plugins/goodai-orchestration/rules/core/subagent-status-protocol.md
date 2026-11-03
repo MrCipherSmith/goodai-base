@@ -139,6 +139,40 @@ STATUS: NEEDS_CONTEXT
 - [list anything that was finished before the gap was discovered]
 ```
 
+### Proposing Architectural Decisions (ADR)
+
+If a subagent (such as `issue-analyzer`) makes or proposes significant architectural decisions during execution, it can optionally return one or more ADR blocks in a dedicated `## Architectural Decisions (ADR)` section. This works with both `DONE` and `DONE_WITH_CONCERNS` statuses.
+
+**Format structure per ADR:**
+```
+## Architectural Decisions (ADR)
+- **Title**: [Title of the decision]
+- **Status**: [Proposed | Accepted | Superseded]
+- **Context**: [The context and problem being solved]
+- **Decision**: [The decision and why it was made]
+- **Consequences**: [The consequences of this decision]
+```
+
+**Full Example:**
+```
+STATUS: DONE
+
+## Completed
+- Analyze system requirements for orders feature
+
+## Architectural Decisions (ADR)
+- **Title**: postgres-for-write-model
+- **Status**: Accepted
+- **Context**: We need transactional safety and ACID compliance for processing order writes.
+- **Decision**: Use PostgreSQL as the primary database for the write model.
+- **Consequences**: Strict transactional safety, but requires managing DB migration scripts.
+
+## Files changed
+- None
+```
+
+The orchestrator will parse this section and automatically dispatch `job-documenter` to generate the corresponding ADR files inside both the job folder and the project's global `docs/adr/` directory.
+
 ---
 
 ## What the Orchestrator Does for Each Status
