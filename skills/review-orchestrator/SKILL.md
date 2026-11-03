@@ -7,7 +7,7 @@ description: |
   "review --strict", "review --project-conventions", "review --legacy-profiles", "review --all". Routes to specialized reviewers in parallel and
   consolidates findings into one unified report.
   NOT for: running a single specialized reviewer — invoke it directly by name instead.
-version: "1.7.0"
+version: "1.8.0"
 triggers:
   - "review"
   - "code review"
@@ -28,6 +28,7 @@ triggers:
   - "review --testing-practices"
   - "review --core-boundaries"
   - "review --flow-graph"
+  - "review --ui-ux"
   - "review --legacy-profiles"
   - "review --code-ai"
   - "review --boss"
@@ -35,7 +36,7 @@ triggers:
   - "review --mobx-store"
 metadata:
   author: "MrCipherSmith"
-  version: "1.7.0"
+  version: "1.8.0"
   category: "review"
 license: "MIT"
 compatibility: "cursor,codex,zed,opencode,claude"
@@ -72,7 +73,7 @@ Review Orchestrator Progress:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--highload`, `--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`, `--flow-graph`, `--legacy-profiles`, `--code-ai`, `--boss`, `--code-style`, `--mobx-store`, `--strict`, `--all` |
+| `flags` | string[] | no | One or more of: `--frontend`, `--backend`, `--architecture`, `--security`, `--performance`, `--style`, `--clean-code`, `--highload`, `--project-conventions`, `--frontend-conventions`, `--testing-practices`, `--core-boundaries`, `--flow-graph`, `--ui-ux`, `--legacy-profiles`, `--code-ai`, `--boss`, `--code-style`, `--mobx-store`, `--strict`, `--all` |
 | `path` | string | no | File or directory path to review (e.g., `src/stores/`, `src/components/UserCard.tsx`). Activates **path mode** — reviews the files at this path directly, not a git diff. |
 | `commit_range` | string | no | Explicit commit hash or range (e.g., `abc123..HEAD`). Overrides merge-base detection. Ignored in path mode. |
 | `issue_url` | string | no | GitHub issue or task URL. If provided, Stage 1 gate checks spec compliance before dispatching reviewers. |
@@ -224,7 +225,7 @@ When no flag is provided, infer reviewers from the collected file list:
 
 | File pattern | Domain detected | Reviewers invoked |
 |---|---|---|
-| `*.tsx`, `*.jsx`, `*.css`, `*.scss`, `*.html` | frontend | `review-logic` + `review-frontend` + `review-style` |
+| `*.tsx`, `*.jsx`, `*.css`, `*.scss`, `*.html` | frontend | `review-logic` + `review-frontend` + `review-style` + `review-ui-ux` |
 | `*.store.ts`, files containing `makeObservable` | frontend/store | `review-logic` + `review-frontend` + `review-style` |
 | `*.ts`, `*.js` in `src/api/`, `src/services/`, `src/controllers/`, `src/modules/` | backend | `review-logic` + `review-backend` + `review-architecture` |
 | `*.ts`, `*.js` mixed (both UI and service files) | fullstack | all of the above |
@@ -365,6 +366,7 @@ Skipped reviewers:
 | `--testing-practices` | `review-testing-practices` |
 | `--core-boundaries` | `review-core-boundaries` |
 | `--flow-graph` | `review-flow-graph` |
+| `--ui-ux` | `review-ui-ux` (code mode; live mode too when a URL or dev server is available) |
 | `--all` | all reviewers above (including `review-clean-code`, `review-highload`, applicable legacy/profile reviewers, project convention reviewers when local convention docs exist, and `review-greptile` when PR number is present) |
 | `--strict` | runs AFTER all others; adds a strict commentary pass on consolidated findings |
 | (auto) | detected from diff file extensions — see Auto-detection table |
@@ -473,6 +475,7 @@ Greptile findings use `G-` prefixed IDs and are merged into the consolidated rep
 | Test / e2e conventions | NO | `review-testing-practices` |
 | Shared core boundary rules | NO | `review-core-boundaries` |
 | Shared flow/graph abstraction contracts | NO | `review-flow-graph` |
+| UI/UX usability, states, a11y floor, AI-slop | NO | `review-ui-ux` |
 | Legacy/profile review profiles | NO | `code-ai-review`, `code-boss-review`, `code-style-review`, `code-mobx-store-review` |
 
 ---

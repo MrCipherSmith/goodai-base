@@ -4,6 +4,24 @@ All notable changes to goodai-base are documented here.
 
 ---
 
+## [1.19.0] — UI design skills and anti-slop reviewer
+
+> Released: 2026-11-03
+
+### Added
+
+- **`rules/core/ui-anti-slop.mdc`** — Shared catalog of AI-slop tells (color, type, layout, surfaces, motion, copy, behavior) in tiers T1–T3, numeric craft thresholds, WCAG 2.2 AA floor, slop score, and sources (Anthropic frontend-design, NN/g, WCAG 2.2, Vercel guidelines, Practical Typography).
+- **`skills/ui-direction`** — Concept before code: subject facts, three directions, idea sentence with competitor/swap tests, palette/type/layout/motion/signature plan, persistent `DESIGN.md`.
+- **`skills/ui-craft`** — Stack-agnostic UI implementation from `DESIGN.md`: tokens first, every state, purposeful motion, accessibility floor, browser verification at 1440/768/390.
+- **`skills/review-ui-ux`** — Read-only UI/UX reviewer with code and live modes: deterministic checks, Nielsen heuristics and states, hierarchy and slop score; NN/g severity mapped to the orchestrator scale.
+
+### Changed
+
+- **`review-orchestrator`** (1.8.0) — `--ui-ux` flag; `review-ui-ux` auto-added for `*.tsx`/`*.jsx`/`*.css`/`*.scss`/`*.html` diffs.
+- **`AGENTS.md`**, **`rules.json`** — Routing, catalog, and reviewer entries for the new rule and skills.
+
+---
+
 ## [1.18.0] — Opus 5.5 prompting standards
 
 > Released: 2026-09-25

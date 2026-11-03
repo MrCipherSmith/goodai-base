@@ -184,6 +184,9 @@ SCAN Skills Catalog:
 | "iago", "/iago", "add PR diagram"    | `iago`                                                               | Specialized visualization skill — direct |
 | "Add PR description", "Document PR"  | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
 | "Create issue for PR changes"        | `pr-issue-documenter`                                                | Specialized domain skill — direct    |
+| "Design direction", "не нейрослоп"   | `ui-direction`                                                       | Concept before UI code — direct      |
+| "Build / restyle UI", "сверстай"     | `ui-craft` (offer `ui-direction` first when no DESIGN.md)            | UI implementation — direct           |
+| "UI/UX review", "looks like AI slop?" | `review-ui-ux` (or `review-orchestrator --ui-ux`)                    | Specialized reviewer — direct        |
 
 ### Step 2B: If Using Rules (Standards/Reference)
 
@@ -215,6 +218,7 @@ Reference guidelines for coding standards and workflows:
 
 - `core/code-style-patterns.mdc`: Architecture and style patterns for TS/React/MobX.
 - `core/frontend-assistant.mdc`: Frontend delivery standards for TS/React/MobX/AntD/Tailwind.
+- `core/ui-anti-slop.mdc`: AI-slop tell catalog (T1–T3), craft thresholds, WCAG 2.2 AA floor, slop score. Shared by `ui-direction`, `ui-craft`, `review-ui-ux`.
 - `core/mobx-store-template.mdc`: Reference structure for MobX stores.
 - `core/nestjs-dto.mdc`: NestJS DTO and validation annotation standards.
 
@@ -321,6 +325,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review-testing-practices` | Repository-local unit/integration/MSW/Storybook/e2e testing discipline | blocker |
 | `review-core-boundaries` | Shared core/infrastructure boundaries, dependency direction, and stability rules | major |
 | `review-flow-graph` | Shared ReactFlow/graph abstraction contracts, lifecycle, and large-graph performance | major |
+| `review-ui-ux` | Usability heuristics, system states, forms, hierarchy, WCAG 2.2 AA floor, AI-slop score; code and live (rendered) modes | blocker |
 | `iago` | Generates or updates an idempotent Mermaid diagram block for PR review context. Uses `gh` CLI for publishing when explicitly requested. | — |
 | `review-strict` | Meta-pass: elevates weak findings, strict engineering judgment | blocker |
 | `review-pr-feedback` | Analyzes existing PR comments from GitHub (not a code reviewer) | — |
@@ -353,6 +358,7 @@ Intelligent agents for complex analysis and review tasks:
 | `review --testing-practices` | local testing/e2e conventions only |
 | `review --core-boundaries` | shared core boundary review only |
 | `review --flow-graph` | shared flow/graph abstraction review only |
+| `review --ui-ux` | UI/UX + anti-slop review only (auto-added for `*.tsx`/`*.jsx`/`*.css`/`*.scss`/`*.html` diffs) |
 | `review --legacy-profiles` | code-ai + boss + code-style + MobX profile when store files are present |
 | `review --code-ai` | code-ai-review only |
 | `review --boss` | code-boss-review only |
@@ -763,6 +769,25 @@ Fully autonomous — no human gates. Analysts (Phase 2) and writers (Phase 4) ru
 - "autodoc" with no project path → ask for path first, then run
 
 ---
+
+### UI Design Skills
+
+All three read `core/ui-anti-slop.mdc` and share `DESIGN.md` as the persistent direction.
+
+**`skills/ui-direction`**
+- **Purpose**: Visual concept before code — mines subject facts, deals three directions, idea sentence with competitor/swap tests, palette/type/layout/motion/signature plan, writes `DESIGN.md`
+- **Use When**: new page/screen/product or redesign; "make it unique", "не нейрослоп", "design direction", "/ui-direction"
+- **Version**: v1.0.0
+
+**`skills/ui-craft`**
+- **Purpose**: Stack-agnostic UI implementation from `DESIGN.md` — tokens first, real content, every state, purposeful motion, WCAG 2.2 AA, browser verification at 1440/768/390 (≤3 fix rounds)
+- **Use When**: "build this page", "сверстай", "restyle", "implement the design", "/ui-craft"
+- **Version**: v1.0.0
+
+**`skills/review-ui-ux`**
+- **Purpose**: Read-only UI/UX reviewer — deterministic checks → Nielsen heuristics/states/forms → hierarchy and slop score; NN/g severity mapped to blocker/major/minor/info
+- **Use When**: "UI review", "UX review", "ревью UI/UX", "review --ui-ux"; dispatched by `review-orchestrator`
+- **Version**: v1.0.0
 
 ### Meta / Context Skills
 

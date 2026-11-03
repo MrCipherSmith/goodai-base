@@ -128,6 +128,30 @@
       }
     },
     {
+      "id": "ui-anti-slop",
+      "type": "rule",
+      "path": "rules/core/ui-anti-slop.mdc",
+      "description": "AI-slop tell catalog (T1–T3), craft thresholds, WCAG 2.2 AA floor, slop score. Shared by `ui-direction`, `ui-craft`, `review-ui-ux`.",
+      "triggers": {
+        "keywords": [
+          "ai-slop",
+          "tell",
+          "catalog",
+          "craft",
+          "thresholds",
+          "wcag",
+          "floor",
+          "slop",
+          "score",
+          "shared",
+          "ui-direction",
+          "ui-craft",
+          "review-ui-ux"
+        ],
+        "intents": []
+      }
+    },
+    {
       "id": "mobx-store-template",
       "type": "rule",
       "path": "rules/core/mobx-store-template.mdc",
@@ -1165,6 +1189,98 @@
           "assembles",
           "final",
           "docs"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "ui-direction",
+      "type": "skill",
+      "path": "skills/ui-direction/SKILL.md",
+      "description": "Visual concept before code — mines subject facts, deals three directions, idea sentence with competitor/swap tests, palette/type/layout/motion/signature plan, writes `DESIGN.md`",
+      "triggers": {
+        "keywords": [
+          "visual",
+          "concept",
+          "before",
+          "code",
+          "mines",
+          "subject",
+          "facts",
+          "deals",
+          "three",
+          "directions",
+          "idea",
+          "sentence",
+          "competitor",
+          "swap",
+          "tests",
+          "palette",
+          "type",
+          "layout",
+          "motion",
+          "signature",
+          "plan",
+          "writes",
+          "design"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "ui-craft",
+      "type": "skill",
+      "path": "skills/ui-craft/SKILL.md",
+      "description": "Stack-agnostic UI implementation from `DESIGN.md` — tokens first, real content, every state, purposeful motion, WCAG 2.2 AA, browser verification at 1440/768/390 (≤3 fix rounds)",
+      "triggers": {
+        "keywords": [
+          "stack-agnostic",
+          "implementation",
+          "design",
+          "tokens",
+          "first",
+          "real",
+          "content",
+          "every",
+          "state",
+          "purposeful",
+          "motion",
+          "wcag",
+          "browser",
+          "verification",
+          "1440",
+          "768",
+          "390",
+          "fix",
+          "rounds"
+        ],
+        "intents": []
+      }
+    },
+    {
+      "id": "review-ui-ux",
+      "type": "skill",
+      "path": "skills/review-ui-ux/SKILL.md",
+      "description": "Read-only UI/UX reviewer — deterministic checks → Nielsen heuristics/states/forms → hierarchy and slop score; NN/g severity mapped to blocker/major/minor/info",
+      "triggers": {
+        "keywords": [
+          "read-only",
+          "reviewer",
+          "deterministic",
+          "checks",
+          "nielsen",
+          "heuristics",
+          "states",
+          "forms",
+          "hierarchy",
+          "slop",
+          "score",
+          "severity",
+          "mapped",
+          "blocker",
+          "major",
+          "minor",
+          "info"
         ],
         "intents": []
       }
